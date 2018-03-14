@@ -1,32 +1,20 @@
 all: bin
 
-bin: deps
-	cd bin/protoc-gen-hack && go build
+bin: third_party
+	cd bin/protoc-gen-hack && go install
 
-dev: bin example
-	echo; \
-	echo; \
-	echo output:; \
-	find ./example/gen-src -type f -regex '.*\.php' -printf "\n%p\n" -exec cat {} \;
-
-run:
-	cd bin/protoc-gen-hack && go run main.go
-
-.PHONY: example
-example: test
-	$(MAKE) -C example; \
-
+.PHONY: test
 test:
-	for dir in lib; do \
+	for dir in lib test; do \
 		$(MAKE) -C $$dir test; \
 	done
 
 clean:
-	for dir in third_party example; do \
+	for dir in third_party test; do \
 		$(MAKE) -C $$dir clean; \
 	done
 
-deps:
+third_party:
 	for dir in third_party; do \
 		$(MAKE) -C $$dir; \
 	done
