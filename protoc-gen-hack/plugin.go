@@ -84,16 +84,14 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto) error {
 	w.p("// Source: %s", *fdp.Name)
 	w.ln()
 
-	// Top level enums.
+	// Enums, including nested.
 	for _, edp := range fdp.EnumType {
-		if err := writeEnum(w, edp); err != nil {
-			return err
-		}
+		writeEnum(w, edp, "")
 	}
 
-	// Top level and messages.
+	// Messages, recurse.
 	for _, dp := range fdp.MessageType {
-		if err := writeDescriptor(w, dp); err != nil {
+		if err := writeDescriptor(w, dp, ""); err != nil {
 			return err
 		}
 	}
@@ -117,7 +115,9 @@ func (f field) phpType() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return strings.Replace(*f.fd.TypeName, ".", "_", -1)
+		// TODO create type aliases for enums.
+		// return strings.Replace(*f.fd.TypeName, ".", "_", -1)
+		return "int"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -192,20 +192,34 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	}
 }
 
-func writeEnum(w *writer, ed *desc.EnumDescriptorProto) error {
-	w.p("class %s {", *ed.Name)
+func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefix string) {
+	w.p("class %s%s {", prefix, *ed.Name)
 	for _, v := range ed.Value {
-		w.p("const %s %s = %d;", "todotype", *v.Name, *v.Number)
+		w.p("const %s %s = %d;", "int", *v.Name, *v.Number)
 	}
 	w.p("}")
 	w.ln()
-	return nil
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
-func writeDescriptor(w *writer, dp *desc.DescriptorProto) error {
+func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
+	name := prefix + *dp.Name
+	prefix = name + "_"
+
+	// Nested Enums.
+	for _, edp := range dp.EnumType {
+		writeEnum(w, edp, prefix)
+	}
+
+	// Nested Types.
+	for _, ndp := range dp.NestedType {
+		if err := writeDescriptor(w, ndp, prefix); err != nil {
+			return err
+		}
+	}
+
 	w.p("// message %s", *dp.Name)
-	w.p("class %s extends %s\\Message {", *dp.Name, libNs)
+	w.p("class %s extends %s\\Message {", name, libNs)
 
 	// Fields
 	for _, fd := range dp.Field {
@@ -214,13 +228,6 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto) error {
 		w.p("public %s $%s;", f.labeledType(), f.varName())
 	}
 	w.ln()
-
-	// Nested Types
-	for _, ndp := range dp.NestedType {
-		if err := writeDescriptor(w, ndp); err != nil {
-			return err
-		}
-	}
 
 	// Unmarshall function
 	w.p("public function MergeFrom(%s\\Decoder $d) {", libNs)
