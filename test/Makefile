@@ -6,8 +6,8 @@ test: gen
 gen:
 	mkdir -p gen-src
 	mkdir -p gen-data
-	protoc --hack_out=./gen-src example.proto
-	protoc --encode=foo.ExampleOne example.proto < example.pb.txt > gen-data/example.pb.bin	
+	protoc --hack_out=./gen-src example1.proto
+	protoc --encode=foo.example1  example1.proto < example1.pb.txt > gen-data/example1.pb.bin	
 
 clean:
 	rm -rfv gen-src

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package foo;
 
-message ExampleOne {
+message example1 {
   // Scalars.
 	double adouble = 1;
 	float afloat = 2;
