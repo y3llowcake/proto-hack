@@ -1,7 +1,7 @@
 all: bin
 
 bin: third_party
-	cd bin/protoc-gen-hack && go install
+	cd protoc-gen-hack && go install
 
 .PHONY: test
 test:
