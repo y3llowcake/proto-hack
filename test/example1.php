@@ -48,8 +48,5 @@ $exp->abool = true;
 $exp->astring = "foobar";
 $exp->abytes = "hello world";
 
-echo "derp " . ($exp->afloat - $got->afloat)  .  "\n";
-
-//print_r($got);
 a($got, $exp, "example1 mismatch");
 

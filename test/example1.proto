@@ -19,4 +19,11 @@ message example1 {
 	bool abool = 13;
 	string astring = 14;
 	bytes abytes = 15;
+
+  // Enums
+  enum AEnum {
+    A = 0;
+    B = 2;
+  }
+  AEnum aenum = 20;
 }

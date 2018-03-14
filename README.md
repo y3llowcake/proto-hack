@@ -9,3 +9,8 @@ Hacklang generator for protobuf
 
 # Development
 `make test`
+
+# Notes
+Unsigned 64 bit integer types (uint64, fixed64) are represented using their
+signed counterparts, with the top bit simply being stored in the sign bit.
+(similar to java).

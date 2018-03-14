@@ -13,3 +13,5 @@ asfixed64: 1234567890
 abool: true
 astring: "foobar"
 abytes: "hello world"
+
+aenum: B

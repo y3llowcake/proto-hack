@@ -65,7 +65,14 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		w.p("// Source: %s", *fdp.Name)
 		w.ln()
 
-		// Go!
+		// Top Level Defs.
+		for _, edp := range fdp.EnumType {
+			err := writeEnum(w, edp)
+			if err != nil {
+				resp.Error = proto.String(err.Error())
+				return resp
+			}
+		}
 		for _, dp := range fdp.MessageType {
 			err := writeDescriptor(w, dp)
 			if err != nil {
@@ -96,6 +103,8 @@ func (f field) phpType() string {
 		return "float"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		return "enuma"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -145,6 +154,9 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("(%s->readVarInt128() != 0)", dec)
 		isPackable = true // TODO verify
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		reader = fmt.Sprintf("%s->readVarInt128()", dec)
+		isPackable = true // TODO verify
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -167,17 +179,36 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	}
 }
 
+func writeEnum(w *writer, ed *desc.EnumDescriptorProto) error {
+	return nil
+}
+
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto) error {
 	w.p("// message %s", *dp.Name)
 	w.p("class %s extends %s\\Message {", *dp.Name, libNs)
 
+	// Fields
 	for _, fd := range dp.Field {
 		f := field{fd}
 		w.p("// field %s = %d", *fd.Name, *fd.Number)
 		w.p("public %s $%s;", f.labeledType(), f.varName())
 	}
 	w.ln()
+
+	// Nested Types
+	for _, ndp := range dp.NestedType {
+		if err := writeDescriptor(w, ndp); err != nil {
+			return err
+		}
+	}
+	for _, ed := range dp.EnumType {
+		if err := writeEnum(w, ed); err != nil {
+			return err
+		}
+	}
+
+	// Unmarshall function
 	w.p("public function Unmarshal(%s\\Decoder $d) {", libNs)
 	w.p("while (!$d->isEOF()){")
 	w.p("$k = $d->readVarInt128();")
