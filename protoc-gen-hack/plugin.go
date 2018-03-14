@@ -1,11 +1,11 @@
 package main
 
 import (
-	ppb "../third_party/gen-src/github.com/golang/protobuf/protoc-gen-go/plugin"
 	"bytes"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
+	ppb "github.com/y3llowcake/proto-hack/third_party/gen-src/github.com/golang/protobuf/protoc-gen-go/plugin"
 	"io"
 	"strings"
 )
