@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package foo;
+package foo.bar;
 
 message example1 {
   // Scalars.

@@ -123,9 +123,9 @@ function Skip(Decoder $d, int $wt) {
 }
 
 abstract class Message {
-	public abstract function Unmarshal(Decoder $buf);
+	public abstract function MergeFrom(Decoder $buf);
 }
 
 function Unmarshal(string $data, Message $message): void {
-	$message->Unmarshal(Decoder::FromString($data));
+	$message->MergeFrom(Decoder::FromString($data));
 }

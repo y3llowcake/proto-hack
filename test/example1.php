@@ -1,6 +1,6 @@
 <?hh
 include "../lib/protobuf.php";
-include "./gen-src/foo/proto_types.php";
+include "./gen-src/foo/bar/proto_types.php";
 
 
 function a(mixed $got, mixed $exp, string $msg) {
@@ -29,9 +29,9 @@ function repackFloat(float $f): float {
 	return unpack("f", pack("f", $f))[1];
 }
 
-$got = new foo\example1();
+$got = new foo\bar\example1();
 Protobuf\Internal\Unmarshal(file_get_contents('./gen-data/example1.pb.bin'), $got);
-$exp = new foo\example1();
+$exp = new foo\bar\example1();
 $exp->adouble = 13.37;
 $exp->afloat = repackFloat(100.1);
 $exp->aint32 = 1;
