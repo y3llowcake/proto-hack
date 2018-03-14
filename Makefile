@@ -4,7 +4,7 @@ bin: third_party
 	cd protoc-gen-hack && go install
 
 .PHONY: test
-test:
+test: bin
 	for dir in lib test; do \
 		$(MAKE) -C $$dir test; \
 	done

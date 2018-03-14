@@ -41,11 +41,15 @@ class Decoder {
 		return $val;
 	}
 
-	// TODO make this faster.
-	public function readFixedInt(bool $is64): int {
-		$val = unpack('V', $this->readRaw(4))[1];
-		if ($is64){
-			$val = ($val << 32) | unpack('V', $this->readRaw(4));
+	public function readLittleEndianInt(int $size): int {
+		$noff = $this->offset + $size;
+		if ($noff > $this->len){
+			throw new ProtoException("buffer overrun while reading little endian int: " . $size);
+		}
+		$val = 0;
+		for ($i = 0; $i < $size; $i++) {
+			$val |= ord($this->buf[$this->offset]) << ($i * 8);
+			$this->offset++;
 		}
 		return $val;
 	}

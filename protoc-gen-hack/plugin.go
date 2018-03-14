@@ -137,10 +137,10 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		reader = fmt.Sprintf("%s->readDouble()", dec)
 		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
-		reader = fmt.Sprintf("%s->readFixedInt(false)", dec)
+		reader = fmt.Sprintf("%s->readLittleEndianInt(4)", dec)
 		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
-		reader = fmt.Sprintf("%s->readFixedInt(true)", dec)
+		reader = fmt.Sprintf("%s->readLittleEndianInt(8)", dec)
 		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("(%s->readVarInt128() != 0)", dec)
