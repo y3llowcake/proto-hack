@@ -123,6 +123,27 @@ func (f field) phpType() string {
 	}
 }
 
+func (f field) defaultValue() string {
+	if f.isRepeated() {
+		return "new " + f.labeledType() + "(null)"
+	}
+	switch t := *f.fd.Type; t {
+	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+		return "''"
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32, desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32, desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED32, desc.FieldDescriptorProto_TYPE_SFIXED64:
+		return "0"
+	case desc.FieldDescriptorProto_TYPE_FLOAT, desc.FieldDescriptorProto_TYPE_DOUBLE:
+		return "0.0"
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		return "false"
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		return "0"
+	default:
+		panic(fmt.Errorf("unexpected proto type while converting to default value: %v", t))
+	}
+}
+
 func (f field) isRepeated() bool {
 	return *f.fd.Label == desc.FieldDescriptorProto_LABEL_REPEATED
 }
@@ -229,8 +250,17 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
 	}
 	w.ln()
 
-	// Unmarshall function
-	w.p("public function MergeFrom(%s\\Decoder $d) {", libNs)
+	// Constructor
+	w.p("public function __construct() {")
+	for _, fd := range dp.Field {
+		f := field{fd}
+		w.p("$this->%s = %s;", f.varName(), f.defaultValue())
+	}
+	w.p("}")
+	w.ln()
+
+	// MergeFrom function
+	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNs)
 	w.p("while (!$d->isEOF()){")
 	w.p("$k = $d->readVarInt128();")
 	w.p("$fn = %s\\KeyToFieldNumber($k);", libNs)
