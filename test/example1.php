@@ -48,8 +48,18 @@ function test(): void {
 	$exp->abool = true;
 	$exp->astring = "foobar";
 	$exp->abytes = "hello world";
+
 	$exp->aenum1 = foo\bar\AEnum1::B;
 	$exp->aenum2 = foo\bar\example1_AEnum2::D;
+
+	$exp->manystring->add("ms1");
+	$exp->manystring->add("ms2");
+	$exp->manystring->add("ms3");
+
+
+	$exp->manyint64->add(1);
+	$exp->manyint64->add(2);
+	$exp->manyint64->add(3);
 
 	a($got, $exp, "example1 mismatch");
 }

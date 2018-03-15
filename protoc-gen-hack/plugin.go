@@ -203,7 +203,11 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		w.p("if (%s == 2) {", wt)
 		w.p("$packed = %s->readDecoder(%s->readVarInt128());", dec, dec)
 		w.p("while (!$packed->isEOF()) {")
-		w.p("$this->%s->add(%s);", f.varName(), reader)
+		if genDebug {
+			w.p("echo \"reading packed field\\n\";")
+		}
+		packedReader := strings.Replace(reader, dec, "$packed", -1) // Heh, kinda hacky.
+		w.p("$this->%s->add(%s);", f.varName(), packedReader)
 		w.p("}")
 		w.p("} else {")
 	}

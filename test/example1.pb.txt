@@ -13,5 +13,13 @@ asfixed64: 1234567890
 abool: true
 astring: "foobar"
 abytes: "hello world"
+
 aenum1: B
 aenum2: D
+
+manystring: "ms1"
+manystring: "ms2"
+manystring: "ms3"
+manyint64: 1
+manyint64: 2
+manyint64: 3
