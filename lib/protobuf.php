@@ -3,7 +3,7 @@ namespace Protobuf\Internal;
 
 class ProtoException extends \Exception {}
 
-function AssertEndiannessAndIntSize() {
+function AssertEndiannessAndIntSize(): void {
 	if (PHP_INT_SIZE != 8) {
 		throw new ProtoException("unsupported PHP_INT_SIZE size: " . PHP_INT_SIZE);
 	}
@@ -77,7 +77,7 @@ class Decoder {
 		if ($noff > $this->len){
 			throw new ProtoException("buffer overrun while reading buffer: " . $size);
 		}
-		$buf = new Decoder($this->buf, $this->offset, $this->$noff);
+		$buf = new Decoder($this->buf, $this->offset, $noff);
 		$this->offset = $noff;
 		return $buf;
 	}
@@ -86,7 +86,7 @@ class Decoder {
 		return $this->offset >= $this->len;
 	}
 
-	public function skip(int $len) {
+	public function skip(int $len): void {
 		$this->offset += $len;
 	}
 }
@@ -103,7 +103,7 @@ function KeyToWireType(int $k): int {
 	return $k & 0x7;
 }
 
-function Skip(Decoder $d, int $wt) {
+function Skip(Decoder $d, int $wt): void {
 	switch ($wt) {
 	case 0:
 		$d->readVarInt128(); // We could technically optimize this to skip.
@@ -123,7 +123,7 @@ function Skip(Decoder $d, int $wt) {
 }
 
 abstract class Message {
-	public abstract function MergeFrom(Decoder $buf);
+	public abstract function MergeFrom(Decoder $buf): void;
 }
 
 function Unmarshal(string $data, Message $message): void {

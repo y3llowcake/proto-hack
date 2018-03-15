@@ -1,7 +1,7 @@
 all: test
 
 test: gen
-	hhvm -d hhvm.hack.lang.look_for_typechecker=0 example1.php
+	hhvm example1.php
 
 gen:
 	mkdir -p gen-src
