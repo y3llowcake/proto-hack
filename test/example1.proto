@@ -2,6 +2,11 @@ syntax = "proto3";
 
 package foo.bar;
 
+enum AEnum1 {
+  A = 0;
+  B = 2;
+}
+
 message example1 {
   // Scalars.
 	double adouble = 1;
@@ -21,9 +26,14 @@ message example1 {
 	bytes abytes = 15;
 
   // Enums
-  enum AEnum {
-    A = 0;
-    B = 2;
+  enum AEnum2 {
+    C = 0;
+    D = 10;
   }
-  AEnum aenum = 20;
+  AEnum1 aenum1 = 20;
+  AEnum2 aenum2 = 21;
+
+  // Repeated
+  repeated string manystring = 30;
+  repeated int64 manyint64 = 31;
 }
