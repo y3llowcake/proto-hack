@@ -47,6 +47,7 @@ $exp->asfixed64 = 1234567890;
 $exp->abool = true;
 $exp->astring = "foobar";
 $exp->abytes = "hello world";
+$exp->aenum = foo\bar\example1_AEnum::B;
 
 a($got, $exp, "example1 mismatch");
 
