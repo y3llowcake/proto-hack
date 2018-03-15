@@ -61,7 +61,6 @@ function test(): void {
 	$exp->manyint64->add(2);
 	$exp->manyint64->add(3);
 
-	print_r($exp);
 	a($got, $exp, "example1 mismatch");
 }
 
