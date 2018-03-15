@@ -7,10 +7,6 @@ enum AEnum1 {
   B = 2;
 }
 
-message example2 {
-  int32 aint32 = 1;
-}
-
 message example1 {
   // Scalars.
 	double adouble = 1;
@@ -40,10 +36,4 @@ message example1 {
   // Repeated
   repeated string manystring = 30;
   repeated int64 manyint64 = 31;
-
-  // Nested Messages
-  message example2 {
-    string astring = 1;
-  }
-  // example2 aexample2 = 40;
 }

@@ -54,7 +54,11 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	for _, f := range req.FileToGenerate {
 		fileToGenerate[f] = true
 	}
+	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
+		rootns.Parse(fdp)
+		// panic(rootns.PrettyPrint())
+
 		if !fileToGenerate[*fdp.Name] {
 			continue
 		}
@@ -63,7 +67,7 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		f.Name = proto.String(strings.Join(append(packageParts, "proto_types.php"), "/"))
 		b := &bytes.Buffer{}
 		w := &writer{b, 0}
-		if err := writeFile(w, fdp); err != nil {
+		if err := writeFile(w, fdp, rootns); err != nil {
 			resp.Error = proto.String(err.Error())
 			return resp
 		}
@@ -73,8 +77,12 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	return resp
 }
 
-func writeFile(w *writer, fdp *desc.FileDescriptorProto) error {
+func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) error {
 	packageParts := strings.Split(*fdp.Package, ".")
+	ns := rootNs.get(false, packageParts)
+	if ns == nil {
+		panic("unable to find namespace for: " + *fdp.Package)
+	}
 
 	// File header.
 	w.p("<?hh // strict")
@@ -84,14 +92,14 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto) error {
 	w.p("// Source: %s", *fdp.Name)
 	w.ln()
 
-	// Enums, including nested.
+	// Top level enums.
 	for _, edp := range fdp.EnumType {
-		writeEnum(w, edp, "")
+		writeEnum(w, edp, nil)
 	}
 
 	// Messages, recurse.
 	for _, dp := range fdp.MessageType {
-		if err := writeDescriptor(w, dp, ""); err != nil {
+		if err := writeDescriptor(w, dp, ns, nil); err != nil {
 			return err
 		}
 	}
@@ -101,6 +109,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto) error {
 
 type field struct {
 	fd *desc.FieldDescriptorProto
+	ns *Namespace
 }
 
 func (f field) phpType() string {
@@ -115,9 +124,11 @@ func (f field) phpType() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		// TODO create type aliases for enums.
-		// return strings.Replace(*f.fd.TypeName, ".", "_", -1)
-		return "int"
+		ns, name := f.ns.Find(*f.fd.TypeName)
+		ns = strings.Replace(ns, ".", "\\", -1)
+		name = strings.Replace(name, ".", "_", -1) + "_EnumType"
+		return ns + name
+		//return "int"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -217,28 +228,31 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	}
 }
 
-func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefix string) {
-	w.p("class %s%s {", prefix, *ed.Name)
+func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
+	name := strings.Join(append(prefixNames, *ed.Name), "_")
+	typename := name + "_EnumType"
+	w.p("newtype %s = int;", typename)
+	w.p("class %s {", name)
 	for _, v := range ed.Value {
-		w.p("const %s %s = %d;", "int", *v.Name, *v.Number)
+		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
 	w.p("}")
 	w.ln()
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
-func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
-	name := prefix + *dp.Name
-	prefix = name + "_"
+func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) error {
+	nextNames := append(prefixNames, *dp.Name)
+	name := strings.Join(nextNames, "_")
 
 	// Nested Enums.
 	for _, edp := range dp.EnumType {
-		writeEnum(w, edp, prefix)
+		writeEnum(w, edp, nextNames)
 	}
 
 	// Nested Types.
 	for _, ndp := range dp.NestedType {
-		if err := writeDescriptor(w, ndp, prefix); err != nil {
+		if err := writeDescriptor(w, ndp, ns, nextNames); err != nil {
 			return err
 		}
 	}
@@ -248,7 +262,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
 
 	// Fields
 	for _, fd := range dp.Field {
-		f := field{fd}
+		f := field{fd, ns}
 		w.p("// field %s = %d", *fd.Name, *fd.Number)
 		w.p("public %s $%s;", f.labeledType(), f.varName())
 	}
@@ -257,7 +271,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
 	// Constructor
 	w.p("public function __construct() {")
 	for _, fd := range dp.Field {
-		f := field{fd}
+		f := field{fd, ns}
 		w.p("$this->%s = %s;", f.varName(), f.defaultValue())
 	}
 	w.p("}")
@@ -274,7 +288,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, prefix string) error {
 	}
 	w.p("switch ($fn) {")
 	for _, fd := range dp.Field {
-		f := field{fd}
+		f := field{fd, ns}
 		w.p("case %d:", *fd.Number)
 		w.i++
 		if genDebug {
