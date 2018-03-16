@@ -46,4 +46,6 @@ message example1 {
     string astring = 1;
   }
   example2 aexample2 = 40;
+
+  map<string, string> amap = 51;
 }

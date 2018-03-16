@@ -123,6 +123,11 @@ func (f field) phpType() string {
 		return "float"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
+	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+		ns, name := f.ns.Find(*f.fd.TypeName)
+		ns = strings.Replace(ns, ".", "\\", -1)
+		name = strings.Replace(name, ".", "_", -1)
+		return ns + name
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		ns, name := f.ns.Find(*f.fd.TypeName)
 		ns = strings.Replace(ns, ".", "\\", -1)
@@ -150,6 +155,8 @@ func (f field) defaultValue() string {
 		return "false"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		return "0"
+	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+		return "null"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to default value: %v", t))
 	}
@@ -162,9 +169,11 @@ func (f field) isRepeated() bool {
 func (f field) labeledType() string {
 	if f.isRepeated() {
 		return "Vector<" + f.phpType() + ">"
-	} else {
-		return f.phpType()
 	}
+	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		return "?" + f.phpType()
+	}
+	return f.phpType()
 }
 
 func (f field) varName() string {
@@ -172,6 +181,21 @@ func (f field) varName() string {
 }
 
 func (f field) writeDecoder(w *writer, dec, wt string) {
+	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		// This is different enough we handle it on it's own.
+		if f.isRepeated() {
+			w.p("$obj = new %s();", f.phpType())
+			w.p("$obj->MergeFrom(%s->readDecoder(%s->readVarInt128()));", dec, dec)
+			w.p("$this->%s->add($obj);", f.varName())
+		} else {
+			w.p("if ($this->%s == null) {", f.varName())
+			w.p("$this->%s = new %s();", f.varName(), f.phpType())
+			w.p("}")
+			w.p("$this->%s->MergeFrom(%s->readDecoder(%s->readVarInt128()));", f.varName(), dec, dec)
+		}
+		return
+	}
+
 	// TODO should we do wiretype checking here?
 	reader := ""
 	isPackable := false
