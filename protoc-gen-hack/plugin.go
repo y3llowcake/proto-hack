@@ -82,6 +82,7 @@ type field struct {
 	typePhpNs, typePhpName string
 	typeDescriptor         interface{}
 	typeNs                 *Namespace
+	isMap                  bool
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
@@ -94,17 +95,21 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 		f.typePhpName = strings.Replace(typeName, ".", "_", -1)
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
+		if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); ok {
+			if dp.GetOptions().GetMapEntry() {
+				f.isMap = true
+			}
+		}
 	}
+
 	return f
 }
 
 func (f field) mapPhpTypes() (string, string) {
-	if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); !ok {
-		if dp.GetOptions().GetMapEntry() {
-			// keyField := newField()
-		}
-	}
-	return "", ""
+	dp := f.typeDescriptor.(*desc.DescriptorProto)
+	keyField := newField(dp.Field[0], f.typeNs)
+	valueField := newField(dp.Field[1], f.typeNs)
+	return keyField.phpType(), valueField.phpType()
 }
 
 func (f field) phpType() string {
@@ -128,6 +133,9 @@ func (f field) phpType() string {
 }
 
 func (f field) defaultValue() string {
+	if f.isMap {
+		return "dict[]"
+	}
 	if f.isRepeated() {
 		return "vec[]"
 	}
@@ -155,6 +163,10 @@ func (f field) isRepeated() bool {
 }
 
 func (f field) labeledType() string {
+	if f.isMap {
+		k, v := f.mapPhpTypes()
+		return fmt.Sprintf("dict<%s, %s>", k, v)
+	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
 	}
@@ -199,6 +211,12 @@ var isPackable = map[desc.FieldDescriptorProto_Type]bool{
 }
 
 func (f field) writeDecoder(w *writer, dec, wt string) {
+	if f.isMap {
+		w.p("$obj = new %s();", f.phpType())
+		w.p("$obj->MergeFrom(%s->readDecoder());", dec)
+		w.p("$this->%s[$obj->key] = $obj->value;", f.varName())
+		return
+	}
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
@@ -265,6 +283,17 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 func (f field) writeEncoder(w *writer, enc string) {
 	if genDebug {
 		w.p("echo \"writing field: %d (%s)\\n\";", *f.fd.Number, f.varName())
+	}
+	if f.isMap {
+		w.p("foreach ($this->%s as $k => $v) {", f.varName())
+		w.p("$obj = new %s();", f.phpType())
+		w.p("$obj->key = $k;")
+		w.p("$obj->value = $v;")
+		w.p("$nested = new %s\\Encoder();", libNs)
+		w.p("$obj->WriteTo($nested);")
+		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
+		w.p("}")
+		return
 	}
 
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
