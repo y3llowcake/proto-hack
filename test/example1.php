@@ -73,14 +73,14 @@ function testExample1($raw, $failmsg): string {
 	$exp->aenum1 = foo\bar\AEnum1::B;
 	$exp->aenum2 = foo\bar\example1_AEnum2::D;
 
-	$exp->manystring->add("ms1");
-	$exp->manystring->add("ms2");
-	$exp->manystring->add("ms3");
+	$exp->manystring []= "ms1";
+	$exp->manystring []= "ms2";
+	$exp->manystring []= "ms3";
 
 
-	$exp->manyint64->add(1);
-	$exp->manyint64->add(2);
-	$exp->manyint64->add(3);
+	$exp->manyint64 []= 1;
+	$exp->manyint64 []= 2;
+	$exp->manyint64 []= 3;
 
 	$e2 = new foo\bar\example1_example2();
 	$exp->aexample2 = $e2;

@@ -153,13 +153,13 @@ class example1 extends \Protobuf\Internal\Message {
   // field aenum2 = 21
   public \foo\bar\example1_AEnum2_EnumType $aenum2;
   // field manystring = 30
-  public Vector<string> $manystring;
+  public vec<string> $manystring;
   // field manyint64 = 31
-  public Vector<int> $manyint64;
+  public vec<int> $manyint64;
   // field aexample2 = 40
   public ?\foo\bar\example1_example2 $aexample2;
   // field amap = 51
-  public Vector<\foo\bar\example1_AmapEntry> $amap;
+  public vec<\foo\bar\example1_AmapEntry> $amap;
   // field outoforder = 49
   public int $outoforder;
 
@@ -181,10 +181,10 @@ class example1 extends \Protobuf\Internal\Message {
     $this->abytes = '';
     $this->aenum1 = 0;
     $this->aenum2 = 0;
-    $this->manystring = new Vector<string>(null);
-    $this->manyint64 = new Vector<int>(null);
+    $this->manystring = vec[];
+    $this->manyint64 = vec[];
     $this->aexample2 = null;
-    $this->amap = new Vector<\foo\bar\example1_AmapEntry>(null);
+    $this->amap = vec[];
     $this->outoforder = 0;
   }
 
@@ -244,16 +244,16 @@ class example1 extends \Protobuf\Internal\Message {
           $this->aenum2 = $d->readVarInt128();
           break;
         case 30:
-          $this->manystring->add($d->readString());
+          $this->manystring []= $d->readString();
           break;
         case 31:
           if ($wt == 2) {
             $packed = $d->readDecoder();
             while (!$packed->isEOF()) {
-              $this->manyint64->add($packed->readVarInt128());
+              $this->manyint64 []= $packed->readVarInt128();
             }
           } else {
-            $this->manyint64->add($d->readVarInt128());
+            $this->manyint64 []= $d->readVarInt128();
           }
           break;
         case 40:
@@ -268,7 +268,7 @@ class example1 extends \Protobuf\Internal\Message {
         case 51:
           $obj = new \foo\bar\example1_AmapEntry();
           $obj->MergeFrom($d->readDecoder());
-          $this->amap->add($obj);
+          $this->amap []= $obj;
           break;
         default:
           $d->skipWireType($wt);

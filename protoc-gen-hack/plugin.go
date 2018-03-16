@@ -108,7 +108,7 @@ func (f field) phpType() string {
 
 func (f field) defaultValue() string {
 	if f.isRepeated() {
-		return "new " + f.labeledType() + "(null)"
+		return "vec[]"
 	}
 	switch t := *f.fd.Type; t {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
@@ -135,7 +135,7 @@ func (f field) isRepeated() bool {
 
 func (f field) labeledType() string {
 	if f.isRepeated() {
-		return "Vector<" + f.phpType() + ">"
+		return "vec<" + f.phpType() + ">"
 	}
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		return "?" + f.phpType()
@@ -183,7 +183,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
 			w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-			w.p("$this->%s->add($obj);", f.varName())
+			w.p("$this->%s []= $obj;", f.varName())
 		} else {
 			w.p("if ($this->%s == null) {", f.varName())
 			w.p("$this->%s = new %s();", f.varName(), f.phpType())
@@ -231,11 +231,11 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 			w.p("echo \"reading packed field\\n\";")
 		}
 		packedReader := strings.Replace(reader, dec, "$packed", 1) // Heh, kinda hacky.
-		w.p("$this->%s->add(%s);", f.varName(), packedReader)
+		w.p("$this->%s []= %s;", f.varName(), packedReader)
 		w.p("}")
 		w.p("} else {")
 	}
-	w.p("$this->%s->add(%s);", f.varName(), reader)
+	w.p("$this->%s []= %s;", f.varName(), reader)
 	if packable {
 		w.p("}")
 	}
