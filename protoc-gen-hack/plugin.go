@@ -231,7 +231,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
 		reader = fmt.Sprintf("%s->readLittleEndianInt(8)", dec)
 	case desc.FieldDescriptorProto_TYPE_BOOL:
-		reader = fmt.Sprintf("(%s->readVarInt128() != 0)", dec)
+		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		reader = fmt.Sprintf("%s->readVarInt128()", dec)
 	default:
@@ -265,7 +265,9 @@ func (f field) writeEncoder(w *writer, enc string) {
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
+			//TODO
 		} else {
+			//TODO
 		}
 		return
 	}
@@ -279,21 +281,28 @@ func (f field) writeEncoder(w *writer, enc string) {
 	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
 		writer = fmt.Sprintf("%s->writeVarInt128ZigZag($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
-		writer = fmt.Sprintf("%s->writeFloat(%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeFloat($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
-		writer = fmt.Sprintf("%s->writeDouble(%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeDouble($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
 		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 4)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
 		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 8)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_BOOL:
-		writer = fmt.Sprintf("(%s->writeVarInt128() != 0)", enc)
+		writer = fmt.Sprintf("%s->writeBool($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		writer = fmt.Sprintf("%s->writeVarInt128(%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
-	_ = writer
+	if !f.isRepeated() {
+		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		w.p("%s;", writer)
+		w.p("}")
+		return
+	}
+	// Repeated
+	// TODO
 }
 
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
@@ -380,7 +389,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNs)
 	for _, fd := range dp.Field {
 		f := field{fd, ns}
-		f.writeEncoder(w, "$d")
+		f.writeEncoder(w, "$e")
 	}
 	w.p("}") // WriteToFunction
 
