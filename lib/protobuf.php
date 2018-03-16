@@ -180,6 +180,10 @@ class Encoder {
 		$this->writeVarInt128(($i << 1) ^ ($i >> 31));
 	}
 
+	public function isEmpty(): bool {
+		return strlen($this->buf) == 0;
+	}
+
 	public function __toString(): string {
 		return $this->buf;
 	}

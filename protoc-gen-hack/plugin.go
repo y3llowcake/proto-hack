@@ -180,6 +180,19 @@ func (f field) varName() string {
 	return *f.fd.Name
 }
 
+// Default is 0
+var writeWireType = map[desc.FieldDescriptorProto_Type]int{
+	desc.FieldDescriptorProto_TYPE_FLOAT:    5,
+	desc.FieldDescriptorProto_TYPE_DOUBLE:   1,
+	desc.FieldDescriptorProto_TYPE_FIXED32:  5,
+	desc.FieldDescriptorProto_TYPE_SFIXED32: 5,
+	desc.FieldDescriptorProto_TYPE_FIXED64:  1,
+	desc.FieldDescriptorProto_TYPE_SFIXED64: 5,
+	desc.FieldDescriptorProto_TYPE_STRING:   2,
+	desc.FieldDescriptorProto_TYPE_BYTES:    2,
+	desc.FieldDescriptorProto_TYPE_MESSAGE:  2,
+}
+
 var isPackable = map[desc.FieldDescriptorProto_Type]bool{
 	desc.FieldDescriptorProto_TYPE_INT64:    true,
 	desc.FieldDescriptorProto_TYPE_INT32:    true,
@@ -250,7 +263,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		if genDebug {
 			w.p("echo \"reading packed field\\n\";")
 		}
-		packedReader := strings.Replace(reader, dec, "$packed", -1) // Heh, kinda hacky.
+		packedReader := strings.Replace(reader, dec, "$packed", 1) // Heh, kinda hacky.
 		w.p("$this->%s->add(%s);", f.varName(), packedReader)
 		w.p("}")
 		w.p("} else {")
@@ -262,12 +275,31 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 }
 
 func (f field) writeEncoder(w *writer, enc string) {
+	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[*f.fd.Type])
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
+		// TODO we could optimize to not to string copies.
 		if f.isRepeated() {
-
+			w.p("foreach ($this->%s as $msg) {", f.varName())
+			w.p("$nested = new %s\\Encoder();", libNs)
+			w.p("if (!$nested->isEmpty()) {")
+			w.p("$msg->WriteTo($nested);")
+			w.p(tagWriter)
+			w.p("%s->writeString((string)$nested);", enc)
+			w.p("}")
+			w.p("}")
 		} else {
-			w.p("$this->%s?->WriteTo(%s);", f.varName(), enc)
+			w.p("$msg = $this->%s;", f.varName())
+			w.p("if ($msg != null) {")
+			w.p(tagWriter)
+			w.p("$nested = new %s\\Encoder();", libNs)
+			w.p("$msg->WriteTo($nested);")
+			w.p("if (!$nested->isEmpty()) {")
+			w.p("$msg->WriteTo($nested);")
+			w.p(tagWriter)
+			w.p("%s->writeString((string)$nested);", enc)
+			w.p("}")
+			w.p("}")
 		}
 		return
 	}
@@ -297,12 +329,32 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 	if !f.isRepeated() {
 		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		w.p(tagWriter)
 		w.p("%s;", writer)
 		w.p("}")
 		return
 	}
 	// Repeated
-	// TODO
+	// Heh, kinda hacky.
+	repeatWriter := strings.Replace(writer, "$this->"+f.varName(), "$elem", 1)
+	if isPackable[*f.fd.Type] {
+		// Heh, kinda hacky.
+		packedWriter := strings.Replace(repeatWriter, enc, "$packed", 1)
+		w.p("$packed = new %s\\Encoder();", libNs)
+		w.p("foreach ($this->%s as $elem) {", f.varName())
+		w.p("%s;", packedWriter)
+		w.p("if (!$packed->isEmpty()) {")
+		w.p("%s->writeTag(%d, 2);", enc, *f.fd.Number)
+		w.p("%s->writeString((string)$packed);", enc)
+		w.p("}")
+		w.p("}")
+	} else {
+		// Heh kinda hacky.
+		w.p("foreach ($this->%s as $elem) {", f.varName())
+		w.p(tagWriter)
+		w.p("%s;", repeatWriter)
+		w.p("}")
+	}
 }
 
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
