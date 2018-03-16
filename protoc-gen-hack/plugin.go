@@ -275,6 +275,10 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 }
 
 func (f field) writeEncoder(w *writer, enc string) {
+	if genDebug {
+		w.p("echo \"writing field: %d (%s)\\n\";", *f.fd.Number, f.varName())
+	}
+
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		// TODO we could optimize to not to string copies.
@@ -331,11 +335,13 @@ func (f field) writeEncoder(w *writer, enc string) {
 		packedWriter := strings.Replace(repeatWriter, enc, "$packed", 1)
 		w.p("$packed = new %s\\Encoder();", libNs)
 		w.p("foreach ($this->%s as $elem) {", f.varName())
+		if genDebug {
+			w.p("echo \"writing packed\\n\";")
+		}
 		w.p("%s;", packedWriter)
-		w.p("%s->writeEncoder($packed, %d);", enc, *f.fd.Number)
 		w.p("}")
+		w.p("%s->writeEncoder($packed, %d);", enc, *f.fd.Number)
 	} else {
-		// Heh kinda hacky.
 		w.p("foreach ($this->%s as $elem) {", f.varName())
 		w.p(tagWriter)
 		w.p("%s;", repeatWriter)

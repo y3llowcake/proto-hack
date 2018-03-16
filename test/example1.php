@@ -70,7 +70,9 @@ function testExample1($raw, $failmsg): string {
 }
 
 function test(): void {
-	testExample1(file_get_contents('./gen-data/example1.pb.bin'), "test example1: file");
+	$res = testExample1(file_get_contents('./gen-data/example1.pb.bin'), "test example1: file");
+	testExample1($res, "test example1: remarshal");
+
 }
 
 test();
