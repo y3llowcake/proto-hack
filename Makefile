@@ -14,6 +14,7 @@ clean:
 		$(MAKE) -C $$dir clean; \
 	done
 
+.PHONY: third_party
 third_party:
 	for dir in third_party; do \
 		$(MAKE) -C $$dir; \

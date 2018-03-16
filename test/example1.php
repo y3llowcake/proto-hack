@@ -1,6 +1,6 @@
 <?hh // partial
 include "../lib/protobuf.php";
-include "./gen-src/foo/bar/proto_types.php";
+include "./gen-src/example1_proto.php";
 
 
 function a(mixed $got, mixed $exp, string $msg): void {

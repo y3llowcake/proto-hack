@@ -7,6 +7,7 @@ import (
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	ppb "github.com/y3llowcake/proto-hack/third_party/gen-src/github.com/golang/protobuf/protoc-gen-go/plugin"
 	"io"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -43,8 +44,11 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 			continue
 		}
 		f := &ppb.CodeGeneratorResponse_File{}
-		packageParts := strings.Split(*fdp.Package, ".")
-		f.Name = proto.String(strings.Join(append(packageParts, "proto_types.php"), "/"))
+
+		fext := filepath.Ext(*fdp.Name)
+		fname := strings.TrimSuffix(*fdp.Name, fext) + "_proto.php"
+		f.Name = proto.String(fname)
+
 		b := &bytes.Buffer{}
 		w := &writer{b, 0}
 		if err := writeFile(w, fdp, rootns); err != nil {
