@@ -67,10 +67,7 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 
 		b := &bytes.Buffer{}
 		w := &writer{b, 0}
-		if err := writeFile(w, fdp, rootns); err != nil {
-			resp.Error = proto.String(err.Error())
-			return resp
-		}
+		writeFile(w, fdp, rootns)
 		f.Content = proto.String(b.String())
 		resp.File = append(resp.File, f)
 	}
@@ -332,7 +329,7 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
-func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) error {
+func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, *dp.Name)
 	name := strings.Join(nextNames, "_")
 
@@ -343,9 +340,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// Nested Types.
 	for _, ndp := range dp.NestedType {
-		if err := writeDescriptor(w, ndp, ns, nextNames); err != nil {
-			return err
-		}
+		writeDescriptor(w, ndp, ns, nextNames)
 	}
 
 	w.p("// message %s", *dp.Name)
@@ -415,7 +410,6 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	w.p("}") // class
 	w.ln()
-	return nil
 }
 
 type writer struct {
@@ -439,7 +433,7 @@ func (w *writer) ln() {
 	fmt.Fprintln(w.w)
 }
 
-func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) error {
+func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
 	packageParts := strings.Split(*fdp.Package, ".")
 	ns := rootNs.get(false, packageParts)
 	if ns == nil {
@@ -461,10 +455,6 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) erro
 
 	// Messages, recurse.
 	for _, dp := range fdp.MessageType {
-		if err := writeDescriptor(w, dp, ns, nil); err != nil {
-			return err
-		}
+		writeDescriptor(w, dp, ns, nil)
 	}
-
-	return nil
 }
