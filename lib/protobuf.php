@@ -153,9 +153,14 @@ class Encoder {
 	}
 
 	public function writeLittleEndianInt(int $i, int $size): void {
+		for ($j = 0; $j < $size; $j++) {
+			$this->buf .= chr($i & 0xFF);
+			$i = $i >> 8;
+		}
 	}
 
 	public function writeBool(bool $b): void {
+		$this->buf .= $b ? chr(0x01) : chr(0x00);
 	}
 
 	public function writeFloat(float $f): void {
@@ -167,6 +172,8 @@ class Encoder {
 	}
 
 	public function writeString(string $s): void {
+		$this->writeVarInt128(strlen($s));
+		$this->buf .= $s;
 	}
 
 	public function writeVarInt128ZigZag(int $i): void {
