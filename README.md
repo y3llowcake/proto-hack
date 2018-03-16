@@ -1,11 +1,27 @@
 # proto-hack
 Hacklang generator for protobuf
 
+# Dependencies
+- golang
+- hhvm
+- protoc
+
 # Installation
 `go get -u github.com/y3llowcake/proto-hack/protoc-gen-hack`
 
+`protoc-gen-hack` should now be in your `$PATH`
+
 # Usage
 `protoc --hack_out=./gen-src example.proto`
+
+In addition to generated code, you will need the library code in `/lib`.
+
+```
+  $msg = new ExampleMessage();
+  $raw = Protobuf\Marshal($msg);
+  $msg2 = new ExampleMessage(); 
+  Protobuf\Unmarshal($raw, $msg);
+```
 
 # Development
 `make test`
