@@ -275,32 +275,19 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 }
 
 func (f field) writeEncoder(w *writer, enc string) {
-	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[*f.fd.Type])
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		// TODO we could optimize to not to string copies.
 		if f.isRepeated() {
 			w.p("foreach ($this->%s as $msg) {", f.varName())
-			w.p("$nested = new %s\\Encoder();", libNs)
-			w.p("if (!$nested->isEmpty()) {")
-			w.p("$msg->WriteTo($nested);")
-			w.p(tagWriter)
-			w.p("%s->writeString((string)$nested);", enc)
-			w.p("}")
-			w.p("}")
 		} else {
 			w.p("$msg = $this->%s;", f.varName())
 			w.p("if ($msg != null) {")
-			w.p(tagWriter)
-			w.p("$nested = new %s\\Encoder();", libNs)
-			w.p("$msg->WriteTo($nested);")
-			w.p("if (!$nested->isEmpty()) {")
-			w.p("$msg->WriteTo($nested);")
-			w.p(tagWriter)
-			w.p("%s->writeString((string)$nested);", enc)
-			w.p("}")
-			w.p("}")
 		}
+		w.p("$nested = new %s\\Encoder();", libNs)
+		w.p("$msg->WriteTo($nested);")
+		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
+		w.p("}")
 		return
 	}
 
@@ -327,6 +314,8 @@ func (f field) writeEncoder(w *writer, enc string) {
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
+	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[*f.fd.Type])
+
 	if !f.isRepeated() {
 		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
 		w.p(tagWriter)
@@ -343,10 +332,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 		w.p("$packed = new %s\\Encoder();", libNs)
 		w.p("foreach ($this->%s as $elem) {", f.varName())
 		w.p("%s;", packedWriter)
-		w.p("if (!$packed->isEmpty()) {")
-		w.p("%s->writeTag(%d, 2);", enc, *f.fd.Number)
-		w.p("%s->writeString((string)$packed);", enc)
-		w.p("}")
+		w.p("%s->writeEncoder($packed, %d);", enc, *f.fd.Number)
 		w.p("}")
 	} else {
 		// Heh kinda hacky.

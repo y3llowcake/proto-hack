@@ -180,6 +180,13 @@ class Encoder {
 		$this->writeVarInt128(($i << 1) ^ ($i >> 31));
 	}
 
+	public function writeEncoder(Encoder $e, int $fn): void {
+		if (!$e->isEmpty()) {
+			$this->writeTag($fn, 2);
+			$this->writeString((string)$e);
+		}
+	}
+
 	public function isEmpty(): bool {
 		return strlen($this->buf) == 0;
 	}
