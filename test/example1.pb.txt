@@ -28,4 +28,13 @@ aexample2 {
   astring: "zomg"
 }
 
+amap {
+  key: "k1"
+  value: "v1"
+}
+amap {
+  key: "k2"
+  value: "v2"
+}
+
 outoforder: 1

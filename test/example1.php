@@ -86,6 +86,16 @@ function testExample1($raw, $failmsg): string {
 	$exp->aexample2 = $e2;
 	$e2->astring = "zomg";
 
+	$entry = new foo\bar\example1_AmapEntry();
+	$entry->key = "k1";
+	$entry->value = "v1";
+	$exp->amap []= $entry;
+
+	$entry = new foo\bar\example1_AmapEntry();
+	$entry->key = "k2";
+	$entry->value = "v2";
+	$exp->amap []= $entry;
+
 	$exp->outoforder = 1;
 
 	a($got, $exp, $failmsg);
