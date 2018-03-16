@@ -27,27 +27,6 @@ func CodeGenerator(b []byte) ([]byte, error) {
 	return out, nil
 }
 
-type writer struct {
-	w io.Writer
-	i int
-}
-
-func (w *writer) p(format string, a ...interface{}) {
-	if strings.HasPrefix(format, "}") {
-		w.i--
-	}
-	indent := strings.Repeat("  ", w.i)
-	fmt.Fprintf(w.w, indent+format, a...)
-	w.ln()
-	if strings.HasSuffix(format, "{") {
-		w.i++
-	}
-}
-
-func (w *writer) ln() {
-	fmt.Fprintln(w.w)
-}
-
 func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	resp := &ppb.CodeGeneratorResponse{}
 	fileToGenerate := map[string]bool{}
@@ -75,6 +54,27 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		resp.File = append(resp.File, f)
 	}
 	return resp
+}
+
+type writer struct {
+	w io.Writer
+	i int
+}
+
+func (w *writer) p(format string, a ...interface{}) {
+	if strings.HasPrefix(format, "}") {
+		w.i--
+	}
+	indent := strings.Repeat("  ", w.i)
+	fmt.Fprintf(w.w, indent+format, a...)
+	w.ln()
+	if strings.HasSuffix(format, "{") {
+		w.i++
+	}
+}
+
+func (w *writer) ln() {
+	fmt.Fprintln(w.w)
 }
 
 func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) error {
