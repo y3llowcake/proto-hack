@@ -78,8 +78,20 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 }
 
 type field struct {
-	fd *desc.FieldDescriptorProto
-	ns *Namespace
+	fd                     *desc.FieldDescriptorProto
+	typePhpNs, typePhpName string
+}
+
+func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
+	var typeNs, typeName string
+	if fd.GetTypeName() != "" {
+		typeNs, typeName = ns.Find(fd.GetTypeName())
+	}
+	return field{
+		fd:          fd,
+		typePhpNs:   strings.Replace(typeNs, ".", "\\", -1),
+		typePhpName: strings.Replace(typeName, ".", "_", -1),
+	}
 }
 
 func (f field) phpType() string {
@@ -94,16 +106,9 @@ func (f field) phpType() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
-		ns, name := f.ns.Find(*f.fd.TypeName)
-		ns = strings.Replace(ns, ".", "\\", -1)
-		name = strings.Replace(name, ".", "_", -1)
-		return ns + name
+		return f.typePhpNs + f.typePhpName
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		ns, name := f.ns.Find(*f.fd.TypeName)
-		ns = strings.Replace(ns, ".", "\\", -1)
-		name = strings.Replace(name, ".", "_", -1) + "_EnumType"
-		return ns + name
-		//return "int"
+		return f.typePhpNs + f.typePhpName + "_EnumType"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -352,7 +357,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	fields := []field{}
 	for _, fd := range dp.Field {
-		fields = append(fields, field{fd, ns})
+		fields = append(fields, newField(fd, ns))
 	}
 
 	// Members
