@@ -93,6 +93,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 		f.typePhpNs = strings.Replace(typeNs, ".", "\\", -1)
 		f.typePhpName = strings.Replace(typeName, ".", "_", -1)
 		f.typeDescriptor = i
+		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
 	}
 	return f
 }
@@ -118,9 +119,9 @@ func (f field) phpType() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
-		return f.typePhpNs + f.typePhpName
+		return f.typePhpNs + "\\" + f.typePhpName
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return f.typePhpNs + f.typePhpName + "_EnumType"
+		return f.typePhpNs + "\\" + f.typePhpName + "_EnumType"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -458,7 +459,7 @@ func (w *writer) ln() {
 
 func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
 	packageParts := strings.Split(*fdp.Package, ".")
-	ns := rootNs.FindFullyQualifiedNamespace(*fdp.Package)
+	ns := rootNs.FindFullyQualifiedNamespace("." + *fdp.Package)
 	if ns == nil {
 		panic("unable to find namespace for: " + *fdp.Package)
 	}

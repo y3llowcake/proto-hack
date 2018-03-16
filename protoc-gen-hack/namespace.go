@@ -80,15 +80,17 @@ func (n *Namespace) get(create bool, parts []string) *Namespace {
 
 // From any point in the namespace tree, decend to the root and then back up to
 // the target namespace.
-func (n *Namespace) FindFullyQualifiedNamespace(target string) *Namespace {
+func (n *Namespace) FindFullyQualifiedNamespace(fqns string) *Namespace {
+	mustFullyQualified(fqns)
 	for n.parent != nil {
 		n = n.parent
 	}
-	found := n.get(false, strings.Split(target, "."))
+
+	found := n.get(false, strings.Split(strings.TrimPrefix(fqns, "."), "."))
 	if found != nil {
 		return found
 	}
-	panic(fmt.Errorf("unable to find target namespace: %s", target))
+	panic(fmt.Errorf("unable to find target namespace: %s", fqns))
 }
 
 func (n *Namespace) Parse(fdp *desc.FileDescriptorProto) {
@@ -125,20 +127,25 @@ func (n *Namespace) PrettyPrint() string {
 	return string(b)
 }
 
+func mustFullyQualified(fqn string) {
+	if !strings.HasPrefix(fqn, ".") {
+		panic("not fully qualified: " + fqn)
+	}
+}
+
 // Find is where the magic happens. It takes a fully qualified proto name
 //   e.g. ".foo.bar.baz"
 // resolves it to a named entity and returns the proto name split at the
 // namespace boundary.
-//   e.g. ".foo" ".bar.baz"
+//   e.g. ".foo" "bar.baz"
 // and also returns the descriptor.
 func (n *Namespace) FindFullyQualifiedName(fqn string) (string, string, interface{}) {
-	if !strings.HasPrefix(fqn, ".") {
-		panic("name is not fully qualified: " + fqn)
-	}
+	mustFullyQualified(fqn)
 	ns, name, i := n.find(fqn, true)
 	if ns == "" {
 		panic("couldn't resolve name: " + fqn)
 	}
+	ns = strings.TrimSuffix(ns, ".")
 	return ns, name, i
 }
 
