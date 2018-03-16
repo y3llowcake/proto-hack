@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// Names is a tree of structures and enums defined in a single namespace.
 type Names struct {
 	parent   *Names
 	Children map[string]*Names
@@ -34,6 +35,7 @@ func (n *Names) get(create bool, parts ...string) *Names {
 	return child.get(create, parts[1:]...)
 }
 
+// Namespace is a tree of namespaces, where each namespace has a tree of Names.
 type Namespace struct {
 	parent   *Namespace
 	Fqn      string
