@@ -23,3 +23,7 @@ manystring: "ms3"
 manyint64: 1
 manyint64: 2
 manyint64: 3
+
+aexample2 {
+  astring: "zomg"
+}

@@ -45,5 +45,5 @@ message example1 {
   message example2 {
     string astring = 1;
   }
-  // example2 aexample2 = 40;
+  example2 aexample2 = 40;
 }

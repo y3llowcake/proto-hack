@@ -19,7 +19,7 @@ function diff(mixed $got, mixed $exp): string {
 		$gotval = $prop->getValue($got);
 		$expval = $rexp->getProperty($prop->name)->getValue($exp);
 		if ($gotval != $expval) {
-			return "property: {$prop->name} got: $gotval expected: $expval";
+			return sprintf("property: %s got: %s expected: %s", $prop->name, print_r($gotval, true), print_r($expval, true));
 		}
 	}
 	return "<empty diff>";
@@ -60,6 +60,10 @@ function test(): void {
 	$exp->manyint64->add(1);
 	$exp->manyint64->add(2);
 	$exp->manyint64->add(3);
+
+	$e2 = new foo\bar\example1_example2();
+	$exp->aexample2 = $e2;
+	$e2->astring = "zomg";
 
 	a($got, $exp, "example1 mismatch");
 }
