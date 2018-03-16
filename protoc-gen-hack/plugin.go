@@ -316,6 +316,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+// writeEnum writes a enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
 	typename := name + "_EnumType"
@@ -412,6 +413,8 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 }
 
+// writer is a little helper for output printing. It indents code
+// appropriately among other things.
 type writer struct {
 	w io.Writer
 	i int

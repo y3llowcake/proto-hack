@@ -107,8 +107,11 @@ func (n *Namespace) PrettyPrint() string {
 	return string(b)
 }
 
-// Given a fully qualified name, split it at the namespace boundary after
-// resolving the target using c++ scoping rules.
+// Find is where the magic happens. It takes a fully qualified proto name
+//   e.g. ".foo.bar.baz"
+// resolves it to a named entity and returns the proto name split ane the
+// namespace boundary.
+//   e.g. ".foo" ".bar.baz"
 func (n *Namespace) Find(fqn string) (string, string) {
 	if !strings.HasPrefix(fqn, ".") {
 		panic("name is not fully qualified: " + fqn)
@@ -137,7 +140,7 @@ func (n *Namespace) find(fqn string, checkParent bool) (string, string) {
 
 	}
 	// Try our ancestor namespace.
-	// TODO: this will revist n [us] multiple times! optimize.
+	// TODO: this will revist n [us] multiple times! We could optimize.
 	if checkParent && n.parent != nil {
 		return n.parent.Find(fqn)
 	}
