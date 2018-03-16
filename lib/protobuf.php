@@ -1,5 +1,19 @@
 <?hh // strict
-namespace Protobuf\Internal;
+
+namespace Protobuf {
+
+function Unmarshal(string $data, \Protobuf\Internal\Message $message): void {
+	$message->MergeFrom(\Protobuf\Internal\Decoder::FromString($data));
+}
+
+function Marshal(\Protobuf\Internal\Message $message): string {
+	$e = new \Protobuf\Internal\Encoder();
+	$message->WriteTo($e);
+	return (string)$e;
+}
+
+namespace Internal {
+// AVERT YOUR EYES YE! NOTHING TO SEE BELOW!
 
 class ProtoException extends \Exception {}
 
@@ -202,12 +216,7 @@ abstract class Message {
 	public abstract function WriteTo(Encoder $e): void;
 }
 
-function Unmarshal(string $data, Message $message): void {
-	$message->MergeFrom(Decoder::FromString($data));
-}
+} // namespace Internal
 
-function Marshal(Message $message): string {
-	$e = new Encoder();
-	$message->WriteTo($e);
-	return (string)$e;
-}
+} // namespace Protobuf
+

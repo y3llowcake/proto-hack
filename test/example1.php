@@ -29,9 +29,9 @@ function repackFloat(float $f): float {
 	return unpack("f", pack("f", $f))[1];
 }
 
-function test(): void {
+function testExample1($raw, $failmsg): string {
 	$got = new foo\bar\example1();
-	Protobuf\Internal\Unmarshal(file_get_contents('./gen-data/example1.pb.bin'), $got);
+	Protobuf\Unmarshal($raw, $got);
 	$exp = new foo\bar\example1();
 	$exp->adouble = 13.37;
 	$exp->afloat = repackFloat(100.1);
@@ -65,7 +65,12 @@ function test(): void {
 	$exp->aexample2 = $e2;
 	$e2->astring = "zomg";
 
-	a($got, $exp, "example1 mismatch");
+	a($got, $exp, $failmsg);
+	return Protobuf\Marshal($got);
+}
+
+function test(): void {
+	testExample1(file_get_contents('./gen-data/example1.pb.bin'), "test example1: file");
 }
 
 test();
