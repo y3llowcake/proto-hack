@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	"strings"
 )
@@ -77,6 +78,19 @@ func (n *Namespace) get(create bool, parts []string) *Namespace {
 	return child.get(create, parts[1:])
 }
 
+// From any point in the namespace tree, decend to the root and then back up to
+// the target namespace.
+func (n *Namespace) FindFullyQualifiedNamespace(target string) *Namespace {
+	for n.parent != nil {
+		n = n.parent
+	}
+	found := n.get(false, strings.Split(target, "."))
+	if found != nil {
+		return found
+	}
+	panic(fmt.Errorf("unable to find target namespace: %s", target))
+}
+
 func (n *Namespace) Parse(fdp *desc.FileDescriptorProto) {
 	childns := n.get(true, strings.Split(*fdp.Package, "."))
 
@@ -117,7 +131,7 @@ func (n *Namespace) PrettyPrint() string {
 // namespace boundary.
 //   e.g. ".foo" ".bar.baz"
 // and also returns the descriptor.
-func (n *Namespace) Find(fqn string) (string, string, interface{}) {
+func (n *Namespace) FindFullyQualifiedName(fqn string) (string, string, interface{}) {
 	if !strings.HasPrefix(fqn, ".") {
 		panic("name is not fully qualified: " + fqn)
 	}
@@ -147,7 +161,7 @@ func (n *Namespace) find(fqn string, checkParent bool) (string, string, interfac
 	// Try our ancestor namespace.
 	// TODO: this will revist n [us] multiple times! We could optimize.
 	if checkParent && n.parent != nil {
-		return n.parent.Find(fqn)
+		return n.parent.FindFullyQualifiedName(fqn)
 	}
 	return "", "", nil
 }

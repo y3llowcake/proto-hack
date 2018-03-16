@@ -80,6 +80,8 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 type field struct {
 	fd                     *desc.FieldDescriptorProto
 	typePhpNs, typePhpName string
+	typeDescriptor         interface{}
+	typeNs                 *Namespace
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
@@ -87,16 +89,21 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 		fd: fd,
 	}
 	if fd.GetTypeName() != "" {
-		typeNs, typeName, _ := ns.Find(fd.GetTypeName())
+		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
 		f.typePhpNs = strings.Replace(typeNs, ".", "\\", -1)
 		f.typePhpName = strings.Replace(typeName, ".", "_", -1)
+		f.typeDescriptor = i
 	}
-	/*	if *fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
-		if fd.GetOptions().GetMapEntry() {
-			panic("shoot")
-		}
-	}*/
 	return f
+}
+
+func (f field) mapPhpTypes() (string, string) {
+	if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); !ok {
+		if dp.GetOptions().GetMapEntry() {
+			// keyField := newField()
+		}
+	}
+	return "", ""
 }
 
 func (f field) phpType() string {
@@ -451,7 +458,7 @@ func (w *writer) ln() {
 
 func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
 	packageParts := strings.Split(*fdp.Package, ".")
-	ns := rootNs.get(false, packageParts)
+	ns := rootNs.FindFullyQualifiedNamespace(*fdp.Package)
 	if ns == nil {
 		panic("unable to find namespace for: " + *fdp.Package)
 	}
