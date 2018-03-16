@@ -329,7 +329,13 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.i--
 	w.p("}") // switch
 	w.p("}") // while
-	w.p("}") // function fromBuffer
+	w.p("}") // function MergeFrom
+	w.ln()
+
+	// WriteTo function
+	w.p("public function WriteTo(%s\\Encoder $e): void {", libNs)
+	w.p("}") // WriteToFunction
+
 	w.p("}") // class
 	w.ln()
 	return nil

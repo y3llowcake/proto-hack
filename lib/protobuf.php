@@ -126,10 +126,52 @@ class Decoder {
 	}
 }
 
+class Encoder {
+	private string $buf;
+	public function __construct() {
+		$this->buf = "";
+	}
+
+	public function writeVarInt128(int $i): void {
+	}
+
+	public function writeTag(int $fn, int $wt): void {
+	}
+
+	public function writeLittleEndianInt(int $i): void {
+	}
+
+	public function writeFloat(float $f): void {
+		$this->buf .= pack('f', $f);
+	}
+
+	public function writeDouble(float $d): void {
+		$this->buf .= pack('d', $d);
+	}
+
+	public function writeString(string $s): void {
+	}
+
+	public function writeVarInt128ZigZag(int $i): void {
+	}
+
+	public function __toString(): string {
+		return $this->buf;
+	}
+}
+
+
 abstract class Message {
-	public abstract function MergeFrom(Decoder $buf): void;
+	public abstract function MergeFrom(Decoder $d): void;
+	public abstract function WriteTo(Encoder $e): void;
 }
 
 function Unmarshal(string $data, Message $message): void {
 	$message->MergeFrom(Decoder::FromString($data));
+}
+
+function Marshal(Message $message): string {
+	$e = new Encoder();
+	$message->WriteTo($e);
+	return (string)$e;
 }
