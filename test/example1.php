@@ -9,6 +9,27 @@ function a(mixed $got, mixed $exp, string $msg): void {
 	}
 }
 
+function araw(string $got, string $exp, string $msg): void {
+	if ($got === $exp) {
+		return;
+	}
+	echo sprintf("length got: %d expected: %d\n", strlen($got), strlen($exp));
+	$gdec = Protobuf\Internal\Decoder::FromString($got);
+	$edec = Protobuf\Internal\Decoder::FromString($exp);
+	while (!$gdec->isEOF() && !$edec->isEOF()) {
+		list($gfn, $gwt) = $gdec->readTag();
+		list($efn, $ewt) = $edec->readTag();
+		echo sprintf("got fn:%d wt:%d\n", $gfn, $gwt);
+		echo sprintf("exp fn:%d wt:%d\n", $efn, $ewt);
+		if ($gfn != $efn || $gwt != $ewt) {
+			echo "^^ mismatch ^^\n";
+		}
+		$gdec->skipWireType($gwt);
+		$edec->skipWireType($ewt);
+	}
+	throw new Exception($msg);
+}
+
 function diff(mixed $got, mixed $exp): string {
 	if (!is_object($got) || !is_object($exp) || get_class($got) != get_class($exp)) {
 		return "<not diffable>";
@@ -74,9 +95,7 @@ function testExample1($raw, $failmsg): string {
 function test(): void {
 	$raw = file_get_contents('./gen-data/example1.pb.bin');
 	$res = testExample1($raw, "test example1: file");
-	if ($res !== $raw) {
-		// throw new Exception("hack marshal does not match protoc marshal");
-	}
+	araw($res, $raw, "hack marshal does not match protoc marshal");
 	testExample1($res, "test example1: remarshal");
 }
 

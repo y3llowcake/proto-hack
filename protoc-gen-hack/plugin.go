@@ -188,7 +188,7 @@ var writeWireType = map[desc.FieldDescriptorProto_Type]int{
 	desc.FieldDescriptorProto_TYPE_FIXED32:  5,
 	desc.FieldDescriptorProto_TYPE_SFIXED32: 5,
 	desc.FieldDescriptorProto_TYPE_FIXED64:  1,
-	desc.FieldDescriptorProto_TYPE_SFIXED64: 5,
+	desc.FieldDescriptorProto_TYPE_SFIXED64: 1,
 	desc.FieldDescriptorProto_TYPE_STRING:   2,
 	desc.FieldDescriptorProto_TYPE_BYTES:    2,
 	desc.FieldDescriptorProto_TYPE_MESSAGE:  2,
