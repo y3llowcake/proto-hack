@@ -19,16 +19,16 @@ function test(): void {
 
 	// Zigzag
 	$b = Decoder::FromString(chr(0x00));
-	a(ZigZagDecode($b->readVarInt128()), 0, "read zigzag 0");
+	a($b->readVarInt128ZigZag(), 0, "read zigzag 0");
 
 	$b = Decoder::FromString(chr(0x01));
-	a(ZigZagDecode($b->readVarInt128()), -1, "read zigzag 1");
+	a($b->readVarInt128ZigZag(), -1, "read zigzag 1");
 
 	$b = Decoder::FromString(chr(0x02));
-	a(ZigZagDecode($b->readVarInt128()), 1, "read zigzag 2");
+	a($b->readVarInt128ZigZag(), 1, "read zigzag 2");
 
 	$b = Decoder::FromString(chr(0x03));
-	a(ZigZagDecode($b->readVarInt128()), -2, "read zigzag 3");
+	a($b->readVarInt128ZigZag(), -2, "read zigzag 3");
 }
 
 AssertEndiannessAndIntSize();

@@ -41,6 +41,12 @@ class Decoder {
 		return $val;
 	}
 
+	// returns (field number, wire type)
+	public function readTag(): (int, int) {
+		$k = $this->readVarInt128();		
+		return tuple($k >> 3, $k & 0x7);
+	}
+
 	public function readLittleEndianInt(int $size): int {
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
@@ -62,7 +68,16 @@ class Decoder {
 		return unpack('d', $this->readRaw(8))[1];
 	}
 
-	public function readRaw(int $size): string {
+	public function readString(): string {
+		return $this->readRaw($this->readVarInt128());
+	}
+
+	public function readVarInt128ZigZag(): int {
+		$i = $this->readVarInt128();
+		return ($i >> 1) ^ - ($i & 1);
+	}
+
+	private function readRaw(int $size): string {
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
 			throw new ProtoException("buffer overrun while reading raw: " . $size);
@@ -72,7 +87,8 @@ class Decoder {
 		return $ss;
 	}
 
-	public function readDecoder(int $size): Decoder {
+	public function readDecoder(): Decoder {
+		$size = $this->readVarInt128();
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
 			throw new ProtoException("buffer overrun while reading buffer: " . $size);
@@ -86,39 +102,27 @@ class Decoder {
 		return $this->offset >= $this->len;
 	}
 
-	public function skip(int $len): void {
-		$this->offset += $len;
+	public function skipWireType(int $wt): void {
+		switch ($wt) {
+		case 0:
+			$this->readVarInt128(); // We could technically optimize this to skip.
+			break;
+		case 1:
+			$this->skip(8);
+			break;
+		case 2:
+			$this->skip($this->readVarInt128());
+			break;
+		case 5:
+			$this->skip(4);
+			break;
+		default:
+			throw new ProtoException("encountered unknown wire type $wt during skip");
+		}
 	}
-}
 
-function ZigZagDecode(int $i): int {
-	return ($i >> 1) ^ - ($i & 1);
-}
-
-function KeyToFieldNumber(int $k): int {
-	return $k >> 3;
-}
-
-function KeyToWireType(int $k): int {
-	return $k & 0x7;
-}
-
-function Skip(Decoder $d, int $wt): void {
-	switch ($wt) {
-	case 0:
-		$d->readVarInt128(); // We could technically optimize this to skip.
-		break;
-	case 1:
-		$d->skip(8);
-		break;
-	case 2:
-		$d->skip($d->readVarInt128());
-		break;
-	case 5:
-		$d->skip(4);
-		break;
-	default:
-		throw new ProtoException("encountered unknown wire type $wt during skip");
+	private function skip(int $len): void {
+		$this->offset += $len;
 	}
 }
 

@@ -185,13 +185,13 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
-			w.p("$obj->MergeFrom(%s->readDecoder(%s->readVarInt128()));", dec, dec)
+			w.p("$obj->MergeFrom(%s->readDecoder());", dec)
 			w.p("$this->%s->add($obj);", f.varName())
 		} else {
 			w.p("if ($this->%s == null) {", f.varName())
 			w.p("$this->%s = new %s();", f.varName(), f.phpType())
 			w.p("}")
-			w.p("$this->%s->MergeFrom(%s->readDecoder(%s->readVarInt128()));", f.varName(), dec, dec)
+			w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
 		}
 		return
 	}
@@ -201,12 +201,12 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	isPackable := false
 	switch *f.fd.Type {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
-		reader = fmt.Sprintf("%s->readRaw(%s->readVarInt128())", dec, dec)
+		reader = fmt.Sprintf("%s->readString()", dec)
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
 		reader = fmt.Sprintf("%s->readVarInt128()", dec)
 		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
-		reader = fmt.Sprintf("%s\\ZigZagDecode(%s->readVarInt128())", libNs, dec)
+		reader = fmt.Sprintf("%s->readVarInt128ZigZag()", dec)
 		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		reader = fmt.Sprintf("%s->readFloat()", dec)
@@ -236,7 +236,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	// Repeated
 	if isPackable {
 		w.p("if (%s == 2) {", wt)
-		w.p("$packed = %s->readDecoder(%s->readVarInt128());", dec, dec)
+		w.p("$packed = %s->readDecoder();", dec)
 		w.p("while (!$packed->isEOF()) {")
 		if genDebug {
 			w.p("echo \"reading packed field\\n\";")
@@ -304,9 +304,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// MergeFrom function
 	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNs)
 	w.p("while (!$d->isEOF()){")
-	w.p("$k = $d->readVarInt128();")
-	w.p("$fn = %s\\KeyToFieldNumber($k);", libNs)
-	w.p("$wt = %s\\KeyToWireType($k);", libNs)
+	w.p("list($fn, $wt) = $d->readTag();")
 	if genDebug {
 		w.p("echo \"unmarshal loop field:$fn wiretype:$wt\\n\";")
 	}
@@ -327,7 +325,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	if genDebug {
 		w.p("echo \"skipping unknown field:$fn wiretype:$wt\\n\";")
 	}
-	w.p("%s\\Skip($d, $wt);", libNs)
+	w.p("$d->skipWireType($wt);")
 	w.i--
 	w.p("}") // switch
 	w.p("}") // while
