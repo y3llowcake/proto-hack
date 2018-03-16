@@ -83,15 +83,20 @@ type field struct {
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
-	var typeNs, typeName string
+	f := field{
+		fd: fd,
+	}
 	if fd.GetTypeName() != "" {
-		typeNs, typeName = ns.Find(fd.GetTypeName())
+		typeNs, typeName, _ := ns.Find(fd.GetTypeName())
+		f.typePhpNs = strings.Replace(typeNs, ".", "\\", -1)
+		f.typePhpName = strings.Replace(typeName, ".", "_", -1)
 	}
-	return field{
-		fd:          fd,
-		typePhpNs:   strings.Replace(typeNs, ".", "\\", -1),
-		typePhpName: strings.Replace(typeName, ".", "_", -1),
-	}
+	/*	if *fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		if fd.GetOptions().GetMapEntry() {
+			panic("shoot")
+		}
+	}*/
+	return f
 }
 
 func (f field) phpType() string {
