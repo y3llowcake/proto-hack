@@ -60,6 +60,10 @@ class Decoder {
 		return $val;
 	}
 
+	public function readBool(): bool {
+		return $this->readVarInt128() != 0;
+	}
+
 	public function readFloat(): float {
 		return unpack('f', $this->readRaw(4))[1];
 	}
@@ -138,7 +142,10 @@ class Encoder {
 	public function writeTag(int $fn, int $wt): void {
 	}
 
-	public function writeLittleEndianInt(int $i): void {
+	public function writeLittleEndianInt(int $i, int $size): void {
+	}
+
+	public function writeBool(bool $b): void {
 	}
 
 	public function writeFloat(float $f): void {

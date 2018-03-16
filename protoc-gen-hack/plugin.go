@@ -180,6 +180,23 @@ func (f field) varName() string {
 	return *f.fd.Name
 }
 
+var isPackable = map[desc.FieldDescriptorProto_Type]bool{
+	desc.FieldDescriptorProto_TYPE_INT64:    true,
+	desc.FieldDescriptorProto_TYPE_INT32:    true,
+	desc.FieldDescriptorProto_TYPE_UINT64:   true,
+	desc.FieldDescriptorProto_TYPE_UINT32:   true,
+	desc.FieldDescriptorProto_TYPE_SINT64:   true,
+	desc.FieldDescriptorProto_TYPE_SINT32:   true,
+	desc.FieldDescriptorProto_TYPE_FLOAT:    true,
+	desc.FieldDescriptorProto_TYPE_DOUBLE:   true,
+	desc.FieldDescriptorProto_TYPE_FIXED32:  true,
+	desc.FieldDescriptorProto_TYPE_SFIXED32: true,
+	desc.FieldDescriptorProto_TYPE_FIXED64:  true,
+	desc.FieldDescriptorProto_TYPE_SFIXED64: true,
+	desc.FieldDescriptorProto_TYPE_BOOL:     true,
+	desc.FieldDescriptorProto_TYPE_ENUM:     true,
+}
+
 func (f field) writeDecoder(w *writer, dec, wt string) {
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
@@ -198,34 +215,25 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 
 	// TODO should we do wiretype checking here?
 	reader := ""
-	isPackable := false
 	switch *f.fd.Type {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
 		reader = fmt.Sprintf("%s->readString()", dec)
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
 		reader = fmt.Sprintf("%s->readVarInt128()", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
 		reader = fmt.Sprintf("%s->readVarInt128ZigZag()", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		reader = fmt.Sprintf("%s->readFloat()", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		reader = fmt.Sprintf("%s->readDouble()", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
 		reader = fmt.Sprintf("%s->readLittleEndianInt(4)", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
 		reader = fmt.Sprintf("%s->readLittleEndianInt(8)", dec)
-		isPackable = true
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("(%s->readVarInt128() != 0)", dec)
-		isPackable = true // TODO verify
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		reader = fmt.Sprintf("%s->readVarInt128()", dec)
-		isPackable = true // TODO verify
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -234,7 +242,8 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		return
 	}
 	// Repeated
-	if isPackable {
+	packable := isPackable[*f.fd.Type]
+	if packable {
 		w.p("if (%s == 2) {", wt)
 		w.p("$packed = %s->readDecoder();", dec)
 		w.p("while (!$packed->isEOF()) {")
@@ -247,9 +256,44 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		w.p("} else {")
 	}
 	w.p("$this->%s->add(%s);", f.varName(), reader)
-	if isPackable {
+	if packable {
 		w.p("}")
 	}
+}
+
+func (f field) writeEncoder(w *writer, enc string) {
+	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		// This is different enough we handle it on it's own.
+		if f.isRepeated() {
+		} else {
+		}
+		return
+	}
+
+	writer := ""
+	switch *f.fd.Type {
+	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
+		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
+		writer = fmt.Sprintf("%s->writeVarInt128ZigZag($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_FLOAT:
+		writer = fmt.Sprintf("%s->writeFloat(%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_DOUBLE:
+		writer = fmt.Sprintf("%s->writeDouble(%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
+		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 4)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
+		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 8)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		writer = fmt.Sprintf("(%s->writeVarInt128() != 0)", enc)
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		writer = fmt.Sprintf("%s->writeVarInt128(%s)", enc, f.varName())
+	default:
+		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
+	}
+	_ = writer
 }
 
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
@@ -334,6 +378,10 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNs)
+	for _, fd := range dp.Field {
+		f := field{fd, ns}
+		f.writeEncoder(w, "$d")
+	}
 	w.p("}") // WriteToFunction
 
 	w.p("}") // class
