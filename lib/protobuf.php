@@ -137,9 +137,19 @@ class Encoder {
 	}
 
 	public function writeVarInt128(int $i): void {
+		while (true) {
+			$b = $i & 0x7F; /* lower 7 bits */
+			$i = $i >> 7;
+			if ($i == 0) {
+				$this->buf .= chr($b);
+				break;
+			}
+			$this->buf .= chr($b | 0x80); /* set the top bit */
+		}
 	}
 
 	public function writeTag(int $fn, int $wt): void {
+		$this->writeVarInt128(($fn << 3) | $wt);		
 	}
 
 	public function writeLittleEndianInt(int $i, int $size): void {
@@ -160,6 +170,7 @@ class Encoder {
 	}
 
 	public function writeVarInt128ZigZag(int $i): void {
+		$this->writeVarInt128(($i << 1) ^ ($i >> 31));
 	}
 
 	public function __toString(): string {

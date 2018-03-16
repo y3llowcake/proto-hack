@@ -265,9 +265,9 @@ func (f field) writeEncoder(w *writer, enc string) {
 	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
-			//TODO
+
 		} else {
-			//TODO
+			w.p("$this->%s?->WriteTo(%s);", f.varName(), enc)
 		}
 		return
 	}
