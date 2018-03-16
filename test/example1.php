@@ -65,14 +65,19 @@ function testExample1($raw, $failmsg): string {
 	$exp->aexample2 = $e2;
 	$e2->astring = "zomg";
 
+	$exp->outoforder = 1;
+
 	a($got, $exp, $failmsg);
 	return Protobuf\Marshal($got);
 }
 
 function test(): void {
-	$res = testExample1(file_get_contents('./gen-data/example1.pb.bin'), "test example1: file");
+	$raw = file_get_contents('./gen-data/example1.pb.bin');
+	$res = testExample1($raw, "test example1: file");
+	if ($res !== $raw) {
+		// throw new Exception("hack marshal does not match protoc marshal");
+	}
 	testExample1($res, "test example1: remarshal");
-
 }
 
 test();

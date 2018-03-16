@@ -27,3 +27,5 @@ manyint64: 3
 aexample2 {
   astring: "zomg"
 }
+
+outoforder: 1

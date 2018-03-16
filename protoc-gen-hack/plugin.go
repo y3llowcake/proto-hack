@@ -7,6 +7,7 @@ import (
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
 	ppb "github.com/y3llowcake/proto-hack/third_party/gen-src/github.com/golang/protobuf/protoc-gen-go/plugin"
 	"io"
+	"sort"
 	"strings"
 )
 
@@ -381,22 +382,30 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("// message %s", *dp.Name)
 	w.p("class %s extends %s\\Message {", name, libNs)
 
-	// Fields
+	fields := []field{}
 	for _, fd := range dp.Field {
-		f := field{fd, ns}
-		w.p("// field %s = %d", *fd.Name, *fd.Number)
+		fields = append(fields, field{fd, ns})
+	}
+
+	// Members
+	for _, f := range fields {
+		w.p("// field %s = %d", *f.fd.Name, *f.fd.Number)
 		w.p("public %s $%s;", f.labeledType(), f.varName())
 	}
 	w.ln()
 
-	// Constructor
+	// Constructor.
 	w.p("public function __construct() {")
-	for _, fd := range dp.Field {
-		f := field{fd, ns}
+	for _, f := range fields {
 		w.p("$this->%s = %s;", f.varName(), f.defaultValue())
 	}
 	w.p("}")
 	w.ln()
+
+	// Now sort the fields by number.
+	sort.Slice(fields, func(i, j int) bool {
+		return *fields[i].fd.Number < *fields[j].fd.Number
+	})
 
 	// MergeFrom function
 	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNs)
@@ -406,9 +415,8 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("echo \"unmarshal loop field:$fn wiretype:$wt\\n\";")
 	}
 	w.p("switch ($fn) {")
-	for _, fd := range dp.Field {
-		f := field{fd, ns}
-		w.p("case %d:", *fd.Number)
+	for _, f := range fields {
+		w.p("case %d:", *f.fd.Number)
 		w.i++
 		if genDebug {
 			w.p("echo \"reading field %s\\n\";", f.varName())
@@ -431,8 +439,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNs)
-	for _, fd := range dp.Field {
-		f := field{fd, ns}
+	for _, f := range fields {
 		f.writeEncoder(w, "$e")
 	}
 	w.p("}") // WriteToFunction

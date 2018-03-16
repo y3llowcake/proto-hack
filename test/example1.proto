@@ -48,4 +48,6 @@ message example1 {
   example2 aexample2 = 40;
 
   map<string, string> amap = 51;
+
+  int64 outoforder = 49;
 }
