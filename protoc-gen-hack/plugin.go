@@ -53,6 +53,9 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	}
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
+		if *fdp.Syntax != "proto3" {
+			panic(fmt.Errorf("unsupported syntax: %s in file %s", *fdp.Syntax, *fdp.Name))
+		}
 		rootns.Parse(fdp)
 		// panic(rootns.PrettyPrint())
 
