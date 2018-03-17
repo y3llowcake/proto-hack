@@ -77,6 +77,10 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	return resp
 }
 
+func toPhpName(ns, name string) (string, string) {
+	return strings.Replace(ns, ".", "\\", -1), strings.Replace(name, ".", "_", -1)
+}
+
 type field struct {
 	fd                     *desc.FieldDescriptorProto
 	typePhpNs, typePhpName string
@@ -91,8 +95,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 	}
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
-		f.typePhpNs = strings.Replace(typeNs, ".", "\\", -1)
-		f.typePhpName = strings.Replace(typeName, ".", "_", -1)
+		f.typePhpNs, f.typePhpName = toPhpName(typeNs, typeName)
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
 		if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); ok {
@@ -463,6 +466,48 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 }
 
+type method struct {
+	mdp                                  *desc.MethodDescriptorProto
+	PhpName, InputPhpName, OutputPhpName string
+}
+
+func newMethod(mdp *desc.MethodDescriptorProto, ns *Namespace) method {
+	m := method{mdp: mdp}
+	m.PhpName = mdp.GetName()
+	tns, tn, _ := ns.FindFullyQualifiedName(mdp.GetInputType())
+	tns, tn = toPhpName(tns, tn)
+	m.InputPhpName = tns + "\\" + tn
+	tns, tn, _ = ns.FindFullyQualifiedName(mdp.GetOutputType())
+	tns, tn = toPhpName(tns, tn)
+	m.OutputPhpName = tns + "\\" + tn
+	return m
+}
+
+func (m method) isStreaming() bool {
+	return m.mdp.GetClientStreaming() || m.mdp.GetServerStreaming()
+}
+
+func writeService(w *writer, sdp *desc.ServiceDescriptorProto, ns *Namespace) {
+	methods := []method{}
+	for _, mdp := range sdp.Method {
+		methods = append(methods, newMethod(mdp, ns))
+	}
+
+	// Client
+	w.p("class %sClient {", sdp.GetName())
+	for _, m := range methods {
+		if m.isStreaming() {
+			continue
+		}
+		w.p("public function %s(%s $in): %s {", m.PhpName, m.InputPhpName, m.OutputPhpName)
+		w.p("$out = new %s();", m.OutputPhpName)
+		w.p("return $out;")
+		w.p("}")
+		w.ln()
+	}
+	w.p("}")
+}
+
 // writer is a little helper for output printing. It indents code
 // appropriately among other things.
 type writer struct {
@@ -509,5 +554,12 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
 	// Messages, recurse.
 	for _, dp := range fdp.MessageType {
 		writeDescriptor(w, dp, ns, nil)
+	}
+
+	// TODO: top level fields?
+
+	// Write services.
+	for _, sdp := range fdp.Service {
+		writeService(w, sdp, ns)
 	}
 }

@@ -51,3 +51,7 @@ message example1 {
 
   int64 outoforder = 49;
 }
+
+service ExampleService {
+  rpc OneToTwo(example1) returns (example2) {}
+}

@@ -11,7 +11,7 @@ import (
 type Names struct {
 	parent     *Names
 	Children   map[string]*Names
-	descriptor interface{}
+	descriptor interface{} // This should be set on every node of the tree.
 }
 
 func newNames(parent *Names) *Names {

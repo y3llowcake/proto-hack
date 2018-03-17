@@ -86,15 +86,8 @@ function testExample1($raw, $failmsg): string {
 	$exp->aexample2 = $e2;
 	$e2->astring = "zomg";
 
-	$entry = new foo\bar\example1_AmapEntry();
-	$entry->key = "k1";
-	$entry->value = "v1";
-	$exp->amap []= $entry;
-
-	$entry = new foo\bar\example1_AmapEntry();
-	$entry->key = "k2";
-	$entry->value = "v2";
-	$exp->amap []= $entry;
+	$exp->amap["k1"] = "v1";
+	$exp->amap["k2"] = "v2";
 
 	$exp->outoforder = 1;
 
@@ -102,11 +95,23 @@ function testExample1($raw, $failmsg): string {
 	return Protobuf\Marshal($got);
 }
 
+function microtime_as_int(): int {
+	$gtod = gettimeofday();
+ 	return ($gtod['sec'] * 1000000) + $gtod['usec'];
+}
+
 function test(): void {
 	$raw = file_get_contents('./gen-data/example1.pb.bin');
 	$res = testExample1($raw, "test example1: file");
 	araw($res, $raw, "hack marshal does not match protoc marshal");
 	testExample1($res, "test example1: remarshal");
+
+	/*for ($i = 0; $i < 1000; $i++){
+		$start = microtime_as_int();
+		testExample1($raw, "blarg");
+		$start = microtime_as_int() - $start;
+		echo "elapsed: " . $start . "\n";	
+	}*/
 }
 
 test();

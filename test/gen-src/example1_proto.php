@@ -159,7 +159,7 @@ class example1 extends \Protobuf\Internal\Message {
   // field aexample2 = 40
   public ?\foo\bar\example1_example2 $aexample2;
   // field amap = 51
-  public vec<\foo\bar\example1_AmapEntry> $amap;
+  public dict<string, string> $amap;
   // field outoforder = 49
   public int $outoforder;
 
@@ -184,7 +184,7 @@ class example1 extends \Protobuf\Internal\Message {
     $this->manystring = vec[];
     $this->manyint64 = vec[];
     $this->aexample2 = null;
-    $this->amap = vec[];
+    $this->amap = dict[];
     $this->outoforder = 0;
   }
 
@@ -268,7 +268,7 @@ class example1 extends \Protobuf\Internal\Message {
         case 51:
           $obj = new \foo\bar\example1_AmapEntry();
           $obj->MergeFrom($d->readDecoder());
-          $this->amap []= $obj;
+          $this->amap[$obj->key] = $obj->value;
           break;
         default:
           $d->skipWireType($wt);
@@ -364,11 +364,21 @@ class example1 extends \Protobuf\Internal\Message {
       $e->writeTag(49, 0);
       $e->writeVarInt128($this->outoforder);
     }
-    foreach ($this->amap as $msg) {
+    foreach ($this->amap as $k => $v) {
+      $obj = new \foo\bar\example1_AmapEntry();
+      $obj->key = $k;
+      $obj->value = $v;
       $nested = new \Protobuf\Internal\Encoder();
-      $msg->WriteTo($nested);
+      $obj->WriteTo($nested);
       $e->writeEncoder($nested, 51);
     }
   }
 }
 
+class ExampleServiceClient {
+  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2 {
+    $out = new \foo\bar\example2();
+    return $out;
+  }
+
+}
