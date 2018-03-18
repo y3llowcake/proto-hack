@@ -11,7 +11,7 @@ class AEnum1 {
 }
 
 // message example2
-class example2 implements \Protobuf\Internal\Message {
+class example2 implements \Protobuf\Message {
   // field aint32 = 1
   public int $aint32;
 
@@ -47,7 +47,7 @@ class example1_AEnum2 {
 }
 
 // message example2
-class example1_example2 implements \Protobuf\Internal\Message {
+class example1_example2 implements \Protobuf\Message {
   // field astring = 1
   public string $astring;
 
@@ -77,7 +77,7 @@ class example1_example2 implements \Protobuf\Internal\Message {
 }
 
 // message AmapEntry
-class example1_AmapEntry implements \Protobuf\Internal\Message {
+class example1_AmapEntry implements \Protobuf\Message {
   // field key = 1
   public string $key;
   // field value = 2
@@ -117,7 +117,7 @@ class example1_AmapEntry implements \Protobuf\Internal\Message {
 }
 
 // message example1
-class example1 implements \Protobuf\Internal\Message {
+class example1 implements \Protobuf\Message {
   // field adouble = 1
   public float $adouble;
   // field afloat = 2

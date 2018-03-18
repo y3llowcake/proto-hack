@@ -14,8 +14,9 @@ import (
 )
 
 const (
-	genDebug = false
-	libNs    = "\\Protobuf\\Internal"
+	genDebug      = false
+	libNs         = "\\Protobuf"
+	libNsInternal = libNs + "\\Internal"
 )
 
 func main() {
@@ -329,7 +330,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 		w.p("$obj = new %s();", f.phpType())
 		w.p("$obj->key = $k;")
 		w.p("$obj->value = $v;")
-		w.p("$nested = new %s\\Encoder();", libNs)
+		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$obj->WriteTo($nested);")
 		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
 		w.p("}")
@@ -345,7 +346,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 			w.p("$msg = $this->%s;", f.varName())
 			w.p("if ($msg != null) {")
 		}
-		w.p("$nested = new %s\\Encoder();", libNs)
+		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$msg->WriteTo($nested);")
 		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
 		w.p("}")
@@ -390,7 +391,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 	if isPackable[*f.fd.Type] {
 		// Heh, kinda hacky.
 		packedWriter := strings.Replace(repeatWriter, enc, "$packed", 1)
-		w.p("$packed = new %s\\Encoder();", libNs)
+		w.p("$packed = new %s\\Encoder();", libNsInternal)
 		w.p("foreach ($this->%s as $elem) {", f.varName())
 		if genDebug {
 			w.p("echo \"writing packed\\n\";")
@@ -463,7 +464,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	})
 
 	// MergeFrom function
-	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNs)
+	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNsInternal)
 	w.p("while (!$d->isEOF()){")
 	w.p("list($fn, $wt) = $d->readTag();")
 	if genDebug {
@@ -493,7 +494,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	// WriteTo function
-	w.p("public function WriteTo(%s\\Encoder $e): void {", libNs)
+	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
 		f.writeEncoder(w, "$e")
 	}

@@ -2,11 +2,16 @@
 
 namespace Protobuf {
 
-function Unmarshal(string $data, \Protobuf\Internal\Message $message): void {
+interface Message {
+	public function MergeFrom(Internal\Decoder $d): void;
+	public function WriteTo(Internal\Encoder $e): void;
+}
+
+function Unmarshal(string $data, Message $message): void {
 	$message->MergeFrom(\Protobuf\Internal\Decoder::FromString($data));
 }
 
-function Marshal(\Protobuf\Internal\Message $message): string {
+function Marshal(Message $message): string {
 	$e = new \Protobuf\Internal\Encoder();
 	$message->WriteTo($e);
 	return (string)$e;
@@ -208,12 +213,6 @@ class Encoder {
 	public function __toString(): string {
 		return $this->buf;
 	}
-}
-
-// TODO move this out of the internal namespace
-interface Message {
-	public function MergeFrom(Decoder $d): void;
-	public function WriteTo(Encoder $e): void;
 }
 
 } // namespace Internal
