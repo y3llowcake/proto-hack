@@ -483,9 +483,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
-		w.pdebug("writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
+		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeEncoder(w, "$e")
-		w.pdebug("wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
+		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 	}
 	w.p("}") // WriteToFunction
 
