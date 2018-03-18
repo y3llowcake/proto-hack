@@ -320,7 +320,6 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 }
 
 func (f field) writeEncoder(w *writer, enc string) {
-	w.pdebug("writing field: %d (%s)", f.fd.GetNumber(), f.varName())
 	if f.isMap {
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
@@ -416,7 +415,7 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
-	nextNames := append(prefixNames, *dp.Name)
+	nextNames := append(prefixNames, dp.GetName())
 	name := strings.Join(nextNames, "_")
 
 	// Nested Enums.
@@ -429,7 +428,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		writeDescriptor(w, ndp, ns, nextNames)
 	}
 
-	w.p("// message %s", *dp.Name)
+	w.p("// message %s", dp.GetName())
 	w.p("class %s implements %s\\Message {", name, libNs)
 
 	fields := []field{}
@@ -439,7 +438,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// Members
 	for _, f := range fields {
-		w.p("// field %s = %d", *f.fd.Name, *f.fd.Number)
+		w.p("// field %s = %d", f.fd.GetName(), f.fd.GetNumber())
 		w.p("public %s $%s;", f.labeledType(), f.varName())
 	}
 	w.ln()
@@ -454,7 +453,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// Now sort the fields by number.
 	sort.Slice(fields, func(i, j int) bool {
-		return *fields[i].fd.Number < *fields[j].fd.Number
+		return fields[i].fd.GetNumber() < fields[j].fd.GetNumber()
 	})
 
 	// MergeFrom function
@@ -465,9 +464,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, f := range fields {
 		w.p("case %d:", f.fd.GetNumber())
 		w.i++
-		w.pdebug("reading field %d (%s) wiretype: $wt", f.fd.GetNumber(), f.varName())
+		w.pdebug("reading field:%d (%s) wiretype:$wt of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeDecoder(w, "$d", "$wt")
-		w.pdebug("read field %d (%s)", f.fd.GetNumber(), f.varName())
+		w.pdebug("read field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		w.p("break;")
 		w.i--
 	}
@@ -484,7 +483,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
+		w.pdebug("writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeEncoder(w, "$e")
+		w.pdebug("wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 	}
 	w.p("}") // WriteToFunction
 
