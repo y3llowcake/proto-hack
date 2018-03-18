@@ -376,9 +376,12 @@ class example1 extends \Protobuf\Internal\Message {
 }
 
 class ExampleServiceClient {
-  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2 {
-    $out = new \foo\bar\example2();
-    return $out;
+  public function __construct(private \Grpc\ClientConn $cc) {
   }
 
+  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2 {
+    $out = new \foo\bar\example2();
+    $this->cc->Invoke('foo.bar.ExampleService/OneToTwo', $in, $out);
+    return $out;
+  }
 }
