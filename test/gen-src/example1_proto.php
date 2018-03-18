@@ -166,6 +166,10 @@ class example1 implements \Protobuf\Message {
   public dict<string, string> $amap;
   // field outoforder = 49
   public int $outoforder;
+  // field oostring = 60
+  public string $oostring;
+  // field ooint = 61
+  public int $ooint;
 
   public function __construct() {
     $this->adouble = 0.0;
@@ -192,6 +196,8 @@ class example1 implements \Protobuf\Message {
     $this->aexample23 = null;
     $this->amap = dict[];
     $this->outoforder = 0;
+    $this->oostring = '';
+    $this->ooint = 0;
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -287,6 +293,12 @@ class example1 implements \Protobuf\Message {
           $obj = new \foo\bar\example1_AmapEntry();
           $obj->MergeFrom($d->readDecoder());
           $this->amap[$obj->key] = $obj->value;
+          break;
+        case 60:
+          $this->oostring = $d->readString();
+          break;
+        case 61:
+          $this->ooint = $d->readVarInt128();
           break;
         default:
           $d->skipWireType($wt);
@@ -401,6 +413,14 @@ class example1 implements \Protobuf\Message {
       $nested = new \Protobuf\Internal\Encoder();
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 51);
+    }
+    if ($this->oostring !== '') {
+      $e->writeTag(60, 2);
+      $e->writeString($this->oostring);
+    }
+    if ($this->ooint !== 0) {
+      $e->writeTag(61, 0);
+      $e->writeVarInt128($this->ooint);
     }
   }
 }

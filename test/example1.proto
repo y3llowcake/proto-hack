@@ -55,6 +55,11 @@ message example1 {
   map<string, string> amap = 51;
 
   int64 outoforder = 49;
+
+  oneof aoneof {
+    string oostring = 60;
+    int32 ooint = 61;
+  }
 }
 
 service ExampleService {
