@@ -307,9 +307,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		w.p("if (%s == 2) {", wt)
 		w.p("$packed = %s->readDecoder();", dec)
 		w.p("while (!$packed->isEOF()) {")
-		if genDebug {
-			w.p("echo \"reading packed field\\n\";")
-		}
+		w.pdebug("reading packed field")
 		packedReader := strings.Replace(reader, dec, "$packed", 1) // Heh, kinda hacky.
 		w.p("$this->%s []= %s;", f.varName(), packedReader)
 		w.p("}")
@@ -322,9 +320,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 }
 
 func (f field) writeEncoder(w *writer, enc string) {
-	if genDebug {
-		w.p("echo \"writing field: %d (%s)\\n\";", *f.fd.Number, f.varName())
-	}
+	w.pdebug("writing field: %d (%s)", f.fd.GetNumber(), f.varName())
 	if f.isMap {
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
@@ -393,9 +389,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 		packedWriter := strings.Replace(repeatWriter, enc, "$packed", 1)
 		w.p("$packed = new %s\\Encoder();", libNsInternal)
 		w.p("foreach ($this->%s as $elem) {", f.varName())
-		if genDebug {
-			w.p("echo \"writing packed\\n\";")
-		}
+		w.pdebug("writing packed")
 		w.p("%s;", packedWriter)
 		w.p("}")
 		w.p("%s->writeEncoder($packed, %d);", enc, *f.fd.Number)
@@ -467,25 +461,19 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("public function MergeFrom(%s\\Decoder $d): void {", libNsInternal)
 	w.p("while (!$d->isEOF()){")
 	w.p("list($fn, $wt) = $d->readTag();")
-	if genDebug {
-		w.p("echo \"unmarshal loop field:$fn wiretype:$wt\\n\";")
-	}
 	w.p("switch ($fn) {")
 	for _, f := range fields {
-		w.p("case %d:", *f.fd.Number)
+		w.p("case %d:", f.fd.GetNumber())
 		w.i++
-		if genDebug {
-			w.p("echo \"reading field %s\\n\";", f.varName())
-		}
+		w.pdebug("reading field %d (%s) wiretype: $wt", f.fd.GetNumber(), f.varName())
 		f.writeDecoder(w, "$d", "$wt")
+		w.pdebug("read field %d (%s)", f.fd.GetNumber(), f.varName())
 		w.p("break;")
 		w.i--
 	}
 	w.p("default:")
 	w.i++
-	if genDebug {
-		w.p("echo \"skipping unknown field:$fn wiretype:$wt\\n\";")
-	}
+	w.pdebug("skipping unknown field:$fn wiretype:$wt")
 	w.p("$d->skipWireType($wt);")
 	w.i--
 	w.p("}") // switch
@@ -610,4 +598,11 @@ func (w *writer) p(format string, a ...interface{}) {
 
 func (w *writer) ln() {
 	fmt.Fprintln(w.w)
+}
+
+func (w *writer) pdebug(format string, a ...interface{}) {
+	if !genDebug {
+		return
+	}
+	w.p(fmt.Sprintf(`echo "DEBUG: %s\n";`, format), a...)
 }
