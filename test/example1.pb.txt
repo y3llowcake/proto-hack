@@ -28,6 +28,10 @@ aexample2 {
   astring: "zomg"
 }
 
+aexample22 {
+  aint32: 123
+}
+
 amap {
   key: "k1"
   value: "v1"

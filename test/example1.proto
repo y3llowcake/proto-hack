@@ -46,6 +46,7 @@ message example1 {
     string astring = 1;
   }
   example2 aexample2 = 40;
+  .foo.bar.example2 aexample22 = 41;
 
   map<string, string> amap = 51;
 

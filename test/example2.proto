@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+package fiz.baz;
+
+message example2 {
+  int32 zomg = 1;
+}

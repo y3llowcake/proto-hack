@@ -87,6 +87,11 @@ function testExample1($raw, $failmsg): string {
 	$exp->aexample2 = $e2;
 	$e2->astring = "zomg";
 
+	$e22 = new foo\bar\example2();
+	$exp->aexample22 = $e22;
+	$e22->aint32 = 123;
+
+
 	$exp->amap["k1"] = "v1";
 	$exp->amap["k2"] = "v2";
 
