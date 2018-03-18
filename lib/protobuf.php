@@ -190,18 +190,19 @@ class Encoder {
 	}
 
 	public function writeLittleEndianInt(int $i, int $size): void {
-		$j = 0;
-		if ($i < 0) {
-			// Special case: The sign bit is preserved while right shifiting.
-			$this->buf .= chr($i & 0xFF);
-			// Now shift and move sign bit.
-			$i = (($i & 0x7FFFFFFFFFFFFFFF) >> 8) | 0x80000000000000;
-			$j++;
+		if ($size == 4) {
+			$this->writeLittleEndianInt32($i);
+		} else {
+			$this->writeLittleEndianInt64($i);
 		}
-		for (; $j < $size; $j++) {
-			$this->buf .= chr($i & 0xFF);
-			$i = $i >> 8;
-		}
+	}
+
+	public function writeLittleEndianInt32(int $i): void {
+		$this->buf .= pack('l', $i);
+	}
+
+	public function writeLittleEndianInt64(int $i): void {
+		$this->buf .= pack('q', $i);
 	}
 
 	public function writeBool(bool $b): void {
