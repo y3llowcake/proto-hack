@@ -535,10 +535,10 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 			continue
 		}
 		w.ln()
-		w.p("public function %s(%s $in): %s {", m.PhpName, m.InputPhpName, m.OutputPhpName)
+		w.p("public async function %s(%s $in): Awaitable<%s> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
 		w.p("$out = new %s();", m.OutputPhpName)
 		grpcMethod := fmt.Sprintf("%s.%s/%s", pkg, sdp.GetName(), m.mdp.GetName())
-		w.p("$this->cc->Invoke('%s', $in, $out);", grpcMethod)
+		w.p("await $this->cc->Invoke('%s', $in, $out);", grpcMethod)
 		w.p("return $out;")
 		w.p("}")
 	}

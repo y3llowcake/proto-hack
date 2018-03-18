@@ -379,9 +379,9 @@ class ExampleServiceClient {
   public function __construct(private \Grpc\ClientConn $cc) {
   }
 
-  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2 {
+  public async function OneToTwo(\foo\bar\example1 $in): Awaitable<\foo\bar\example2> {
     $out = new \foo\bar\example2();
-    $this->cc->Invoke('foo.bar.ExampleService/OneToTwo', $in, $out);
+    await $this->cc->Invoke('foo.bar.ExampleService/OneToTwo', $in, $out);
     return $out;
   }
 }
