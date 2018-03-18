@@ -1,5 +1,6 @@
 <?hh // partial
 include "../lib/protobuf.php";
+include "../lib/grpc.php";
 include "./gen-src/example1_proto.php";
 
 

@@ -9,13 +9,9 @@ interface ClientConn {
 	public function Invoke(string $method, Message $in, Message $out): Awaitable<void>;
 }
 
-//type Handler = (function(\Protobuf\Message): \Protobuf\Message);
-
-interface Server {
-	public function RegisterService(
-		string $name,
-		dict<string, (function(Message): Message)> $handlers
-	): void;
+interface ServerDispatch {
+	public function Name(): string;
+	public function Dispatch(string $method, string $rawin): string;
 }
 
 } // namespace Grpc

@@ -390,7 +390,23 @@ interface ExampleServiceServer {
   public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2;
 }
 
-function RegisterExampleServiceServer(\Grpc\Server $gs, ExampleServiceServer $s): void {
-  $h = dict[];
-  $gs->RegisterService('foo.bar.ExampleService', $h);
+class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
+  public function __construct(private ExampleServiceServer $s) {
+  }
+
+  public function Name(): string {
+    return 'foo.bar.ExampleService';
+  }
+
+  public function Dispatch(string $method, string $rawin): string {
+    switch ($method) {
+      case 'OneToTwo':
+        $in = new \foo\bar\example1();
+        \Protobuf\Unmarshal($rawin, $in);
+        $out = $this->s->OneToTwo($in);
+        return \Protobuf\Marshal($out);
+    }
+    throw new \Exception('unknown method: ' . $method);
+    return '';
+  }
 }

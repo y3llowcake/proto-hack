@@ -559,16 +559,32 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	}
 	w.p("}")
 	w.ln()
-	w.p("function Register%sServer(\\Grpc\\Server $gs, %sServer $s): void {", sdp.GetName(), sdp.GetName())
-	w.p("$h = dict[];")
+	w.p("class %sServerDispatch implements \\Grpc\\ServerDispatch {", sdp.GetName())
+	w.p("public function __construct(private %sServer $s) {", sdp.GetName())
+	w.p("}")
+	w.ln()
+	w.p("public function Name(): string {")
+	w.p("return '%s.%s';", pkg, sdp.GetName())
+	w.p("}")
+	w.ln()
+	w.p("public function Dispatch(string $method, string $rawin): string {")
+	w.p("switch ($method) {")
 	for _, m := range methods {
 		if m.isStreaming() {
 			continue
 		}
-		//w.p("$h['%s'] = inst_meth($s, '%s');", m.PhpName, m.PhpName)
-		//w.p("$h['%s'] = inst_meth($s, '%s');", m.PhpName, m.PhpName)
+		w.p("case '%s':", m.PhpName)
+		w.i++
+		w.p("$in = new %s();", m.InputPhpName)
+		w.p("%s\\Unmarshal($rawin, $in);", libNs)
+		w.p("$out = $this->s->%s($in);", m.PhpName)
+		w.p("return %s\\Marshal($out);", libNs)
+		w.i--
 	}
-	w.p("$gs->RegisterService('%s.%s', $h);", pkg, sdp.GetName())
+	w.p("}")
+	w.p("throw new \\Exception('unknown method: ' . $method);") // TODO type me.
+	w.p("return '';")
+	w.p("}")
 	w.p("}")
 
 }
