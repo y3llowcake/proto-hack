@@ -4,7 +4,6 @@ include "../lib/grpc.php";
 include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
 
-
 function a(mixed $got, mixed $exp, string $msg): void {
 	if ($got != $exp) {
 		throw new Exception($msg . "; got:\n" . print_r($got, true) . "\n expected:\n" . print_r($exp, true) . "\ndiff:\n" . diff($got, $exp));
@@ -15,7 +14,15 @@ function araw(string $got, string $exp, string $msg): void {
 	if ($got === $exp) {
 		return;
 	}
+	for ($i =0; $i < min(strlen($got), strlen($exp)); $i++) {
+		if ($got[$i] !== $exp[$i]) {
+			//echo sprintf("first diff at offset:%d got:%d exp:%d\n", $i, ord($got[$i]), ord($exp[$i]));
+			echo sprintf("first diff at offset:%d got:%s exp:%s\n", $i, ord($got[$i]), ord($exp[$i]));
+			break;
+		}
+	}
 	echo sprintf("length got: %d expected: %d\n", strlen($got), strlen($exp));
+
 	$gdec = Protobuf\Internal\Decoder::FromString($got);
 	$edec = Protobuf\Internal\Decoder::FromString($exp);
 	while (!$gdec->isEOF() && !$edec->isEOF()) {
@@ -29,6 +36,9 @@ function araw(string $got, string $exp, string $msg): void {
 		$gdec->skipWireType($gwt);
 		$edec->skipWireType($ewt);
 	}
+	$tmpf = tempnam ('', 'proto-test-got');
+	$msg .= " writing to got to $tmpf";
+	file_put_contents($tmpf, $got);
 	throw new Exception($msg);
 }
 
@@ -124,4 +134,6 @@ function test(): void {
 	}*/
 }
 
+set_time_limit(5);
+ini_set('memory_limit', '20M');
 test();
