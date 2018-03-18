@@ -2,7 +2,7 @@
 
 namespace Protobuf {
 
-class ProtoException extends \Exception {}
+class ProtobufException extends \Exception {}
 
 interface Message {
 	public function MergeFrom(Internal\Decoder $d): void;
@@ -24,7 +24,7 @@ namespace Internal {
 
 function AssertEndiannessAndIntSize(): void {
 	if (PHP_INT_SIZE != 8) {
-		throw new \Protobuf\ProtoException("unsupported PHP_INT_SIZE size: " . PHP_INT_SIZE);
+		throw new \Protobuf\ProtobufException("unsupported PHP_INT_SIZE size: " . PHP_INT_SIZE);
 	}
 	// TODO assert endianness...
 }
@@ -47,7 +47,7 @@ class Decoder {
 		$shift = 0;
 		while (true) {
 			if ($this->isEOF()){
-				throw new \Protobuf\ProtoException("buffer overrun while reading varint-128");
+				throw new \Protobuf\ProtobufException("buffer overrun while reading varint-128");
 			}
 			$c = ord($this->buf[$this->offset]);
 			$val += (($c & 127) << $shift);
@@ -69,7 +69,7 @@ class Decoder {
 	public function readLittleEndianInt(int $size): int {
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
-			throw new \Protobuf\ProtoException("buffer overrun while reading little endian int: " . $size);
+			throw new \Protobuf\ProtobufException("buffer overrun while reading little endian int: " . $size);
 		}
 		$val = 0;
 		for ($i = 0; $i < $size; $i++) {
@@ -103,7 +103,7 @@ class Decoder {
 	private function readRaw(int $size): string {
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
-			throw new \Protobuf\ProtoException("buffer overrun while reading raw: " . $size);
+			throw new \Protobuf\ProtobufException("buffer overrun while reading raw: " . $size);
 		}
 		$ss = substr($this->buf, $this->offset, $size);
 		$this->offset = $noff;
@@ -114,7 +114,7 @@ class Decoder {
 		$size = $this->readVarInt128();
 		$noff = $this->offset + $size;
 		if ($noff > $this->len){
-			throw new \Protobuf\ProtoException("buffer overrun while reading buffer: " . $size);
+			throw new \Protobuf\ProtobufException("buffer overrun while reading buffer: " . $size);
 		}
 		$buf = new Decoder($this->buf, $this->offset, $noff);
 		$this->offset = $noff;
@@ -140,7 +140,7 @@ class Decoder {
 			$this->skip(4);
 			break;
 		default:
-			throw new \Protobuf\ProtoException("encountered unknown wire type $wt during skip");
+			throw new \Protobuf\ProtobufException("encountered unknown wire type $wt during skip");
 		}
 	}
 
