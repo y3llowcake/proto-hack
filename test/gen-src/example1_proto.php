@@ -229,16 +229,16 @@ class example1 implements \Protobuf\Message {
           $this->asint64 = $d->readVarInt128ZigZag();
           break;
         case 9:
-          $this->afixed32 = $d->readLittleEndianInt(4);
+          $this->afixed32 = $d->readLittleEndianInt32();
           break;
         case 10:
-          $this->afixed64 = $d->readLittleEndianInt(8);
+          $this->afixed64 = $d->readLittleEndianInt64();
           break;
         case 11:
-          $this->asfixed32 = $d->readLittleEndianInt(4);
+          $this->asfixed32 = $d->readLittleEndianInt32();
           break;
         case 12:
-          $this->asfixed64 = $d->readLittleEndianInt(8);
+          $this->asfixed64 = $d->readLittleEndianInt64();
           break;
         case 13:
           $this->abool = $d->readBool();
@@ -341,19 +341,19 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->afixed32 !== 0) {
       $e->writeTag(9, 5);
-      $e->writeLittleEndianInt($this->afixed32, 4);
+      $e->writeLittleEndianInt32($this->afixed32);
     }
     if ($this->afixed64 !== 0) {
       $e->writeTag(10, 1);
-      $e->writeLittleEndianInt($this->afixed64, 8);
+      $e->writeLittleEndianInt64($this->afixed64);
     }
     if ($this->asfixed32 !== 0) {
       $e->writeTag(11, 5);
-      $e->writeLittleEndianInt($this->asfixed32, 4);
+      $e->writeLittleEndianInt32($this->asfixed32);
     }
     if ($this->asfixed64 !== 0) {
       $e->writeTag(12, 1);
-      $e->writeLittleEndianInt($this->asfixed64, 8);
+      $e->writeLittleEndianInt64($this->asfixed64);
     }
     if ($this->abool !== false) {
       $e->writeTag(13, 0);

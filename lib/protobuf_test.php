@@ -33,12 +33,20 @@ function testVarIntZigZag(int $dec, string $enc) {
 	a((string)$e, $enc, "write varint zigzag");
 }
 
-function testLittleEndianInt(int $dec, string $enc, int $size) {
+function testLittleEndianInt32(int $dec, string $enc) {
 	$d = Decoder::FromString($enc);
-	a($d->readLittleEndianInt($size), $dec, "read le int");
+	a($d->readLittleEndianInt32(), $dec, "read le int32");
 	$e = new Encoder();
-	$e->writeLittleEndianInt($dec, $size);
-	a((string)$e, $enc, "write le int");
+	$e->writeLittleEndianInt32($dec);
+	a((string)$e, $enc, "write le int32");
+}
+
+function testLittleEndianInt64(int $dec, string $enc) {
+	$d = Decoder::FromString($enc);
+	a($d->readLittleEndianInt64(), $dec, "read le int64");
+	$e = new Encoder();
+	$e->writeLittleEndianInt64($dec);
+	a((string)$e, $enc, "write le int64");
 }
 
 
@@ -63,15 +71,15 @@ function test(): void {
 	// testVarIntZigZag(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));
 
 
-	// Little endian
-	testLittleEndianInt(0, cat(0x00, 0x00, 0x00, 0x00), 4);
-	testLittleEndianInt(0, cat(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00), 8);
-	testLittleEndianInt(1, cat(0x01, 0x00, 0x00, 0x00), 4);
-	testLittleEndianInt(1, cat(0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00), 8);
+	// Little endian 32
+	testLittleEndianInt32(0, cat(0x00, 0x00, 0x00, 0x00));
+	testLittleEndianInt32(1, cat(0x01, 0x00, 0x00, 0x00));
+	testLittleEndianInt32(1234567890, cat(0xD2, 0x02, 0x96, 0x49));
+	testLittleEndianInt32(-1, cat(0xFF, 0xFF, 0xFF, 0xFF));
 
-	testLittleEndianInt(1234567890, cat(0xD2, 0x02, 0x96, 0x49), 4);
-	testLittleEndianInt(-1, cat(0xFF, 0xFF, 0xFF, 0xFF), 4);
-	testLittleEndianInt(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF), 8);
+	testLittleEndianInt64(0, cat(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00));
+	testLittleEndianInt64(1, cat(0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00));
+	testLittleEndianInt64(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF));
 }
 
 AssertEndiannessAndIntSize();

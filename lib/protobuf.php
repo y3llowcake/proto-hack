@@ -51,14 +51,12 @@ class Decoder {
 			}
 			$c = ord($this->buf[$this->offset]);
 			$this->offset++;
-			// echo "read varint128 part: $c\n";
 			$val += (($c & 127) << $shift);
 			$shift+=7;
 			if ($c < 128) {
 				break;
 			}
 		}
-		// echo "read varint128: $val\n";
 		return $val;
 	}
 
@@ -66,14 +64,6 @@ class Decoder {
 	public function readTag(): (int, int) {
 		$k = $this->readVarInt128();		
 		return tuple($k >> 3, $k & 0x7);
-	}
-
-	// TODO remove this function.
-	public function readLittleEndianInt(int $size): int {
-		if ($size == 4) {
-			return $this->readLittleEndianInt32();
-		}
-		return $this->readLittleEndianInt64();
 	}
 
 	public function readLittleEndianInt32(): int {
@@ -132,7 +122,6 @@ class Decoder {
 	}
 
 	public function skipWireType(int $wt): void {
-		// echo "skipping at {$this->offset}\n";
 		switch ($wt) {
 		case 0:
 			$this->readVarInt128(); // We could technically optimize this to skip.
@@ -163,11 +152,9 @@ class Encoder {
 	}
 
 	public function writeVarInt128(int $i): void {
-		// echo "writing var int: $i\n";
 		if ($i < 0) {
 			// Special case: The sign bit is preserved while right shifiting.
 			$this->buf .= chr(($i & 0x7F) | 0x80);
-			// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
 			// Now shift and move sign bit.
 			$i = (($i & 0x7FFFFFFFFFFFFFFF) >> 7) | 0x100000000000000;
 		}
@@ -176,25 +163,14 @@ class Encoder {
 			$i = $i >> 7;
 			if ($i == 0) {
 				$this->buf .= chr($b);
-				// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
-
 				return;
 			}
 			$this->buf .= chr($b | 0x80); // set the top bit.
-			// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
 		}
 	}
 
 	public function writeTag(int $fn, int $wt): void {
 		$this->writeVarInt128(($fn << 3) | $wt);		
-	}
-
-	public function writeLittleEndianInt(int $i, int $size): void {
-		if ($size == 4) {
-			$this->writeLittleEndianInt32($i);
-		} else {
-			$this->writeLittleEndianInt64($i);
-		}
 	}
 
 	public function writeLittleEndianInt32(int $i): void {

@@ -287,9 +287,9 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		reader = fmt.Sprintf("%s->readDouble()", dec)
 	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
-		reader = fmt.Sprintf("%s->readLittleEndianInt(4)", dec)
+		reader = fmt.Sprintf("%s->readLittleEndianInt32()", dec)
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
-		reader = fmt.Sprintf("%s->readLittleEndianInt(8)", dec)
+		reader = fmt.Sprintf("%s->readLittleEndianInt64()", dec)
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
@@ -361,9 +361,9 @@ func (f field) writeEncoder(w *writer, enc string) {
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		writer = fmt.Sprintf("%s->writeDouble($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
-		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 4)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeLittleEndianInt32($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
-		writer = fmt.Sprintf("%s->writeLittleEndianInt($this->%s, 8)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeLittleEndianInt64($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		writer = fmt.Sprintf("%s->writeBool($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_ENUM:
