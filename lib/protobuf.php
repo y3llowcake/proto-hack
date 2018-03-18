@@ -68,17 +68,20 @@ class Decoder {
 		return tuple($k >> 3, $k & 0x7);
 	}
 
+	// TODO remove this function.
 	public function readLittleEndianInt(int $size): int {
-		$noff = $this->offset + $size;
-		if ($noff > $this->len){
-			throw new \Protobuf\ProtobufException("buffer overrun while reading little endian int: " . $size);
+		if ($size == 4) {
+			return $this->readLittleEndianInt32();
 		}
-		$val = 0;
-		for ($i = 0; $i < $size; $i++) {
-			$val |= ord($this->buf[$this->offset]) << ($i * 8);
-			$this->offset++;
-		}
-		return $val;
+		return $this->readLittleEndianInt64();
+	}
+
+	public function readLittleEndianInt32(): int {
+		return unpack('l', $this->readRaw(4))[1];
+	}
+
+	public function readLittleEndianInt64(): int {
+		return unpack('q', $this->readRaw(8))[1];
 	}
 
 	public function readBool(): bool {
@@ -162,8 +165,7 @@ class Encoder {
 	public function writeVarInt128(int $i): void {
 		// echo "writing var int: $i\n";
 		if ($i < 0) {
-			// The sign bit is preserved right shifiting so we special case this.
-			// First write the lower 7 plus continuation bit.
+			// Special case: The sign bit is preserved while right shifiting.
 			$this->buf .= chr(($i & 0x7F) | 0x80);
 			// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
 			// Now shift and move sign bit.
@@ -188,7 +190,15 @@ class Encoder {
 	}
 
 	public function writeLittleEndianInt(int $i, int $size): void {
-		for ($j = 0; $j < $size; $j++) {
+		$j = 0;
+		if ($i < 0) {
+			// Special case: The sign bit is preserved while right shifiting.
+			$this->buf .= chr($i & 0xFF);
+			// Now shift and move sign bit.
+			$i = (($i & 0x7FFFFFFFFFFFFFFF) >> 8) | 0x80000000000000;
+			$j++;
+		}
+		for (; $j < $size; $j++) {
 			$this->buf .= chr($i & 0xFF);
 			$i = $i >> 8;
 		}
