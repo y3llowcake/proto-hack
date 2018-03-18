@@ -391,7 +391,7 @@ interface ExampleServiceServer {
 }
 
 class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
-  public function __construct(private ExampleServiceServer $s) {
+  public function __construct(public ExampleServiceServer $server) {
   }
 
   public function Name(): string {
@@ -403,7 +403,7 @@ class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
       case 'OneToTwo':
         $in = new \foo\bar\example1();
         \Protobuf\Unmarshal($rawin, $in);
-        $out = $this->s->OneToTwo($in);
+        $out = $this->server->OneToTwo($in);
         return \Protobuf\Marshal($out);
     }
     throw new \Grpc\GrpcException('unknown method: ' . $method);

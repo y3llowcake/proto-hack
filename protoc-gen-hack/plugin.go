@@ -560,7 +560,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	w.p("}")
 	w.ln()
 	w.p("class %sServerDispatch implements \\Grpc\\ServerDispatch {", sdp.GetName())
-	w.p("public function __construct(private %sServer $s) {", sdp.GetName())
+	w.p("public function __construct(public %sServer $server) {", sdp.GetName())
 	w.p("}")
 	w.ln()
 	w.p("public function Name(): string {")
@@ -577,7 +577,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.i++
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("%s\\Unmarshal($rawin, $in);", libNs)
-		w.p("$out = $this->s->%s($in);", m.PhpName)
+		w.p("$out = $this->server->%s($in);", m.PhpName)
 		w.p("return %s\\Marshal($out);", libNs)
 		w.i--
 	}
