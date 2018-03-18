@@ -50,13 +50,15 @@ class Decoder {
 				throw new \Protobuf\ProtobufException("buffer overrun while reading varint-128");
 			}
 			$c = ord($this->buf[$this->offset]);
+			$this->offset++;
+			// echo "read varint128 part: $c\n";
 			$val += (($c & 127) << $shift);
 			$shift+=7;
-			$this->offset++;
 			if ($c < 128) {
 				break;
 			}
 		}
+		// echo "read varint128: $val\n";
 		return $val;
 	}
 
@@ -97,6 +99,7 @@ class Decoder {
 
 	public function readVarInt128ZigZag(): int {
 		$i = $this->readVarInt128();
+		// TODO, is c++ shift subtly different?
 		return ($i >> 1) ^ - ($i & 1);
 	}
 
@@ -126,6 +129,7 @@ class Decoder {
 	}
 
 	public function skipWireType(int $wt): void {
+		// echo "skipping at {$this->offset}\n";
 		switch ($wt) {
 		case 0:
 			$this->readVarInt128(); // We could technically optimize this to skip.
@@ -156,14 +160,26 @@ class Encoder {
 	}
 
 	public function writeVarInt128(int $i): void {
+		// echo "writing var int: $i\n";
+		if ($i < 0) {
+			// The sign bit is preserved right shifiting so we special case this.
+			// First write the lower 7 plus continuation bit.
+			$this->buf .= chr(($i & 0x7F) | 0x80);
+			// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
+			// Now shift and move sign bit.
+			$i = (($i & 0x7FFFFFFFFFFFFFFF) >> 7) | 0x100000000000000;
+		}
 		while (true) {
-			$b = $i & 0x7F; /* lower 7 bits */
+			$b = $i & 0x7F; // lower 7 bits
 			$i = $i >> 7;
 			if ($i == 0) {
 				$this->buf .= chr($b);
-				break;
+				// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
+
+				return;
 			}
-			$this->buf .= chr($b | 0x80); /* set the top bit */
+			$this->buf .= chr($b | 0x80); // set the top bit.
+			// echo "wrote varint part: " . ord($this->buf[strlen($this->buf) - 1])  . "\n";
 		}
 	}
 
