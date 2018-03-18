@@ -2,6 +2,8 @@
 
 namespace Grpc {
 
+class GrpcException extends \Exception {}
+
 use \Protobuf\Message;
 
 interface ClientConn {

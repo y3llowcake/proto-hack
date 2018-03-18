@@ -406,7 +406,7 @@ class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
         $out = $this->s->OneToTwo($in);
         return \Protobuf\Marshal($out);
     }
-    throw new \Exception('unknown method: ' . $method);
+    throw new \Grpc\GrpcException('unknown method: ' . $method);
     return '';
   }
 }

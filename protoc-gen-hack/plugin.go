@@ -582,7 +582,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.i--
 	}
 	w.p("}")
-	w.p("throw new \\Exception('unknown method: ' . $method);") // TODO type me.
+	w.p("throw new \\Grpc\\GrpcException('unknown method: ' . $method);") // TODO type me.
 	w.p("return '';")
 	w.p("}")
 	w.p("}")
