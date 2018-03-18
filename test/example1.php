@@ -2,6 +2,7 @@
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
 include "./gen-src/example1_proto.php";
+include "./gen-src/example2_proto.php";
 
 
 function a(mixed $got, mixed $exp, string $msg): void {
@@ -91,6 +92,9 @@ function testExample1($raw, $failmsg): string {
 	$exp->aexample22 = $e22;
 	$e22->aint32 = 123;
 
+	$e23 = new fiz\baz\example2();
+	$exp->aexample23 = $e23;
+	$e23->zomg = -12;
 
 	$exp->amap["k1"] = "v1";
 	$exp->amap["k2"] = "v2";

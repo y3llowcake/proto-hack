@@ -2,11 +2,14 @@ syntax = "proto3";
 
 package foo.bar;
 
+import "example2.proto";
+
 enum AEnum1 {
   A = 0;
   B = 2;
 }
 
+// Intentionally, same as below to test namespacing.
 message example2 {
   int32 aint32 = 1;
 }
@@ -41,12 +44,13 @@ message example1 {
   repeated string manystring = 30;
   repeated int64 manyint64 = 31;
 
-  // Nested Messages
+  // Nested Messages / namespace test.
   message example2 {
     string astring = 1;
   }
   example2 aexample2 = 40;
   .foo.bar.example2 aexample22 = 41;
+  .fiz.baz.example2 aexample23 = 42;
 
   map<string, string> amap = 51;
 

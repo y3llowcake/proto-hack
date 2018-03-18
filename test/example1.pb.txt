@@ -27,9 +27,11 @@ manyint64: 3
 aexample2 {
   astring: "zomg"
 }
-
 aexample22 {
   aint32: 123
+}
+aexample23 {
+  zomg: -12
 }
 
 amap {

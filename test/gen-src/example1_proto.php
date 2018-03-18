@@ -160,6 +160,8 @@ class example1 implements \Protobuf\Message {
   public ?\foo\bar\example1_example2 $aexample2;
   // field aexample22 = 41
   public ?\foo\bar\example2 $aexample22;
+  // field aexample23 = 42
+  public ?\fiz\baz\example2 $aexample23;
   // field amap = 51
   public dict<string, string> $amap;
   // field outoforder = 49
@@ -187,6 +189,7 @@ class example1 implements \Protobuf\Message {
     $this->manyint64 = vec[];
     $this->aexample2 = null;
     $this->aexample22 = null;
+    $this->aexample23 = null;
     $this->amap = dict[];
     $this->outoforder = 0;
   }
@@ -270,6 +273,12 @@ class example1 implements \Protobuf\Message {
             $this->aexample22 = new \foo\bar\example2();
           }
           $this->aexample22->MergeFrom($d->readDecoder());
+          break;
+        case 42:
+          if ($this->aexample23 == null) {
+            $this->aexample23 = new \fiz\baz\example2();
+          }
+          $this->aexample23->MergeFrom($d->readDecoder());
           break;
         case 49:
           $this->outoforder = $d->readVarInt128();
@@ -374,6 +383,12 @@ class example1 implements \Protobuf\Message {
       $nested = new \Protobuf\Internal\Encoder();
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 41);
+    }
+    $msg = $this->aexample23;
+    if ($msg != null) {
+      $nested = new \Protobuf\Internal\Encoder();
+      $msg->WriteTo($nested);
+      $e->writeEncoder($nested, 42);
     }
     if ($this->outoforder !== 0) {
       $e->writeTag(49, 0);
