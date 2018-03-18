@@ -51,6 +51,8 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	for _, f := range req.FileToGenerate {
 		fileToGenerate[f] = true
 	}
+	genService := strings.Contains(req.GetParameter(), "plugin=grpc")
+
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
 		if *fdp.Syntax != "proto3" {
@@ -70,14 +72,14 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 
 		b := &bytes.Buffer{}
 		w := &writer{b, 0}
-		writeFile(w, fdp, rootns)
+		writeFile(w, fdp, rootns, genService)
 		f.Content = proto.String(b.String())
 		resp.File = append(resp.File, f)
 	}
 	return resp
 }
 
-func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
+func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genService bool) {
 	packageParts := strings.Split(*fdp.Package, ".")
 	ns := rootNs.FindFullyQualifiedNamespace("." + *fdp.Package)
 	if ns == nil {
@@ -105,8 +107,10 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace) {
 	// TODO: top level fields?
 
 	// Write services.
-	for _, sdp := range fdp.Service {
-		writeService(w, sdp, fdp.GetPackage(), ns)
+	if genService {
+		for _, sdp := range fdp.Service {
+			writeService(w, sdp, fdp.GetPackage(), ns)
+		}
 	}
 }
 

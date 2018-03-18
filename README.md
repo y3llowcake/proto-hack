@@ -14,6 +14,9 @@ Hacklang generator for protobuf
 # Usage
 `protoc --hack_out=./gen-src example.proto`
 
+To include gRPC service stubs:
+`protoc --hack_out=plugin=grpc:./gen-src example.proto`
+
 In addition to generated code, you will need the library code in `/lib`.
 
 ```
