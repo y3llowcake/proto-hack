@@ -11,7 +11,7 @@ class AEnum1 {
 }
 
 // message example2
-class example2 extends \Protobuf\Internal\Message {
+class example2 implements \Protobuf\Internal\Message {
   // field aint32 = 1
   public int $aint32;
 
@@ -47,7 +47,7 @@ class example1_AEnum2 {
 }
 
 // message example2
-class example1_example2 extends \Protobuf\Internal\Message {
+class example1_example2 implements \Protobuf\Internal\Message {
   // field astring = 1
   public string $astring;
 
@@ -77,7 +77,7 @@ class example1_example2 extends \Protobuf\Internal\Message {
 }
 
 // message AmapEntry
-class example1_AmapEntry extends \Protobuf\Internal\Message {
+class example1_AmapEntry implements \Protobuf\Internal\Message {
   // field key = 1
   public string $key;
   // field value = 2
@@ -117,7 +117,7 @@ class example1_AmapEntry extends \Protobuf\Internal\Message {
 }
 
 // message example1
-class example1 extends \Protobuf\Internal\Message {
+class example1 implements \Protobuf\Internal\Message {
   // field adouble = 1
   public float $adouble;
   // field afloat = 2
@@ -384,4 +384,13 @@ class ExampleServiceClient {
     await $this->cc->Invoke('foo.bar.ExampleService/OneToTwo', $in, $out);
     return $out;
   }
+}
+
+interface ExampleServiceServer {
+  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2;
+}
+
+function RegisterExampleServiceServer(\Grpc\Server $gs, ExampleServiceServer $s): void {
+  $h = dict[];
+  $gs->RegisterService('foo.bar.ExampleService', $h);
 }

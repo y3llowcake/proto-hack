@@ -210,10 +210,10 @@ class Encoder {
 	}
 }
 
-
-abstract class Message {
-	public abstract function MergeFrom(Decoder $d): void;
-	public abstract function WriteTo(Encoder $e): void;
+// TODO move this out of the internal namespace
+interface Message {
+	public function MergeFrom(Decoder $d): void;
+	public function WriteTo(Encoder $e): void;
 }
 
 } // namespace Internal

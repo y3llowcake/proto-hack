@@ -435,7 +435,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	}
 
 	w.p("// message %s", *dp.Name)
-	w.p("class %s extends %s\\Message {", name, libNs)
+	w.p("class %s implements %s\\Message {", name, libNs)
 
 	fields := []field{}
 	for _, fd := range dp.Field {
@@ -541,12 +541,35 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.ln()
 		w.p("public async function %s(%s $in): Awaitable<%s> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
 		w.p("$out = new %s();", m.OutputPhpName)
-		grpcMethod := fmt.Sprintf("%s.%s/%s", pkg, sdp.GetName(), m.mdp.GetName())
-		w.p("await $this->cc->Invoke('%s', $in, $out);", grpcMethod)
+		w.p("await $this->cc->Invoke('%s.%s/%s', $in, $out);", pkg, sdp.GetName(), m.mdp.GetName())
 		w.p("return $out;")
 		w.p("}")
 	}
 	w.p("}")
+	w.ln()
+
+	// Server
+	w.p("interface %sServer {", sdp.GetName())
+	for _, m := range methods {
+		if m.isStreaming() {
+			continue
+		}
+		w.p("public function %s(%s $in): %s;", m.PhpName, m.InputPhpName, m.OutputPhpName)
+	}
+	w.p("}")
+	w.ln()
+	w.p("function Register%sServer(\\Grpc\\Server $gs, %sServer $s): void {", sdp.GetName(), sdp.GetName())
+	w.p("$h = dict[];")
+	for _, m := range methods {
+		if m.isStreaming() {
+			continue
+		}
+		//w.p("$h['%s'] = inst_meth($s, '%s');", m.PhpName, m.PhpName)
+		//w.p("$h['%s'] = inst_meth($s, '%s');", m.PhpName, m.PhpName)
+	}
+	w.p("$gs->RegisterService('%s.%s', $h);", pkg, sdp.GetName())
+	w.p("}")
+
 }
 
 // writer is a little helper for output printing. It indents code
