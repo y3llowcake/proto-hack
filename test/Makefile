@@ -2,7 +2,7 @@ all: test
 
 test: gen
 	hhvm example1.php
-	echo "\033[1mTEST PASSED\033[0m"
+	echo "\033[1mINTEGRATION TEST PASSED\033[0m"
 
 gen:
 	mkdir -p gen-src
