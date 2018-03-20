@@ -126,7 +126,7 @@ function test(): void {
 	araw($res, $raw, "hack marshal does not match protoc marshal");
 	testExample1($res, "test example1: remarshal");
 
-	/*for ($i = 0; $i < 1000; $i++){
+	/*for ($i = 0; $i < 10000; $i++){
 		$start = microtime_as_int();
 		testExample1($raw, "blarg");
 		$start = microtime_as_int() - $start;

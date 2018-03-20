@@ -10,16 +10,18 @@ interface Message {
 }
 
 function Unmarshal(string $data, Message $message): void {
-	$message->MergeFrom(\Protobuf\Internal\Decoder::FromString($data));
+	$message->MergeFrom(Internal\Decoder::FromString($data));
 }
 
 function Marshal(Message $message): string {
-	$e = new \Protobuf\Internal\Encoder();
+	$e = new Internal\Encoder();
 	$message->WriteTo($e);
 	return (string)$e;
 }
 
-namespace Internal {
+} // namespace Protobuf
+
+namespace Protobuf\Internal {
 // AVERT YOUR EYES YE! NOTHING TO SEE BELOW!
 
 function AssertEndiannessAndIntSize(): void {
@@ -218,7 +220,4 @@ class Encoder {
 	}
 }
 
-} // namespace Internal
-
-} // namespace Protobuf
-
+} // namespace Protobuf/Internal
