@@ -124,6 +124,7 @@ type field struct {
 	typePhpNs, typePhpName string
 	typeDescriptor         interface{}
 	typeNs                 *Namespace
+	typeEnumDefault        string
 	isMap                  bool
 }
 
@@ -141,6 +142,15 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 				f.isMap = true
 			}
 		}
+		if ed, ok := f.typeDescriptor.(*desc.EnumDescriptorProto); ok {
+			for _, v := range ed.Value {
+				if v.GetNumber() == 0 {
+					f.typeEnumDefault = v.GetName()
+					break
+				}
+			}
+		}
+
 	}
 
 	return f
@@ -191,7 +201,7 @@ func (f field) defaultValue() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "false"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return "0"
+		return f.typePhpNs + "\\" + f.typePhpName + "::" + f.typeEnumDefault
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
 		return "null"
 	default:

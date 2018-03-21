@@ -187,8 +187,8 @@ class example1 implements \Protobuf\Message {
     $this->abool = false;
     $this->astring = '';
     $this->abytes = '';
-    $this->aenum1 = 0;
-    $this->aenum2 = 0;
+    $this->aenum1 = \foo\bar\AEnum1::A;
+    $this->aenum2 = \foo\bar\example1_AEnum2::C;
     $this->manystring = vec[];
     $this->manyint64 = vec[];
     $this->aexample2 = null;
@@ -367,11 +367,11 @@ class example1 implements \Protobuf\Message {
       $e->writeTag(15, 2);
       $e->writeString($this->abytes);
     }
-    if ($this->aenum1 !== 0) {
+    if ($this->aenum1 !== \foo\bar\AEnum1::A) {
       $e->writeTag(20, 0);
       $e->writeVarInt128($this->aenum1);
     }
-    if ($this->aenum2 !== 0) {
+    if ($this->aenum2 !== \foo\bar\example1_AEnum2::C) {
       $e->writeTag(21, 0);
       $e->writeVarInt128($this->aenum2);
     }

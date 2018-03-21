@@ -112,7 +112,7 @@ func (n *Namespace) Parse(fdp *desc.FileDescriptorProto) {
 func (n *Names) parseDescriptor(dp *desc.DescriptorProto) {
 
 	for _, edp := range dp.EnumType {
-		n.get(true, *edp.Name).descriptor = dp.EnumType
+		n.get(true, *edp.Name).descriptor = edp
 	}
 
 	for _, dp := range dp.NestedType {
