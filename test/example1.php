@@ -84,6 +84,7 @@ function testExample1($raw, $failmsg): string {
 
 	$exp->aenum1 = foo\bar\AEnum1::B;
 	$exp->aenum2 = foo\bar\example1_AEnum2::D;
+	$exp->aenum22 = fiz\baz\AEnum2::Z;
 
 	$exp->manystring []= "ms1";
 	$exp->manystring []= "ms2";

@@ -39,6 +39,7 @@ message example1 {
   }
   AEnum1 aenum1 = 20;
   AEnum2 aenum2 = 21;
+  fiz.baz.AEnum2 aenum22 = 22;
 
   // Repeated
   repeated string manystring = 30;

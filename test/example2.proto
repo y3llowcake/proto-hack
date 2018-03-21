@@ -5,3 +5,7 @@ package fiz.baz;
 message example2 {
   int32 zomg = 1;
 }
+
+enum AEnum2 {
+  Z = 0;
+}

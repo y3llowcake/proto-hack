@@ -16,6 +16,7 @@ abytes: "hello world"
 
 aenum1: B
 aenum2: D
+aenum22: Z
 
 manystring: "ms1"
 manystring: "ms2"

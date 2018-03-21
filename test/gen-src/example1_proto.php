@@ -158,6 +158,8 @@ class example1 implements \Protobuf\Message {
   public \foo\bar\AEnum1_EnumType $aenum1;
   // field aenum2 = 21
   public \foo\bar\example1_AEnum2_EnumType $aenum2;
+  // field aenum22 = 22
+  public \fiz\baz\AEnum2_EnumType $aenum22;
   // field manystring = 30
   public vec<string> $manystring;
   // field manyint64 = 31
@@ -195,6 +197,7 @@ class example1 implements \Protobuf\Message {
     $this->abytes = '';
     $this->aenum1 = \foo\bar\AEnum1::A;
     $this->aenum2 = \foo\bar\example1_AEnum2::C;
+    $this->aenum22 = \fiz\baz\AEnum2::Z;
     $this->manystring = vec[];
     $this->manyint64 = vec[];
     $this->aexample2 = null;
@@ -260,6 +263,9 @@ class example1 implements \Protobuf\Message {
           break;
         case 21:
           $this->aenum2 = \foo\bar\example1_AEnum2::FromInt($d->readVarInt128());
+          break;
+        case 22:
+          $this->aenum22 = \fiz\baz\AEnum2::FromInt($d->readVarInt128());
           break;
         case 30:
           $this->manystring []= $d->readString();
@@ -380,6 +386,10 @@ class example1 implements \Protobuf\Message {
     if ($this->aenum2 !== \foo\bar\example1_AEnum2::C) {
       $e->writeTag(21, 0);
       $e->writeVarInt128($this->aenum2);
+    }
+    if ($this->aenum22 !== \fiz\baz\AEnum2::Z) {
+      $e->writeTag(22, 0);
+      $e->writeVarInt128($this->aenum22);
     }
     foreach ($this->manystring as $elem) {
       $e->writeTag(30, 2);
