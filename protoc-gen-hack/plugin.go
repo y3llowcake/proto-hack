@@ -160,7 +160,7 @@ func (f field) mapPhpTypes() (string, string) {
 	dp := f.typeDescriptor.(*desc.DescriptorProto)
 	keyField := newField(dp.Field[0], f.typeNs)
 	valueField := newField(dp.Field[1], f.typeNs)
-	return keyField.phpType(), valueField.phpType()
+	return keyField.phpType(), valueField.labeledType()
 }
 
 func (f field) phpType() string {

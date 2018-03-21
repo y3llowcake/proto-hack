@@ -54,6 +54,7 @@ message example1 {
   .fiz.baz.example2 aexample23 = 42;
 
   map<string, string> amap = 51;
+  map<string, fiz.baz.example2> amap2 = 52;
 
   int64 outoforder = 49;
 

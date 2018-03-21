@@ -122,6 +122,51 @@ class example1_AmapEntry implements \Protobuf\Message {
   }
 }
 
+// message Amap2Entry
+class example1_Amap2Entry implements \Protobuf\Message {
+  // field key = 1
+  public string $key;
+  // field value = 2
+  public ?\fiz\baz\example2 $value;
+
+  public function __construct() {
+    $this->key = '';
+    $this->value = null;
+  }
+
+  public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
+    while (!$d->isEOF()){
+      list($fn, $wt) = $d->readTag();
+      switch ($fn) {
+        case 1:
+          $this->key = $d->readString();
+          break;
+        case 2:
+          if ($this->value == null) {
+            $this->value = new \fiz\baz\example2();
+          }
+          $this->value->MergeFrom($d->readDecoder());
+          break;
+        default:
+          $d->skipWireType($wt);
+      }
+    }
+  }
+
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    if ($this->key !== '') {
+      $e->writeTag(1, 2);
+      $e->writeString($this->key);
+    }
+    $msg = $this->value;
+    if ($msg != null) {
+      $nested = new \Protobuf\Internal\Encoder();
+      $msg->WriteTo($nested);
+      $e->writeEncoder($nested, 2);
+    }
+  }
+}
+
 // message example1
 class example1 implements \Protobuf\Message {
   // field adouble = 1
@@ -172,6 +217,8 @@ class example1 implements \Protobuf\Message {
   public ?\fiz\baz\example2 $aexample23;
   // field amap = 51
   public dict<string, string> $amap;
+  // field amap2 = 52
+  public dict<string, ?\fiz\baz\example2> $amap2;
   // field outoforder = 49
   public int $outoforder;
   // field oostring = 60
@@ -204,6 +251,7 @@ class example1 implements \Protobuf\Message {
     $this->aexample22 = null;
     $this->aexample23 = null;
     $this->amap = dict[];
+    $this->amap2 = dict[];
     $this->outoforder = 0;
     $this->oostring = '';
     $this->ooint = 0;
@@ -305,6 +353,11 @@ class example1 implements \Protobuf\Message {
           $obj = new \foo\bar\example1_AmapEntry();
           $obj->MergeFrom($d->readDecoder());
           $this->amap[$obj->key] = $obj->value;
+          break;
+        case 52:
+          $obj = new \foo\bar\example1_Amap2Entry();
+          $obj->MergeFrom($d->readDecoder());
+          $this->amap2[$obj->key] = $obj->value;
           break;
         case 60:
           $this->oostring = $d->readString();
@@ -429,6 +482,14 @@ class example1 implements \Protobuf\Message {
       $nested = new \Protobuf\Internal\Encoder();
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 51);
+    }
+    foreach ($this->amap2 as $k => $v) {
+      $obj = new \foo\bar\example1_Amap2Entry();
+      $obj->key = $k;
+      $obj->value = $v;
+      $nested = new \Protobuf\Internal\Encoder();
+      $obj->WriteTo($nested);
+      $e->writeEncoder($nested, 52);
     }
     if ($this->oostring !== '') {
       $e->writeTag(60, 2);
