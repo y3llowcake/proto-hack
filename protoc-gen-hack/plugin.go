@@ -303,7 +303,8 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		reader = fmt.Sprintf("%s->readVarInt128()", dec)
+
+		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarInt128())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -414,11 +415,14 @@ func (f field) writeEncoder(w *writer, enc string) {
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
 	typename := name + "_EnumType"
-	w.p("newtype %s = int;", typename)
+	w.p("newtype %s as int = int;", typename)
 	w.p("class %s {", name)
 	for _, v := range ed.Value {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
+	w.p("public static function FromInt(int $i): %s {", typename)
+	w.p("return $i;")
+	w.p("}")
 	w.p("}")
 	w.ln()
 }
