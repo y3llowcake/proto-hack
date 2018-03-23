@@ -6,9 +6,11 @@ class GrpcException extends \Exception {}
 
 use \Protobuf\Message;
 
+interface CallOption {}
+
 interface ClientConn {
 	// TODO calloptions.
-	public function Invoke(string $method, Message $in, Message $out): Awaitable<void>;
+	public function Invoke(string $method, Message $in, Message $out, CallOption ...$co): Awaitable<void>;
 }
 
 interface ServerDispatch {
