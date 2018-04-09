@@ -6,13 +6,13 @@ namespace Grpc {
 
   use \Protobuf\Message;
 
-	interface CallOption {}
+  interface CallOption {}
 
-	interface Context {}
+  interface Context {}
 
-	interface ClientConn {
-		public function Invoke(
-			Context $ctx,
+  interface ClientConn {
+    public function Invoke(
+      Context $ctx,
       string $method,
       Message $in,
       Message $out,
