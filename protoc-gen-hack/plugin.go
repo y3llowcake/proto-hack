@@ -558,7 +558,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		if m.isStreaming() {
 			continue
 		}
-		w.p("public function %s(%s $in): %s;", m.PhpName, m.InputPhpName, m.OutputPhpName)
+		w.p("public function %s(\\Grpc\\Context $ctx, %s $in): %s;", m.PhpName, m.InputPhpName, m.OutputPhpName)
 	}
 	w.p("}")
 	w.ln()
@@ -570,7 +570,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	w.p("return '%s.%s';", pkg, sdp.GetName())
 	w.p("}")
 	w.ln()
-	w.p("public function Dispatch(string $method, string $rawin): string {")
+	w.p("public function Dispatch(\\Grpc\\Context $ctx, string $method, string $rawin): string {")
 	w.p("switch ($method) {")
 	for _, m := range methods {
 		if m.isStreaming() {
@@ -580,12 +580,12 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.i++
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("%s\\Unmarshal($rawin, $in);", libNs)
-		w.p("$out = $this->server->%s($in);", m.PhpName)
+		w.p("$out = $this->server->%s($ctx, $in);", m.PhpName)
 		w.p("return %s\\Marshal($out);", libNs)
 		w.i--
 	}
 	w.p("}")
-	w.p("throw new \\Grpc\\GrpcException('unknown method: ' . $method);") // TODO type me.
+	w.p("throw new \\Grpc\\GrpcException(\\Grpc\\Codes::Unimplemented, 'unknown method: ' . $method);") // TODO type me.
 	w.p("return '';")
 	w.p("}")
 	w.p("}")

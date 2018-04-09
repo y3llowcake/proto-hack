@@ -514,7 +514,7 @@ class ExampleServiceClient {
 }
 
 interface ExampleServiceServer {
-  public function OneToTwo(\foo\bar\example1 $in): \foo\bar\example2;
+  public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \foo\bar\example2;
 }
 
 class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
@@ -525,15 +525,15 @@ class ExampleServiceServerDispatch implements \Grpc\ServerDispatch {
     return 'foo.bar.ExampleService';
   }
 
-  public function Dispatch(string $method, string $rawin): string {
+  public function Dispatch(\Grpc\Context $ctx, string $method, string $rawin): string {
     switch ($method) {
       case 'OneToTwo':
         $in = new \foo\bar\example1();
         \Protobuf\Unmarshal($rawin, $in);
-        $out = $this->server->OneToTwo($in);
+        $out = $this->server->OneToTwo($ctx, $in);
         return \Protobuf\Marshal($out);
     }
-    throw new \Grpc\GrpcException('unknown method: ' . $method);
+    throw new \Grpc\GrpcException(\Grpc\Codes::Unimplemented, 'unknown method: ' . $method);
     return '';
   }
 }
