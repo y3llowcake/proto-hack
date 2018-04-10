@@ -53,6 +53,7 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		fileToGenerate[f] = true
 	}
 	genService := strings.Contains(req.GetParameter(), "plugin=grpc")
+	genService = genService | strings.Contains(req.GetParameter(), "plugins=grpc")
 
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
