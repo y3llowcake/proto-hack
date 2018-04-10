@@ -546,7 +546,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.ln()
 		w.p("public async function %s(\\Grpc\\Context $ctx, %s $in, \\Grpc\\CallOption ...$co): Awaitable<%s> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
 		w.p("$out = new %s();", m.OutputPhpName)
-		w.p("await $this->cc->Invoke($ctx, '%s.%s/%s', $in, $out, ...$co);", pkg, sdp.GetName(), m.mdp.GetName())
+		w.p("await $this->cc->Invoke($ctx, '/%s.%s/%s', $in, $out, ...$co);", pkg, sdp.GetName(), m.mdp.GetName())
 		w.p("return $out;")
 		w.p("}")
 	}
