@@ -52,8 +52,8 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	for _, f := range req.FileToGenerate {
 		fileToGenerate[f] = true
 	}
-	genService := strings.Contains(req.GetParameter(), "plugin=grpc")
-	genService = genService | strings.Contains(req.GetParameter(), "plugins=grpc")
+	genService := strings.Contains(req.GetParameter(), "plugins=grpc")
+	genService = genService || strings.Contains(req.GetParameter(), "plugin=grpc")
 
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
@@ -534,6 +534,10 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	for _, mdp := range sdp.Method {
 		methods = append(methods, newMethod(mdp, ns))
 	}
+	fqname := sdp.GetName()
+	if pkg != "" {
+		fqname = pkg + "." + fqname
+	}
 
 	// Client
 	w.p("class %sClient {", sdp.GetName())
@@ -546,7 +550,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.ln()
 		w.p("public async function %s(\\Grpc\\Context $ctx, %s $in, \\Grpc\\CallOption ...$co): Awaitable<%s> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
 		w.p("$out = new %s();", m.OutputPhpName)
-		w.p("await $this->cc->Invoke($ctx, '/%s.%s/%s', $in, $out, ...$co);", pkg, sdp.GetName(), m.mdp.GetName())
+		w.p("await $this->cc->Invoke($ctx, '/%s/%s', $in, $out, ...$co);", fqname, m.mdp.GetName())
 		w.p("return $out;")
 		w.p("}")
 	}
@@ -568,7 +572,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	w.p("}")
 	w.ln()
 	w.p("public function Name(): string {")
-	w.p("return '%s.%s';", pkg, sdp.GetName())
+	w.p("return '%s';", fqname)
 	w.p("}")
 	w.ln()
 	w.p("public function Dispatch(\\Grpc\\Context $ctx, string $method, string $rawin): string {")
