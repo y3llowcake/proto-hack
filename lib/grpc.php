@@ -1,7 +1,7 @@
 <?hh // strict
 
 namespace Grpc {
-  newtype Code = int;
+  newtype Code as int = int;
   abstract class Codes {
     const Code OK = 0;
     const Code Canceled = 1;
