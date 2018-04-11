@@ -35,6 +35,20 @@ namespace Grpc {
     }
   }
 
+  interface Codec {
+    public function Marshal(\Protobuf\Message $m): string;
+    public function Unmarshal(string $s, \Protobuf\Message $m): void;
+  }
+
+  final class DefaultCodec implements Codec {
+    public function Marshal(\Protobuf\Message $m): string {
+      return \Protobuf\Marshal($m);
+    }
+    public function Unmarshal(string $s, \Protobuf\Message $m): void {
+      \Protobuf\Unmarshal($s, $m);
+    }
+  }
+
   use \Protobuf\Message;
 
   interface CallOption {}
@@ -51,10 +65,11 @@ namespace Grpc {
     ): Awaitable<void>;
   }
 
-  interface ServerDispatch {
-    public function Name(): string;
-    public function Dispatch(
+  interface MethodDispatch {
+    public function ServiceName(): string;
+    public function DispatchMethod(
       Context $ctx,
+      Codec $codec,
       string $method,
       string $rawin,
     ): string;

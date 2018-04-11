@@ -567,15 +567,15 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	}
 	w.p("}")
 	w.ln()
-	w.p("class %sServerDispatch implements \\Grpc\\ServerDispatch {", sdp.GetName())
+	w.p("class %sServerDispatch implements \\Grpc\\MethodDispatch {", sdp.GetName())
 	w.p("public function __construct(public %sServer $server) {", sdp.GetName())
 	w.p("}")
 	w.ln()
-	w.p("public function Name(): string {")
+	w.p("public function ServiceName(): string {")
 	w.p("return '%s';", fqname)
 	w.p("}")
 	w.ln()
-	w.p("public function Dispatch(\\Grpc\\Context $ctx, string $method, string $rawin): string {")
+	w.p("public function DispatchMethod(\\Grpc\\Context $ctx,\\Grpc\\Codec $codec, string $method, string $rawin): string {")
 	w.p("switch ($method) {")
 	for _, m := range methods {
 		if m.isStreaming() {
@@ -584,9 +584,9 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("case '%s':", m.PhpName)
 		w.i++
 		w.p("$in = new %s();", m.InputPhpName)
-		w.p("%s\\Unmarshal($rawin, $in);", libNs)
+		w.p("$codec->Unmarshal($rawin, $in);")
 		w.p("$out = $this->server->%s($ctx, $in);", m.PhpName)
-		w.p("return %s\\Marshal($out);", libNs)
+		w.p("return $codec->Marshal($out);")
 		w.i--
 	}
 	w.p("}")
