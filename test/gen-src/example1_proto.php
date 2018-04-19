@@ -52,6 +52,13 @@ class example1_AEnum2 {
   }
 }
 
+newtype example1_aoneof_OneofType = int;
+class example1_aoneof {
+  const example1_aoneof_OneofType NONE = 0;
+  const example1_aoneof_OneofType oostring = 60;
+  const example1_aoneof_OneofType ooint = 61;
+}
+
 // message example2
 class example1_example2 implements \Protobuf\Message {
   // field astring = 1

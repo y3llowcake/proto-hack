@@ -412,7 +412,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
-// writeEnum writes a enumeration type and constants definitions.
+// writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
 	typename := name + "_EnumType"
@@ -428,6 +428,21 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.ln()
 }
 
+// writeOneofEnum writes an enumeration type and constants definitions for
+// proto "oneof" annotations.
+func writeOneofEnum(w *writer, od *desc.OneofDescriptorProto, prefixNames []string, fds []*desc.FieldDescriptorProto) {
+	name := strings.Join(append(prefixNames, *od.Name), "_")
+	typename := name + "_OneofType"
+	w.p("newtype %s = int;", typename)
+	w.p("class %s {", name)
+	w.p("const %s NONE = 0;", typename)
+	for _, fd := range fds {
+		w.p("const %s %s = %d;", typename, fd.GetName(), fd.GetNumber())
+	}
+	w.p("}")
+	w.ln()
+}
+
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
@@ -436,6 +451,21 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// Nested Enums.
 	for _, edp := range dp.EnumType {
 		writeEnum(w, edp, nextNames)
+	}
+
+	// Oneofs: first group each field by it's corresponding oneof.
+	oneofFields := map[int32][]*desc.FieldDescriptorProto{}
+	for _, fd := range dp.Field {
+		if fd.OneofIndex == nil {
+			continue
+		}
+		l := oneofFields[fd.GetOneofIndex()]
+		l = append(l, fd)
+		oneofFields[fd.GetOneofIndex()] = l
+	}
+	// Write a oneof enum.
+	for i, od := range dp.OneofDecl {
+		writeOneofEnum(w, od, nextNames, oneofFields[int32(i)])
 	}
 
 	// Nested Types.
