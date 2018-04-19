@@ -428,16 +428,20 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.ln()
 }
 
+type oneof struct {
+	className string
+	typeName  string
+	fds       []*desc.FieldDescriptorProto
+}
+
 // writeOneofEnum writes an enumeration type and constants definitions for
 // proto "oneof" annotations.
-func writeOneofEnum(w *writer, od *desc.OneofDescriptorProto, prefixNames []string, fds []*desc.FieldDescriptorProto) {
-	name := strings.Join(append(prefixNames, *od.Name), "_")
-	typename := name + "_OneofType"
-	w.p("newtype %s = int;", typename)
-	w.p("class %s {", name)
-	w.p("const %s NONE = 0;", typename)
-	for _, fd := range fds {
-		w.p("const %s %s = %d;", typename, fd.GetName(), fd.GetNumber())
+func writeOneofEnum(w *writer, oo *oneof) {
+	w.p("newtype %s = int;", oo.typeName)
+	w.p("class %s {", oo.className)
+	w.p("const %s NONE = 0;", oo.typeName)
+	for _, fd := range oo.fds {
+		w.p("const %s %s = %d;", oo.typeName, fd.GetName(), fd.GetNumber())
 	}
 	w.p("}")
 	w.ln()
@@ -463,9 +467,18 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		l = append(l, fd)
 		oneofFields[fd.GetOneofIndex()] = l
 	}
+
 	// Write a oneof enum.
+	oneofs := []*oneof{}
 	for i, od := range dp.OneofDecl {
-		writeOneofEnum(w, od, nextNames, oneofFields[int32(i)])
+		name := strings.Join(append(nextNames, *od.Name), "_")
+		oo := &oneof{
+			className: name,
+			typeName:  name + "_OneofType",
+			fds:       oneofFields[int32(i)],
+		}
+		oneofs = append(oneofs, oo)
+		writeOneofEnum(w, oo)
 	}
 
 	// Nested Types.
