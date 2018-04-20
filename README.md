@@ -30,6 +30,11 @@ In addition to generated code, you will need the library code in `/lib`.
 `make test`
 
 # Notes
-Unsigned 64 bit integer types (uint64, fixed64) are represented using their
-signed counterparts, with the top bit simply being stored in the sign bit.
+- Unsigned 64 bit integer types (e.g. uint64, fixed64) are represented using
+their signed counterparts, with the top bit simply being stored in the sign bit.
 (similar to java).
+- Oneofs are only loosely handled. For each oneof the generator creates a
+  helper function and enum that can be used to determine which field is set.
+  Serialization and deserialization code does *not* attempt to enforce that at
+  most one of the fields in a oneof is set. The caller must enforce this
+  themselves.
