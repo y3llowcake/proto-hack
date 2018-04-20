@@ -507,6 +507,16 @@ class example1 implements \Protobuf\Message {
       $e->writeVarInt128($this->ooint);
     }
   }
+
+  public function oneof_aoneof(): example1_aoneof_OneofType {
+    if ($this->oostring != '') {
+      return example1_aoneof::oostring;
+    }
+    if ($this->ooint != 0) {
+      return example1_aoneof::ooint;
+    }
+    return example1_aoneof::NONE;
+  }
 }
 
 class ExampleServiceClient {

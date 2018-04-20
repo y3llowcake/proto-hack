@@ -429,9 +429,10 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 }
 
 type oneof struct {
-	className string
-	typeName  string
-	fds       []*desc.FieldDescriptorProto
+	descriptor *desc.OneofDescriptorProto
+	className  string
+	typeName   string
+	fields     []field
 }
 
 // writeOneofEnum writes an enumeration type and constants definitions for
@@ -440,8 +441,8 @@ func writeOneofEnum(w *writer, oo *oneof) {
 	w.p("newtype %s = int;", oo.typeName)
 	w.p("class %s {", oo.className)
 	w.p("const %s NONE = 0;", oo.typeName)
-	for _, fd := range oo.fds {
-		w.p("const %s %s = %d;", oo.typeName, fd.GetName(), fd.GetNumber())
+	for _, field := range oo.fields {
+		w.p("const %s %s = %d;", oo.typeName, field.fd.GetName(), field.fd.GetNumber())
 	}
 	w.p("}")
 	w.ln()
@@ -457,15 +458,22 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		writeEnum(w, edp, nextNames)
 	}
 
-	// Oneofs: first group each field by it's corresponding oneof.
-	oneofFields := map[int32][]*desc.FieldDescriptorProto{}
+	// Wrap fields in our own struct.
+	fields := []field{}
 	for _, fd := range dp.Field {
-		if fd.OneofIndex == nil {
+		fields = append(fields, newField(fd, ns))
+	}
+
+	// Oneofs: first group each field by it's corresponding oneof.
+	oneofFields := map[int32][]field{}
+	for _, field := range fields {
+		if field.fd.OneofIndex == nil {
 			continue
 		}
-		l := oneofFields[fd.GetOneofIndex()]
-		l = append(l, fd)
-		oneofFields[fd.GetOneofIndex()] = l
+		i := field.fd.GetOneofIndex()
+		l := oneofFields[i]
+		l = append(l, field)
+		oneofFields[i] = l
 	}
 
 	// Write a oneof enum.
@@ -473,9 +481,10 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for i, od := range dp.OneofDecl {
 		name := strings.Join(append(nextNames, *od.Name), "_")
 		oo := &oneof{
-			className: name,
-			typeName:  name + "_OneofType",
-			fds:       oneofFields[int32(i)],
+			descriptor: od,
+			className:  name,
+			typeName:   name + "_OneofType",
+			fields:     oneofFields[int32(i)],
 		}
 		oneofs = append(oneofs, oo)
 		writeOneofEnum(w, oo)
@@ -488,11 +497,6 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	w.p("// message %s", dp.GetName())
 	w.p("class %s implements %s\\Message {", name, libNs)
-
-	fields := []field{}
-	for _, fd := range dp.Field {
-		fields = append(fields, newField(fd, ns))
-	}
 
 	// Members
 	for _, f := range fields {
@@ -546,6 +550,19 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 	}
 	w.p("}") // WriteToFunction
+
+	// Oneof enum helpers.
+	for _, oneof := range oneofs {
+		w.ln()
+		w.p("public function oneof_%s(): %s {", oneof.descriptor.GetName(), oneof.typeName)
+		for _, field := range oneof.fields {
+			w.p("if ($this->%s != %s) {", field.varName(), field.defaultValue())
+			w.p("return %s::%s;", oneof.className, field.fd.GetName())
+			w.p("}")
+		}
+		w.p("return %s::NONE;", oneof.className)
+		w.p("}")
+	}
 
 	w.p("}") // class
 	w.ln()
