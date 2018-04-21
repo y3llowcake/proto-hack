@@ -120,12 +120,14 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	// Write file descriptor.
 	w.ln()
 	w.p("class __FileDescriptor implements %s\\FileDescriptor {", libNsInternal)
+	w.p("const string NAME = '%s';", fdp.GetName())
+	w.p("const string RAW = '%s';", toPhpString(fdp))
 	w.p("public function Name(): string {")
-	w.p("return '%s';", fdp.GetName())
+	w.p("return __FileDescriptor::NAME;")
 	w.p("}")
 	w.ln()
 	w.p("public function FileDescriptorProtoBytes(): string {")
-	w.p("return (string)gzuncompress(base64_decode('%s'));", toPhpString(fdp))
+	w.p("return (string)gzuncompress(base64_decode(__FileDescriptor::RAW));")
 	w.p("}")
 	w.p("}")
 }
