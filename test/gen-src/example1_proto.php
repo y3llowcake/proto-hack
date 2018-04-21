@@ -534,7 +534,7 @@ interface ExampleServiceServer {
   public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \foo\bar\example2;
 }
 
-class ExampleServiceServerDispatch implements \Grpc\MethodDispatch {
+class ExampleServiceServerDispatch implements \Grpc\ServiceDispatch {
   public function __construct(public ExampleServiceServer $server) {
   }
 
@@ -542,15 +542,13 @@ class ExampleServiceServerDispatch implements \Grpc\MethodDispatch {
     return 'foo.bar.ExampleService';
   }
 
-  public function DispatchMethod(\Grpc\Context $ctx,\Grpc\Codec $codec, string $method, string $rawin): string {
+  public function DispatchMethod(\Grpc\Context $ctx, \Grpc\DecoderFunc $df, string $method): \Protobuf\Message {
     switch ($method) {
       case 'OneToTwo':
         $in = new \foo\bar\example1();
-        $codec->Unmarshal($rawin, $in);
-        $out = $this->server->OneToTwo($ctx, $in);
-        return $codec->Marshal($out);
+        $df($in);
+        return $this->server->OneToTwo($ctx, $in);
     }
     throw new \Grpc\GrpcException(\Grpc\Codes::Unimplemented, 'unknown method: ' . $method);
-    return '';
   }
 }
