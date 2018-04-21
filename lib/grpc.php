@@ -1,6 +1,5 @@
 <?hh // strict
 
-
 namespace Grpc {
   newtype Code as int = int;
   abstract class Codes {
@@ -40,7 +39,7 @@ namespace Grpc {
 
   interface Context {}
 
-	use \Protobuf\Message;
+  use \Protobuf\Message;
 
   interface ClientConn {
     public function Invoke(
@@ -52,12 +51,12 @@ namespace Grpc {
     ): Awaitable<void>;
   }
 
-	type DecoderFunc = (function(Message): void);
-	function DefaultDecoderFunc(string $raw): DecoderFunc {
-		return function(Message $m): void use ($raw) {
-			\Protobuf\Unmarshal($raw, $m);
-		};
-	}
+  type DecoderFunc = (function(Message): void);
+  function DefaultDecoderFunc(string $raw): DecoderFunc {
+    return function(Message $m): void use ($raw) {
+      \Protobuf\Unmarshal($raw, $m);
+    };
+  }
 
   interface ServiceDispatch {
     public function ServiceName(): string;

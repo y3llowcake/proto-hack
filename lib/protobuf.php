@@ -227,11 +227,11 @@ namespace Protobuf\Internal {
     public function __toString(): string {
       return $this->buf;
     }
-	}
+  }
 
-	interface FileDescriptor {
-		public function Name(): string;
-		public function FileDescriptorProtoBytes(): string;
-	}
+  interface FileDescriptor {
+    public function Name(): string;
+    public function FileDescriptorProtoBytes(): string;
+  }
 }
 // namespace Protobuf/Internal
