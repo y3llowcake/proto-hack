@@ -67,6 +67,5 @@ namespace Grpc {
       string $method,
     ): Message;
   }
-
 }
 // namespace Grpc
