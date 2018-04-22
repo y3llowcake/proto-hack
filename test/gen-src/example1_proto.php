@@ -534,23 +534,15 @@ interface ExampleServiceServer {
   public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \foo\bar\example2;
 }
 
-class ExampleServiceServerDispatch implements \Grpc\ServiceDispatch {
-  public function __construct(public ExampleServiceServer $server) {
-  }
-
-  public function ServiceName(): string {
-    return 'foo.bar.ExampleService';
-  }
-
-  public function DispatchMethod(\Grpc\Context $ctx, \Grpc\DecoderFunc $df, string $method): \Protobuf\Message {
-    switch ($method) {
-      case 'OneToTwo':
-        $in = new \foo\bar\example1();
-        $df($in);
-        return $this->server->OneToTwo($ctx, $in);
-    }
-    throw new \Grpc\GrpcException(\Grpc\Codes::Unimplemented, 'unknown method: ' . $method);
-  }
+function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer $service): void {
+  $methods = vec[];
+  $handler = function(\Grpc\Context $ctx, \Grpc\DecoderFunc $df): \Protobuf\Message use ($service) {
+    $in = new \foo\bar\example1();
+    $df($in);
+    return $service->OneToTwo($ctx, $in);
+  };
+  $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
+  $server->RegisterService(new \Grpc\ServiceDesc('ExampleService', $methods));
 }
 
 class __FileDescriptor implements \Protobuf\Internal\FileDescriptor {

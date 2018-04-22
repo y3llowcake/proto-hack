@@ -58,13 +58,85 @@ namespace Grpc {
     };
   }
 
-  interface ServiceDispatch {
-    public function ServiceName(): string;
-    public function DispatchMethod(
+  type MethodHandler = (function(Context, DecoderFunc): Message);
+
+  class MethodDesc {
+    public function __construct(
+      public string $name,
+      public MethodHandler $handler,
+    ) {}
+  }
+
+  class ServiceDesc {
+    public function __construct(
+      public string $name,
+      public vec<MethodDesc> $methods,
+    ) {}
+  }
+
+  class Server {
+    // A map from service names, to method names, to method handlers.
+    protected dict<string, dict<string, MethodHandler>> $services;
+    public function __construct() {
+      $this->services = dict[];
+    }
+
+    public function RegisterService(ServiceDesc $sd): void {
+      if (array_key_exists($sd->name, $this->services)) {
+        throw new \Exception(
+          sprintf("duplicate gRPC service entry for: %s", $sd->name),
+        );
+      }
+      $methods = dict[];
+      foreach ($sd->methods as $m) {
+        $methods[$m->name] = $m->handler;
+      }
+      $this->services[$sd->name] = $methods;
+    }
+
+    private static function SplitFQMethod(string $fq): (string, string) {
+      // Strip leading slash, if any.
+      $fq = ltrim($fq, '/');
+      $parts = explode('/', $fq, 2);
+      if (count($parts) < 2) {
+        throw new \Grpc\GrpcException(
+          \Grpc\Codes::InvalidArgument,
+          sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
+        );
+      }
+      return tuple($parts[0], $parts[1]);
+    }
+
+    public function Dispatch(
       Context $ctx,
-      DecoderFunc $df,
-      string $method,
-    ): Message;
+      string $fqmethod,
+      DecoderFunc $dec,
+    ): Message {
+      list($service_name, $method_name) = Server::SplitFQMethod($fqmethod);
+      if (!array_key_exists($service_name, $this->services)) {
+        throw new \Grpc\GrpcException(
+          \Grpc\Codes::Unimplemented,
+          sprintf(
+            "service not implemented: '%s' for '%s'",
+            $service_name,
+            $fqmethod,
+          ),
+        );
+      }
+      $service = $this->services[$service_name];
+      if (!array_key_exists($method_name, $service)) {
+        throw new \Grpc\GrpcException(
+          \Grpc\Codes::Unimplemented,
+          sprintf(
+            "method not implemented: '%s' for '%s'",
+            $method_name,
+            $fqmethod,
+          ),
+        );
+      }
+      $method = $service[$method_name];
+      return $method($ctx, $dec);
+    }
   }
 }
 // namespace Grpc

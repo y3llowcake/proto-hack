@@ -663,30 +663,21 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	}
 	w.p("}")
 	w.ln()
-	w.p("class %sServerDispatch implements \\Grpc\\ServiceDispatch {", sdp.GetName())
-	w.p("public function __construct(public %sServer $server) {", sdp.GetName())
-	w.p("}")
-	w.ln()
-	w.p("public function ServiceName(): string {")
-	w.p("return '%s';", fqname)
-	w.p("}")
-	w.ln()
-	w.p("public function DispatchMethod(\\Grpc\\Context $ctx, \\Grpc\\DecoderFunc $df, string $method): %s\\Message {", libNs)
-	w.p("switch ($method) {")
+
+	w.p("function Register%sServer(\\Grpc\\Server $server, %sServer $service): void {", sdp.GetName(), sdp.GetName())
+	w.p("$methods = vec[];")
 	for _, m := range methods {
 		if m.isStreaming() {
 			continue
 		}
-		w.p("case '%s':", m.PhpName)
-		w.i++
+		w.p("$handler = function(\\Grpc\\Context $ctx, \\Grpc\\DecoderFunc $df): %s\\Message use ($service) {", libNs)
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("$df($in);")
-		w.p("return $this->server->%s($ctx, $in);", m.PhpName)
-		w.i--
+		w.p("return $service->%s($ctx, $in);", m.PhpName)
+		w.p("};")
+		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
 	}
-	w.p("}")
-	w.p("throw new \\Grpc\\GrpcException(\\Grpc\\Codes::Unimplemented, 'unknown method: ' . $method);") // TODO type me.
-	w.p("}")
+	w.p("$server->RegisterService(new \\Grpc\\ServiceDesc('%s', $methods));", sdp.GetName())
 	w.p("}")
 }
 
