@@ -43,14 +43,14 @@ class example2 implements \Protobuf\Message {
 }
 
 
-class __FileDescriptor implements \Protobuf\Internal\FileDescriptor {
+class __FileDescriptor_example2__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example2.proto';
   const string RAW = 'H4sIAAAAAAAC/zSPvUrEUBCF5/fm5mw0cSorESux2GJ9AgsbS0u7XVhFMGYRBcmr+XJyE253Ps7MNwzOj7/78fRx3G1PX9P3FM3r+7w97OebK+RaRcDmaXy75Gu+9ecl3/VID4+fP+MuHPwy0NMfI4URgZHBXShRlCShknsAYhRmlBiAGnGo5QEbmJFQqMsFzuAFLMzFAt2KXsqmEod67ippqPdDsTuF5XIdUC9T2TfF7ou9lVxWfBW0opUktE3NIS3v3/8DAAD//w';
   public function Name(): string {
-    return __FileDescriptor::NAME;
+    return __FileDescriptor_example2__proto::NAME;
   }
 
   public function FileDescriptorProtoBytes(): string {
-    return (string)gzuncompress(base64_decode(__FileDescriptor::RAW));
+    return (string)gzuncompress(base64_decode(__FileDescriptor_example2__proto::RAW));
   }
 }

@@ -7,6 +7,8 @@ test: gen
 gen:
 	mkdir -p gen-src
 	protoc -I ../ --hack_out=plugin=grpc:./gen-src ../third_party/google/protobuf/conformance/conformance.proto
+	# protoc -I ../third_party/google/protobuf/src --hack_out=plugin=grpc:./gen-src ../third_party/google/protobuf/src/google/protobuf/test_messages_proto3.proto
+	protoc -I ../third_party/google/protobuf/src --hack_out=plugin=grpc:./gen-src ../third_party/google/protobuf/src/google/protobuf/*.proto
 
 clean:
 	rm -rfv gen-src
