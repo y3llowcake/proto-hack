@@ -5,7 +5,7 @@ bin: third_party
 
 .PHONY: test
 test: bin
-	for dir in lib test; do \
+	for dir in lib test conformance; do \
 		$(MAKE) -C $$dir test; \
 	done
 
