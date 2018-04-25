@@ -1,7 +1,7 @@
 all: test
 
 test: gen
-	# hhvm example1.php
+	/home/cy/co/protobuf/conformance/conformance-test-runner conformance.sh
 	echo "\033[1mCONFORMANCE TEST PASSED\033[0m"
 
 gen:
