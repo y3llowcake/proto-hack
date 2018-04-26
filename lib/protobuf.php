@@ -68,7 +68,11 @@ namespace Protobuf\Internal {
     // returns (field number, wire type)
     public function readTag(): (int, int) {
       $k = $this->readVarInt128();
-      return tuple($k >> 3, $k & 0x7);
+      $fn = $k >> 3;
+      if ($fn == 0) {
+        throw new \Protobuf\ProtobufException("zero field number");
+      }
+      return tuple($fn, $k & 0x7);
     }
 
     public function readLittleEndianInt32(): int {
