@@ -1,3 +1,3 @@
 #!/bin/sh
 set -e
-hhvm -d hhvm.log.use_log_file=true -d hhvm.log.file=./error.log conformance.php
+hhvm -d log_errors=1 -d display_errors=1 -d error_log=/dev/stderr conformance.php $@

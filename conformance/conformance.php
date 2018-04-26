@@ -1,6 +1,4 @@
 <?hh // partial
-
-ini_set("display_errors", "stderr");
 set_error_handler(
   function($errno, $errstr, $errfile, $errline, $errcontext): bool {
     p(sprintf("ERROR: %s", $errstr));
