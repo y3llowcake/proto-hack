@@ -26,10 +26,24 @@ use conformance\WireFormat;
 use conformance\ConformanceResponse;
 use protobuf_test_messages\proto3\TestAllTypesProto3;
 
-conformancePipe();
+main($argv);
 
 # https://github.com/google/protobuf/blob/master/conformance/conformance_test_runner.cc
 # https://github.com/google/protobuf/blob/master/conformance/conformance.proto
+
+function main(array<string> $argv): void {
+  if (count($argv) > 1) {
+    echo "oneoff test mode\n";
+    $in = $argv[1];
+    echo 'raw input: "'.$in.'"'."\n";
+    $in = stripcslashes($in);
+    $result = testMessageRaw($in);
+    echo 'output: "'.addcslashes($result, $result).'"'."\n";
+    exit;
+  } else {
+    conformancePipe();
+  }
+}
 
 function p(string $s): void {
   # Uncomment for debug output.
@@ -70,14 +84,17 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     $cresp->skipped = "unsupported output type";
     return $cresp;
   }
-  $tm = new TestAllTypesProto3();
   try {
-    Protobuf\Unmarshal($creq->protobuf_payload, $tm);
+    $cresp->protobuf_payload = testMessageRaw($creq->protobuf_payload);
   } catch (Exception $e) {
     p('parse error: '.$e->getMessage());
     $cresp->parse_error = $e->getMessage();
-    return $cresp;
   }
-  $cresp->protobuf_payload = Protobuf\Marshal($tm);
   return $cresp;
+}
+
+function testMessageRaw(string $in): string {
+  $tm = new TestAllTypesProto3();
+  Protobuf\Unmarshal($in, $tm);
+  return Protobuf\Marshal($tm);
 }
