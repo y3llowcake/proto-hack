@@ -32,6 +32,7 @@ conformancePipe();
 # https://github.com/google/protobuf/blob/master/conformance/conformance.proto
 
 function p(string $s): void {
+  # Uncomment for debug output.
   fwrite(STDERR, 'conformance.php: '.$s."\n");
 }
 

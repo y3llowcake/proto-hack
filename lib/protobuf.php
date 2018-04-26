@@ -102,6 +102,11 @@ namespace Protobuf\Internal {
     }
 
     private function readRaw(int $size): string {
+      if ($this->isEOF()) {
+        throw new \Protobuf\ProtobufException(
+          "buffer overrun while reading raw",
+        );
+      }
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
         throw new \Protobuf\ProtobufException(
@@ -136,23 +141,22 @@ namespace Protobuf\Internal {
           $this->readVarInt128(); // We could technically optimize this to skip.
           break;
         case 1:
-          $this->skip(8);
+          $this->offset += 8;
           break;
         case 2:
-          $this->skip($this->readVarInt128());
+          $this->offset += $this->readVarInt128();
           break;
         case 5:
-          $this->skip(4);
+          $this->offset += 4;
           break;
         default:
           throw new \Protobuf\ProtobufException(
             "encountered unknown wire type $wt during skip",
           );
       }
-    }
-
-    private function skip(int $len): void {
-      $this->offset += $len;
+      if ($this->offset > $this->len) { // Note: not EOF.
+        throw new \Protobuf\ProtobufException("buffer overrun after skip");
+      }
     }
   }
 
