@@ -330,8 +330,10 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		reader = fmt.Sprintf("%s->readString()", dec)
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
 		reader = fmt.Sprintf("%s->readVarInt128()", dec)
-	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
-		reader = fmt.Sprintf("%s->readVarInt128ZigZag()", dec)
+	case desc.FieldDescriptorProto_TYPE_SINT64:
+		reader = fmt.Sprintf("%s->readVarInt128ZigZag64()", dec)
+	case desc.FieldDescriptorProto_TYPE_SINT32:
+		reader = fmt.Sprintf("%s->readVarInt128ZigZag32()", dec)
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		reader = fmt.Sprintf("%s->readFloat()", dec)
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
@@ -405,8 +407,10 @@ func (f field) writeEncoder(w *writer, enc string) {
 		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
 		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_SINT64, desc.FieldDescriptorProto_TYPE_SINT32:
-		writer = fmt.Sprintf("%s->writeVarInt128ZigZag($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_SINT64:
+		writer = fmt.Sprintf("%s->writeVarInt128ZigZag64($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_SINT32:
+		writer = fmt.Sprintf("%s->writeVarInt128ZigZag32($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		writer = fmt.Sprintf("%s->writeFloat($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:

@@ -99,10 +99,15 @@ namespace Protobuf\Internal {
       return $this->readRaw($this->readVarInt128());
     }
 
-    public function readVarInt128ZigZag(): int {
+    public function readVarInt128ZigZag32(): int {
       $i = $this->readVarInt128();
-      // TODO, is c++ shift subtly different?
-      return ($i >> 1) ^ -($i & 1);
+      $i |= ($i & 0xFFFFFFFF);
+      return (($i >> 1) & 0x7FFFFFFF) ^ (-($i & 1));
+    }
+
+    public function readVarInt128ZigZag64(): int {
+      $i = $this->readVarInt128();
+      return (($i >> 1) & 0x7FFFFFFFFFFFFFFF) ^ (-($i & 1));
     }
 
     private function readRaw(int $size): string {
@@ -217,8 +222,14 @@ namespace Protobuf\Internal {
       $this->buf .= $s;
     }
 
-    public function writeVarInt128ZigZag(int $i): void {
-      $this->writeVarInt128(($i << 1) ^ ($i >> 31));
+    public function writeVarInt128ZigZag32(int $i): void {
+      $i = $i & 0xFFFFFFFF;
+      $i = (($i << 1) ^ ($i << 32 >> 63)) & 0xFFFFFFFF;
+      $this->writeVarInt128($i);
+    }
+
+    public function writeVarInt128ZigZag64(int $i): void {
+      $this->writeVarInt128(($i << 1) ^ ($i >> 63));
     }
 
     public function writeEncoder(Encoder $e, int $fn): void {

@@ -30,12 +30,20 @@ function testVarInt(int $dec, string $enc) {
   a((string) $e, $enc, "write varint");
 }
 
-function testVarIntZigZag(int $dec, string $enc) {
+function testVarIntZigZag32(int $dec, string $enc) {
   $d = Decoder::FromString($enc);
-  a($d->readVarInt128ZigZag(), $dec, "read varint zigzag");
+  a($d->readVarInt128ZigZag32(), $dec, "read varint zigzag 32");
   $e = new Encoder();
-  $e->writeVarInt128ZigZag($dec);
-  a((string) $e, $enc, "write varint zigzag");
+  $e->writeVarInt128ZigZag32($dec);
+  a((string) $e, $enc, "write varint zigzag 32");
+}
+
+function testVarIntZigZag64(int $dec, string $enc) {
+  $d = Decoder::FromString($enc);
+  a($d->readVarInt128ZigZag64(), $dec, "read varint zigzag 64");
+  $e = new Encoder();
+  $e->writeVarInt128ZigZag64($dec);
+  a((string) $e, $enc, "write varint zigzag 64");
 }
 
 function testLittleEndianInt32(int $dec, string $enc) {
@@ -71,10 +79,15 @@ function test(): void {
   );
 
   // Zigzag
-  testVarIntZigZag(0, cat(0x00));
-  testVarIntZigZag(-1, cat(0x01));
-  testVarIntZigZag(1, cat(0x02));
-  testVarIntZigZag(-2, cat(0x03));
+  testVarIntZigZag32(0, cat(0x00));
+  testVarIntZigZag32(-1, cat(0x01));
+  testVarIntZigZag32(1, cat(0x02));
+  testVarIntZigZag32(-2, cat(0x03));
+
+  testVarIntZigZag64(0, cat(0x00));
+  testVarIntZigZag64(-1, cat(0x01));
+  testVarIntZigZag64(1, cat(0x02));
+  testVarIntZigZag64(-2, cat(0x03));
 
   // TODO this seems broken:
   // testVarIntZigZag(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));

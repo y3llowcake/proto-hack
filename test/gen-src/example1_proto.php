@@ -287,10 +287,10 @@ class example1 implements \Protobuf\Message {
           $this->auint64 = $d->readVarInt128();
           break;
         case 7:
-          $this->asint32 = $d->readVarInt128ZigZag();
+          $this->asint32 = $d->readVarInt128ZigZag32();
           break;
         case 8:
-          $this->asint64 = $d->readVarInt128ZigZag();
+          $this->asint64 = $d->readVarInt128ZigZag64();
           break;
         case 9:
           $this->afixed32 = $d->readLittleEndianInt32();
@@ -405,11 +405,11 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->asint32 !== 0) {
       $e->writeTag(7, 0);
-      $e->writeVarInt128ZigZag($this->asint32);
+      $e->writeVarInt128ZigZag32($this->asint32);
     }
     if ($this->asint64 !== 0) {
       $e->writeTag(8, 0);
-      $e->writeVarInt128ZigZag($this->asint64);
+      $e->writeVarInt128ZigZag64($this->asint64);
     }
     if ($this->afixed32 !== 0) {
       $e->writeTag(9, 5);
