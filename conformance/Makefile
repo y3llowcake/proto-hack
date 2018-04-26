@@ -1,7 +1,7 @@
 all: test
 
 test: gen
-	/home/cy/co/protobuf/conformance/conformance-test-runner --enforce_recommended conformance.sh
+	/home/cy/co/protobuf/conformance/conformance-test-runner --enforce_recommended --failure_list failures.txt conformance.sh
 	echo "\033[1mCONFORMANCE TEST PASSED\033[0m"
 
 gen:

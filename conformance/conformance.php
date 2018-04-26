@@ -45,7 +45,7 @@ function main(array<string> $argv): void {
 
 function p(string $s): void {
   # Uncomment for debug output.
-  fwrite(STDERR, 'conformance.php: '.$s."\n");
+  # fwrite(STDERR, 'conformance.php: '.$s."\n");
 }
 
 function conformancePipe(): void {
