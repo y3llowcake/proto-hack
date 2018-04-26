@@ -21,6 +21,8 @@ include
 ;
 
 use conformance\ConformanceRequest;
+use conformance\ConformanceRequest_payload;
+use conformance\WireFormat;
 use conformance\ConformanceResponse;
 use protobuf_test_messages\proto3\TestAllTypesProto3;
 
@@ -36,18 +38,18 @@ function p(string $s): void {
 function conformancePipe(): void {
   $in = fopen('php://stdin', 'r');
   while (true) {
-		$lens = fread($in, 4);
-		if (feof($in)){
-			return;
-		}
+    $lens = fread($in, 4);
+    if (feof($in)) {
+      return;
+    }
     $len = unpack('l', $lens)[1];
     p("reading: $len");
     $payload = fread($in, $len);
     $result = conformanceRaw($payload);
     p('writing: '.strlen($result));
     echo pack('l', strlen($result)).$result;
-	}
-	p('fin');
+  }
+  p('fin');
 }
 
 function conformanceRaw(string $raw): string {
@@ -57,21 +59,24 @@ function conformanceRaw(string $raw): string {
 }
 
 function conformance(ConformanceRequest $creq): ConformanceResponse {
-  $cresp = new conformance\ConformanceResponse();
-  switch ($creq->oneof_payload()) {
-    case conformance\ConformanceRequest_payload::protobuf_payload:
-      $tm = new TestAllTypesProto3();
-      try {
-        Protobuf\Unmarshal($creq->protobuf_payload, $tm);
-			} catch (Exception $e) {
-				p('parse error: ' . $e->getMessage());
-        $cresp->parse_error = $e->getMessage();
-        return $cresp;
-      }
-      $cresp->protobuf_payload = Protobuf\Marshal($tm);
-      break;
-    default:
-      $cresp->skipped = "unsupported payload type";
+  $cresp = new ConformanceResponse();
+  if ($creq->oneof_payload() !=
+      ConformanceRequest_payload::protobuf_payload) {
+    $cresp->skipped = "unsupported payload type";
+    return $cresp;
   }
+  if ($creq->requested_output_format != WireFormat::PROTOBUF) {
+    $cresp->skipped = "unsupported output type";
+    return $cresp;
+  }
+  $tm = new TestAllTypesProto3();
+  try {
+    Protobuf\Unmarshal($creq->protobuf_payload, $tm);
+  } catch (Exception $e) {
+    p('parse error: '.$e->getMessage());
+    $cresp->parse_error = $e->getMessage();
+    return $cresp;
+  }
+  $cresp->protobuf_payload = Protobuf\Marshal($tm);
   return $cresp;
 }
