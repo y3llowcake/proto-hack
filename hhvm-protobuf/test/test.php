@@ -1,3 +1,3 @@
 <?hh
 
-echo 'library: ' . protobuf_library_version() . '\n';
+echo 'library: ' . protobuf_library_version() . "\n";
