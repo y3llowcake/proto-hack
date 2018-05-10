@@ -1,4 +1,4 @@
 <?hh
 
 <<__HipHopSpecific, __Native>>
-function protobuf_zomg(string $hi): string;
+function protobuf_library_version(): string;

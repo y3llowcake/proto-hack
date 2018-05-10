@@ -1,3 +1,3 @@
 <?hh
 
-echo protobuf_zomg('lulz');
+echo 'library: ' . protobuf_library_version() . '\n';
