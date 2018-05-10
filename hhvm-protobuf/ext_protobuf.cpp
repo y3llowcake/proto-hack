@@ -22,16 +22,15 @@ using folly::stringPrintf;
 
 namespace HPHP {
 
-String HHVM_FUNCTION(zomg, const String& hi) {
-  auto event = new EscapeHatchEvent(dest, opt);
+String HHVM_FUNCTION(zomg, const String& in) {
   return String(in + " world!");
 }
 
-struct EscapeHatchExtension : Extension {
-  EscapeHatchExtension(): Extension("protobuf", "1.0.0") {}
+struct ProtobufExtension : Extension {
+  ProtobufExtension(): Extension("protobuf", "1.0.0") {}
 
   void moduleInit() override {
-    HHVM_FE(protobuf);
+    HHVM_FE(zomg);
     loadSystemlib();
   }
 } s_protobuf_extension;
