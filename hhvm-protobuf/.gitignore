@@ -1,0 +1,6 @@
+*.swp
+CMake*
+Makefile
+cmake*
+run-test
+*.so
