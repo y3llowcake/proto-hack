@@ -684,7 +684,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
 	}
-	w.p("$server->RegisterService(new \\Grpc\\ServiceDesc('%s', $methods));", sdp.GetName())
+	w.p("$server->RegisterService(new \\Grpc\\ServiceDesc('%s', $methods));", fqname)
 	w.p("}")
 }
 

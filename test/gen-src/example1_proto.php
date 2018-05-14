@@ -542,7 +542,7 @@ function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer
     return $service->OneToTwo($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
-  $server->RegisterService(new \Grpc\ServiceDesc('ExampleService', $methods));
+  $server->RegisterService(new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods));
 }
 
 class __FileDescriptor_example1__proto implements \Protobuf\Internal\FileDescriptor {
