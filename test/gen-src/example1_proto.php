@@ -560,6 +560,8 @@ class example1 implements \Protobuf\Message {
     $e->writeMessage('aexample22', 'aexample22', $this->aexample22);
     $e->writeMessage('aexample23', 'aexample23', $this->aexample23);
     $e->writeNum('outoforder', 'outoforder', $this->outoforder);
+    $e->writePrimitiveMap('amap', 'amap', $this->amap);
+    $e->writeMessageMap('amap2', 'amap2', $this->amap2);
     $e->writeString('oostring', 'oostring', $this->oostring);
     $e->writeNum('ooint', 'ooint', $this->ooint);
   }

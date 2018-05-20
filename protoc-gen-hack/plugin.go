@@ -194,11 +194,11 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 	return f
 }
 
-func (f field) mapPhpTypes() (string, string) {
+func (f field) mapFields() (field, field) {
 	dp := f.typeDescriptor.(*desc.DescriptorProto)
 	keyField := newField(dp.Field[0], f.typeNs)
 	valueField := newField(dp.Field[1], f.typeNs)
-	return keyField.phpType(), valueField.labeledType()
+	return keyField, valueField
 }
 
 func (f field) phpType() string {
@@ -253,8 +253,8 @@ func (f field) isRepeated() bool {
 
 func (f field) labeledType() string {
 	if f.isMap {
-		k, v := f.mapPhpTypes()
-		return fmt.Sprintf("dict<%s, %s>", k, v)
+		k, v := f.mapFields()
+		return fmt.Sprintf("dict<%s, %s>", k.phpType(), v.labeledType())
 	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
@@ -453,11 +453,11 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
-func (f field) jsonType() string {
-	switch f.fd.GetType() {
+func (f field) jsonWriter() (string, string) {
+	switch t := f.fd.GetType(); t {
 	case desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
-		return "String"
+		return "String", "Primitive"
 	case desc.FieldDescriptorProto_TYPE_INT64,
 		desc.FieldDescriptorProto_TYPE_INT32,
 		desc.FieldDescriptorProto_TYPE_UINT64,
@@ -470,41 +470,44 @@ func (f field) jsonType() string {
 		desc.FieldDescriptorProto_TYPE_SFIXED64,
 		desc.FieldDescriptorProto_TYPE_FLOAT,
 		desc.FieldDescriptorProto_TYPE_DOUBLE:
-		return "Num"
+		return "Num", "Primitive"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
-		return "Bool"
+		return "Bool", "Primitive"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
-		return "Message"
+		return "Message", "Message"
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		return "Enum", "Enum"
 	default:
-		return ""
+		panic(fmt.Errorf("unexpected proto type: %v", t))
 	}
 }
 
 func (f field) writeJsonEncoder(w *writer, enc string) {
 	if f.isMap {
-		// TODO you were here.
+		_, v := f.mapFields()
+		_, manyWriter := v.jsonWriter()
+		if manyWriter == "Enum" {
+			itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.camelName(), itos, f.varName())
+		} else {
+			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.camelName(), f.varName())
+		}
 		return
 	}
 
-	jt := f.jsonType()
+	writer, manyWriter := f.jsonWriter()
 
 	repeated := ""
 	if f.isRepeated() {
 		repeated = "List"
-		if jt == "String" || jt == "Num" || jt == "Bool" {
-			jt = "Primitive"
-		}
+		writer = manyWriter
 	}
 
-	t := f.fd.GetType()
-	switch {
-	case jt != "":
-		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, jt, repeated, f.fd.GetName(), f.camelName(), f.varName())
-	case t == desc.FieldDescriptorProto_TYPE_ENUM:
+	if writer == "Enum" {
 		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
 		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.camelName(), itos, f.varName())
-	default:
-		panic(fmt.Errorf("unexpected proto type while emitting json encoder: %v", t))
+	} else {
+		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, writer, repeated, f.fd.GetName(), f.camelName(), f.varName())
 	}
 }
 

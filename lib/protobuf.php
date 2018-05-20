@@ -394,6 +394,45 @@ namespace Protobuf\Internal {
       }
     }
 
+    public function writePrimitiveMap(
+      string $oname,
+      string $cname,
+      dict $value,
+    ): void {
+      if (count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writeMessageMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, \Protobuf\Message> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeMessage($v);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeEnumMap(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      dict<arraykey, int> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeEnum($v, $itos);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
     public function __toString(): string {
       $opt = 0;
       if ($this->o->pretty_print) {

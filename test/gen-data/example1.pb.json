@@ -35,5 +35,9 @@
     "aexample23": {
         "zomg": -12
     },
-    "outoforder": 1
+    "outoforder": 1,
+    "amap": {
+        "k1": "v1",
+        "k2": "v2"
+    }
 }
