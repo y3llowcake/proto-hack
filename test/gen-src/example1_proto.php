@@ -41,6 +41,9 @@ class example2 implements \Protobuf\Message {
       $e->writeVarInt128($this->aint32);
     }
   }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeInt('aint32', 'aint32', $this->aint32);
+  }
 }
 
 newtype example1_AEnum2_EnumType as int = int;
@@ -87,6 +90,8 @@ class example1_example2 implements \Protobuf\Message {
       $e->writeString($this->astring);
     }
   }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+  }
 }
 
 // message AmapEntry
@@ -126,6 +131,8 @@ class example1_AmapEntry implements \Protobuf\Message {
       $e->writeTag(2, 2);
       $e->writeString($this->value);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
   }
 }
 
@@ -171,6 +178,9 @@ class example1_Amap2Entry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeMessage('value', 'value', $this->value);
   }
 }
 
@@ -506,6 +516,24 @@ class example1 implements \Protobuf\Message {
       $e->writeTag(61, 0);
       $e->writeVarInt128($this->ooint);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeInt('aint32', 'aint32', $this->aint32);
+    $e->writeInt('aint64', 'aint64', $this->aint64);
+    $e->writeInt('auint32', 'auint32', $this->auint32);
+    $e->writeInt('auint64', 'auint64', $this->auint64);
+    $e->writeInt('asint32', 'asint32', $this->asint32);
+    $e->writeInt('asint64', 'asint64', $this->asint64);
+    $e->writeInt('afixed32', 'afixed32', $this->afixed32);
+    $e->writeInt('afixed64', 'afixed64', $this->afixed64);
+    $e->writeInt('asfixed32', 'asfixed32', $this->asfixed32);
+    $e->writeInt('asfixed64', 'asfixed64', $this->asfixed64);
+    $e->writeIntList('manyint64', 'manyint64', $this->manyint64);
+    $e->writeMessage('aexample2', 'aexample2', $this->aexample2);
+    $e->writeMessage('aexample22', 'aexample22', $this->aexample22);
+    $e->writeMessage('aexample23', 'aexample23', $this->aexample23);
+    $e->writeInt('outoforder', 'outoforder', $this->outoforder);
+    $e->writeInt('ooint', 'ooint', $this->ooint);
   }
 
   public function oneof_aoneof(): example1_aoneof_OneofType {

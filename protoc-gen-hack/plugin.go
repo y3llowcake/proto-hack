@@ -455,6 +455,63 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+func (f field) jsonType() string {
+	switch f.fd.GetType() {
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
+		return "String"
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_SINT64,
+		desc.FieldDescriptorProto_TYPE_SINT32,
+		desc.FieldDescriptorProto_TYPE_FIXED32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32,
+		desc.FieldDescriptorProto_TYPE_FIXED64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
+		return "Int"
+	case desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_DOUBLE:
+		return "Float"
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		return "Bool"
+	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+		return "Message"
+	default:
+		return ""
+	}
+}
+
+func (f field) writeJsonEncoder(w *writer, enc string) {
+	if f.isMap {
+		return
+	}
+
+	if jt := f.jsonType(); jt != "" {
+		if jt != "Int" && jt != "Message" {
+			// TODO Remove.
+			return
+		}
+		repeated := ""
+		if f.isRepeated() {
+			repeated = "List"
+		}
+		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, jt, repeated, f.fd.GetName(), f.camelName(), f.varName())
+		return
+	}
+
+	switch t := f.fd.GetType(); t {
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+	default:
+		panic(fmt.Errorf("unexpected proto type while emitting json encoder: %v", t))
+	}
+}
+
+func (f field) camelName() string {
+	return f.fd.GetName()
+}
+
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
@@ -591,6 +648,13 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeEncoder(w, "$e")
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
+	}
+	w.p("}") // WriteToFunction
+
+	// WriteTo function
+	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
+	for _, f := range fields {
+		f.writeJsonEncoder(w, "$e")
 	}
 	w.p("}") // WriteToFunction
 
