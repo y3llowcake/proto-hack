@@ -327,6 +327,30 @@ namespace Protobuf\Internal {
 			}
 		}
 
+		public function writeEnum(string $oname, string $cname, dict<int, string> $itos, int $value): void {
+			if ($value != 0 || $this->o->emit_default_values) {
+				if ($this->o->enums_as_ints) {
+					$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+				} else {
+					$this->a[$this->o->preserve_names ? $oname : $cname] = $itos[$value];
+				}
+			}
+		}
+
+		public function writeEnumList(string $oname, string $cname, dict<int, string> $itos, vec<int> $value): void {
+			$vs = vec[];
+			foreach ($value as $v) {
+				if ($this->o->enums_as_ints) {
+					$vs []= $v;
+				} else {
+					$vs []= $itos[$v];
+				}
+			}
+			if (count($vs) != 0 || $this->o->emit_default_values) {
+				$this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+			}
+		}
+
 		public function __toString(): string {
 			$opt = 0;
 			if ($this->o->pretty_print) {

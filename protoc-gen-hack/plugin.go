@@ -488,14 +488,15 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 		return
 	}
 
+	repeated := ""
+	if f.isRepeated() {
+		repeated = "List"
+	}
+
 	if jt := f.jsonType(); jt != "" {
 		if jt != "Int" && jt != "Message" {
 			// TODO Remove.
 			return
-		}
-		repeated := ""
-		if f.isRepeated() {
-			repeated = "List"
 		}
 		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, jt, repeated, f.fd.GetName(), f.camelName(), f.varName())
 		return
@@ -503,6 +504,8 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 
 	switch t := f.fd.GetType(); t {
 	case desc.FieldDescriptorProto_TYPE_ENUM:
+		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.camelName(), itos, f.varName())
 	default:
 		panic(fmt.Errorf("unexpected proto type while emitting json encoder: %v", t))
 	}
@@ -521,6 +524,18 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	for _, v := range ed.Value {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
+	w.p("private static dict<int, string> $itos = dict[")
+	w.i++
+	for _, v := range ed.Value {
+		w.p("%d => '%s',", v.GetNumber(), v.GetName())
+	}
+	w.i--
+	w.p("];")
+
+	w.p("public static function NumbersToNames(): dict<int, string> {")
+	w.p("return self::$itos;")
+	w.p("}")
+
 	w.p("public static function FromInt(int $i): %s {", typename)
 	w.p("return $i;")
 	w.p("}")

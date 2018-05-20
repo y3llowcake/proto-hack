@@ -8,6 +8,13 @@ newtype AEnum1_EnumType as int = int;
 class AEnum1 {
   const AEnum1_EnumType A = 0;
   const AEnum1_EnumType B = 2;
+  private static dict<int, string> $itos = dict[
+    0 => 'A',
+    2 => 'B',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): AEnum1_EnumType {
     return $i;
   }
@@ -50,6 +57,13 @@ newtype example1_AEnum2_EnumType as int = int;
 class example1_AEnum2 {
   const example1_AEnum2_EnumType C = 0;
   const example1_AEnum2_EnumType D = 10;
+  private static dict<int, string> $itos = dict[
+    0 => 'C',
+    10 => 'D',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): example1_AEnum2_EnumType {
     return $i;
   }
@@ -528,6 +542,9 @@ class example1 implements \Protobuf\Message {
     $e->writeInt('afixed64', 'afixed64', $this->afixed64);
     $e->writeInt('asfixed32', 'asfixed32', $this->asfixed32);
     $e->writeInt('asfixed64', 'asfixed64', $this->asfixed64);
+    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::NumbersToNames(), $this->aenum1);
+    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::NumbersToNames(), $this->aenum2);
+    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::NumbersToNames(), $this->aenum22);
     $e->writeIntList('manyint64', 'manyint64', $this->manyint64);
     $e->writeMessage('aexample2', 'aexample2', $this->aexample2);
     $e->writeMessage('aexample22', 'aexample22', $this->aexample22);

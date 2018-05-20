@@ -7,6 +7,12 @@ namespace fiz\baz;
 newtype AEnum2_EnumType as int = int;
 class AEnum2 {
   const AEnum2_EnumType Z = 0;
+  private static dict<int, string> $itos = dict[
+    0 => 'Z',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): AEnum2_EnumType {
     return $i;
   }

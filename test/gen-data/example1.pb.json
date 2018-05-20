@@ -9,6 +9,8 @@
     "afixed64": 12345678,
     "asfixed32": 123456789,
     "asfixed64": 1234567890,
+    "aenum1": "B",
+    "aenum2": "D",
     "manyint64": [
         1,
         2,
