@@ -363,6 +363,10 @@ namespace Protobuf\Internal {
       }
     }
 
+    private function encodeEnum(dict<int, string> $itos, int $v): mixed {
+      return $this->o->enums_as_ints ? $v : $itos[$v];
+    }
+
     public function writeEnum(
       string $oname,
       string $cname,
@@ -370,12 +374,8 @@ namespace Protobuf\Internal {
       int $value,
     ): void {
       if ($value != 0 || $this->o->emit_default_values) {
-        if ($this->o->enums_as_ints) {
-          $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-        } else {
-          $this->a[$this->o->preserve_names ? $oname : $cname] =
-            $itos[$value];
-        }
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          $this->encodeEnum($itos, $value);
       }
     }
 
@@ -387,11 +387,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = vec[];
       foreach ($value as $v) {
-        if ($this->o->enums_as_ints) {
-          $vs[] = $v;
-        } else {
-          $vs[] = $itos[$v];
-        }
+        $vs[] = $this->encodeEnum($itos, $v);
       }
       if (count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
