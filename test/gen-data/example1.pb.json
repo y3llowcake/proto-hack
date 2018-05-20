@@ -1,0 +1,24 @@
+{
+    "aint32": 1,
+    "aint64": 12,
+    "auint32": 123,
+    "auint64": 1234,
+    "asint32": 12345,
+    "asint64": 123456,
+    "afixed32": 1234567,
+    "afixed64": 12345678,
+    "asfixed32": 123456789,
+    "asfixed64": 1234567890,
+    "manyint64": [
+        1,
+        2,
+        3
+    ],
+    "aexample22": {
+        "aint32": 123
+    },
+    "aexample23": {
+        "zomg": -12
+    },
+    "outoforder": 1
+}
