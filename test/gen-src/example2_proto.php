@@ -47,7 +47,7 @@ class example2 implements \Protobuf\Message {
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeInt('zomg', 'zomg', $this->zomg);
+    $e->writeNum('zomg', 'zomg', $this->zomg);
   }
 }
 

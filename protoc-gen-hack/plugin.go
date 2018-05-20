@@ -108,8 +108,6 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 		writeDescriptor(w, dp, ns, nil)
 	}
 
-	// TODO: top level fields?
-
 	// Write services.
 	if genService {
 		for _, sdp := range fdp.Service {
@@ -469,11 +467,10 @@ func (f field) jsonType() string {
 		desc.FieldDescriptorProto_TYPE_FIXED32,
 		desc.FieldDescriptorProto_TYPE_SFIXED32,
 		desc.FieldDescriptorProto_TYPE_FIXED64,
-		desc.FieldDescriptorProto_TYPE_SFIXED64:
-		return "Int"
-	case desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_SFIXED64,
+		desc.FieldDescriptorProto_TYPE_FLOAT,
 		desc.FieldDescriptorProto_TYPE_DOUBLE:
-		return "Float"
+		return "Num"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "Bool"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
@@ -485,6 +482,7 @@ func (f field) jsonType() string {
 
 func (f field) writeJsonEncoder(w *writer, enc string) {
 	if f.isMap {
+		// TODO you were here.
 		return
 	}
 
@@ -494,10 +492,6 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 	}
 
 	if jt := f.jsonType(); jt != "" {
-		if jt != "Int" && jt != "Message" {
-			// TODO Remove.
-			return
-		}
 		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, jt, repeated, f.fd.GetName(), f.camelName(), f.varName())
 		return
 	}

@@ -1,4 +1,6 @@
 {
+    "adouble": 13.37,
+    "afloat": 100.09999847412,
     "aint32": 1,
     "aint64": 12,
     "auint32": 123,
@@ -9,13 +11,24 @@
     "afixed64": 12345678,
     "asfixed32": 123456789,
     "asfixed64": 1234567890,
+    "abool": true,
+    "astring": "foobar",
+    "abytes": "hello world",
     "aenum1": "B",
     "aenum2": "D",
+    "manystring": [
+        "ms1",
+        "ms2",
+        "ms3"
+    ],
     "manyint64": [
         1,
         2,
         3
     ],
+    "aexample2": {
+        "astring": "zomg"
+    },
     "aexample22": {
         "aint32": 123
     },

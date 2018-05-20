@@ -315,13 +315,37 @@ namespace Protobuf\Internal {
 			}
 		}
 
-		public function writeInt(string $oname, string $cname, int $value): void {
+		public function writeNum(string $oname, string $cname, num $value): void {
 			if ($value != 0 || $this->o->emit_default_values) {
 				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
 			}
 		}
 
-		public function writeIntList(string $oname, string $cname, vec<int> $value): void {
+		public function writeBool(string $oname, string $cname, bool $value): void {
+			if ($value != false || $this->o->emit_default_values) {
+				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+			}
+		}
+
+		public function writeString(string $oname, string $cname, string $value): void {
+			if ($value != '' || $this->o->emit_default_values) {
+				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+			}
+		}
+
+		public function writeNumList(string $oname, string $cname, vec<num> $value): void {
+			if (count($value) != 0 || $this->o->emit_default_values) {
+				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+			}
+		}
+
+		public function writeBoolList(string $oname, string $cname, vec<bool> $value): void {
+			if (count($value) != 0 || $this->o->emit_default_values) {
+				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+			}
+		}
+
+		public function writeStringList(string $oname, string $cname, vec<string> $value): void {
 			if (count($value) != 0 || $this->o->emit_default_values) {
 				$this->a[$this->o->preserve_names ? $oname : $cname] = $value;
 			}
