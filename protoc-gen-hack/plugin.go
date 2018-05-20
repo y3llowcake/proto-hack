@@ -486,18 +486,21 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 		return
 	}
 
+	jt := f.jsonType()
+
 	repeated := ""
 	if f.isRepeated() {
 		repeated = "List"
+		if jt == "String" || jt == "Num" || jt == "Bool" {
+			jt = "Primitive"
+		}
 	}
 
-	if jt := f.jsonType(); jt != "" {
+	t := f.fd.GetType()
+	switch {
+	case jt != "":
 		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, jt, repeated, f.fd.GetName(), f.camelName(), f.varName())
-		return
-	}
-
-	switch t := f.fd.GetType(); t {
-	case desc.FieldDescriptorProto_TYPE_ENUM:
+	case t == desc.FieldDescriptorProto_TYPE_ENUM:
 		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
 		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.camelName(), itos, f.varName())
 	default:

@@ -554,8 +554,8 @@ class example1 implements \Protobuf\Message {
     $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::NumbersToNames(), $this->aenum1);
     $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::NumbersToNames(), $this->aenum2);
     $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::NumbersToNames(), $this->aenum22);
-    $e->writeStringList('manystring', 'manystring', $this->manystring);
-    $e->writeNumList('manyint64', 'manyint64', $this->manyint64);
+    $e->writePrimitiveList('manystring', 'manystring', $this->manystring);
+    $e->writePrimitiveList('manyint64', 'manyint64', $this->manyint64);
     $e->writeMessage('aexample2', 'aexample2', $this->aexample2);
     $e->writeMessage('aexample22', 'aexample22', $this->aexample22);
     $e->writeMessage('aexample23', 'aexample23', $this->aexample23);
