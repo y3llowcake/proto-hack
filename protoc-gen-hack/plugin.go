@@ -330,8 +330,9 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_INT64,
 		desc.FieldDescriptorProto_TYPE_UINT64:
 		reader = fmt.Sprintf("%s->readVarint()", dec)
-	case desc.FieldDescriptorProto_TYPE_INT32,
-		desc.FieldDescriptorProto_TYPE_UINT32:
+	case desc.FieldDescriptorProto_TYPE_INT32:
+		reader = fmt.Sprintf("%s->readVarint32Signed()", dec)
+	case desc.FieldDescriptorProto_TYPE_UINT32:
 		reader = fmt.Sprintf("%s->readVarint32()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT64:
 		reader = fmt.Sprintf("%s->readVarintZigZag64()", dec)
@@ -406,9 +407,13 @@ func (f field) writeEncoder(w *writer, enc string) {
 
 	writer := ""
 	switch *f.fd.Type {
-	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
 		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_UINT32:
 		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_SINT64:
 		writer = fmt.Sprintf("%s->writeVarintZigZag64($this->%s)", enc, f.varName())
@@ -418,9 +423,11 @@ func (f field) writeEncoder(w *writer, enc string) {
 		writer = fmt.Sprintf("%s->writeFloat($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		writer = fmt.Sprintf("%s->writeDouble($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
+	case desc.FieldDescriptorProto_TYPE_FIXED32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32:
 		writer = fmt.Sprintf("%s->writeLittleEndianInt32($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
+	case desc.FieldDescriptorProto_TYPE_FIXED64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
 		writer = fmt.Sprintf("%s->writeLittleEndianInt64($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		writer = fmt.Sprintf("%s->writeBool($this->%s)", enc, f.varName())
