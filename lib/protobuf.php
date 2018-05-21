@@ -45,7 +45,12 @@ namespace Protobuf\Internal {
         "unsupported PHP_INT_SIZE size: ".PHP_INT_SIZE,
       );
     }
-    // TODO assert endianness...
+    $end = unpack('l', chr(0x70).chr(0x10).chr(0xF0).chr(0x00))[1];
+    if ($end !== 15732848) {
+      throw new \Protobuf\ProtobufException(
+        "unsupported endianess (is this machine little endian?): ".$end,
+      );
+    }
   }
 
   // https://developers.google.com/protocol-buffers/docs/encoding
