@@ -32,7 +32,7 @@ class example2 implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->zomg = $d->readVarint();
+          $this->zomg = $d->readVarint32();
           break;
         default:
           $d->skipWireType($wt);

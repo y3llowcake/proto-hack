@@ -324,10 +324,15 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	// TODO should we do wiretype checking here?
 	reader := ""
 	switch *f.fd.Type {
-	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
 		reader = fmt.Sprintf("%s->readString()", dec)
-	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_UINT64:
 		reader = fmt.Sprintf("%s->readVarint()", dec)
+	case desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_UINT32:
+		reader = fmt.Sprintf("%s->readVarint32()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT64:
 		reader = fmt.Sprintf("%s->readVarintZigZag64()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT32:

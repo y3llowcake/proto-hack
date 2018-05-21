@@ -85,6 +85,15 @@ namespace Protobuf\Internal {
       return $val;
     }
 
+    public function readVarint32(): int {
+      $i = $this->readVarint();
+      $i &= 0xFFFFFFFF;
+      if ($i > 0x7FFFFFFF) {
+        $i |= (0xFFFFFFFF << 32);
+      }
+      return $i;
+    }
+
     // returns (field number, wire type)
     public function readTag(): (int, int) {
       $k = $this->readVarint();
