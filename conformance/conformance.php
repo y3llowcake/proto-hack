@@ -21,6 +21,7 @@ include
 use conformance\ConformanceRequest;
 use conformance\ConformanceRequest_payload;
 use conformance\WireFormat;
+use conformance\WireFormat_EnumType;
 use conformance\ConformanceResponse;
 use protobuf_test_messages\proto3\TestAllTypesProto3;
 
@@ -35,8 +36,14 @@ function main(array<string> $argv): void {
     $in = $argv[1];
     echo 'raw input: "'.$in.'"'."\n";
     $in = stripcslashes($in);
-    $result = testMessageRaw($in);
-    echo 'output: "'.addcslashes($result, $result).'"'."\n";
+    if ($argv[2] != 'json') {
+      $result = testMessageRaw($in, WireFormat::PROTOBUF);
+      $result = addcslashes($result, $result);
+      echo "output: \"$result\"\n";
+    } else {
+      $result = testMessageRaw($in, WireFormat::JSON);
+      echo "output: '$result'\n";
+    }
     exit;
   } else {
     conformancePipe();
@@ -78,12 +85,19 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     $cresp->skipped = "unsupported payload type";
     return $cresp;
   }
-  if ($creq->requested_output_format != WireFormat::PROTOBUF) {
-    $cresp->skipped = "unsupported output type";
-    return $cresp;
-  }
+  $wf = $creq->requested_output_format;
   try {
-    $cresp->protobuf_payload = testMessageRaw($creq->protobuf_payload);
+    switch ($wf) {
+      case WireFormat::PROTOBUF:
+        $cresp->protobuf_payload =
+          testMessageRaw($creq->protobuf_payload, $wf);
+        break;
+      case WireFormat::JSON:
+        $cresp->json_payload = testMessageRaw($creq->protobuf_payload, $wf);
+        break;
+      default:
+        $cresp->skipped = "unsupported output type";
+    }
   } catch (Exception $e) {
     p('parse error: '.$e->getMessage());
     $cresp->parse_error = $e->getMessage();
@@ -91,8 +105,14 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-function testMessageRaw(string $in): string {
+function testMessageRaw(string $in, WireFormat_EnumType $wf): string {
   $tm = new TestAllTypesProto3();
   Protobuf\Unmarshal($in, $tm);
-  return Protobuf\Marshal($tm);
+  switch ($wf) {
+    case WireFormat::PROTOBUF:
+      return Protobuf\Marshal($tm);
+    case WireFormat::JSON:
+      return Protobuf\MarshalJson($tm);
+  }
+  throw new Exception("invalid wire format: $wf");
 }
