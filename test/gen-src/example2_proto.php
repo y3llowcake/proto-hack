@@ -32,7 +32,7 @@ class example2 implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->zomg = $d->readVarInt128();
+          $this->zomg = $d->readVarint();
           break;
         default:
           $d->skipWireType($wt);
@@ -43,7 +43,7 @@ class example2 implements \Protobuf\Message {
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     if ($this->zomg !== 0) {
       $e->writeTag(1, 0);
-      $e->writeVarInt128($this->zomg);
+      $e->writeVarint($this->zomg);
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

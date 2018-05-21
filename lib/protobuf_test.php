@@ -22,27 +22,27 @@ function cat(int ...$is): string {
   return $v;
 }
 
-function testVarInt(int $dec, string $enc) {
+function testVarint(int $dec, string $enc) {
   $d = Decoder::FromString($enc);
-  a($d->readVarInt128(), $dec, "read varint");
+  a($d->readVarint(), $dec, "read varint");
   $e = new Encoder();
-  $e->writeVarInt128($dec);
+  $e->writeVarint($dec);
   a((string) $e, $enc, "write varint");
 }
 
-function testVarIntZigZag32(int $dec, string $enc) {
+function testVarintZigZag32(int $dec, string $enc) {
   $d = Decoder::FromString($enc);
-  a($d->readVarInt128ZigZag32(), $dec, "read varint zigzag 32");
+  a($d->readVarintZigZag32(), $dec, "read varint zigzag 32");
   $e = new Encoder();
-  $e->writeVarInt128ZigZag32($dec);
+  $e->writeVarintZigZag32($dec);
   a((string) $e, $enc, "write varint zigzag 32");
 }
 
-function testVarIntZigZag64(int $dec, string $enc) {
+function testVarintZigZag64(int $dec, string $enc) {
   $d = Decoder::FromString($enc);
-  a($d->readVarInt128ZigZag64(), $dec, "read varint zigzag 64");
+  a($d->readVarintZigZag64(), $dec, "read varint zigzag 64");
   $e = new Encoder();
-  $e->writeVarInt128ZigZag64($dec);
+  $e->writeVarintZigZag64($dec);
   a((string) $e, $enc, "write varint zigzag 64");
 }
 
@@ -66,31 +66,31 @@ function testLittleEndianInt64(int $dec, string $enc) {
 
 function test(): void {
   // Varint 128
-  testVarInt(0, cat(0x0));
-  testVarInt(3, cat(0x3));
-  testVarInt(300, cat(0xAC, 0x02));
-  testVarInt(
+  testVarint(0, cat(0x0));
+  testVarint(3, cat(0x3));
+  testVarint(300, cat(0xAC, 0x02));
+  testVarint(
     -1,
     cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01),
   );
-  testVarInt(
+  testVarint(
     -15,
     cat(0xF1, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01),
   );
 
   // Zigzag
-  testVarIntZigZag32(0, cat(0x00));
-  testVarIntZigZag32(-1, cat(0x01));
-  testVarIntZigZag32(1, cat(0x02));
-  testVarIntZigZag32(-2, cat(0x03));
+  testVarintZigZag32(0, cat(0x00));
+  testVarintZigZag32(-1, cat(0x01));
+  testVarintZigZag32(1, cat(0x02));
+  testVarintZigZag32(-2, cat(0x03));
 
-  testVarIntZigZag64(0, cat(0x00));
-  testVarIntZigZag64(-1, cat(0x01));
-  testVarIntZigZag64(1, cat(0x02));
-  testVarIntZigZag64(-2, cat(0x03));
+  testVarintZigZag64(0, cat(0x00));
+  testVarintZigZag64(-1, cat(0x01));
+  testVarintZigZag64(1, cat(0x02));
+  testVarintZigZag64(-2, cat(0x03));
 
   // TODO this seems broken:
-  // testVarIntZigZag(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));
+  // testVarintZigZag(-1, cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x01));
 
   // Little endian 32
   testLittleEndianInt32(0, cat(0x00, 0x00, 0x00, 0x00));

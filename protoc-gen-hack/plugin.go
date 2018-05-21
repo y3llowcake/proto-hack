@@ -327,11 +327,11 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
 		reader = fmt.Sprintf("%s->readString()", dec)
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
-		reader = fmt.Sprintf("%s->readVarInt128()", dec)
+		reader = fmt.Sprintf("%s->readVarint()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT64:
-		reader = fmt.Sprintf("%s->readVarInt128ZigZag64()", dec)
+		reader = fmt.Sprintf("%s->readVarintZigZag64()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT32:
-		reader = fmt.Sprintf("%s->readVarInt128ZigZag32()", dec)
+		reader = fmt.Sprintf("%s->readVarintZigZag32()", dec)
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		reader = fmt.Sprintf("%s->readFloat()", dec)
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
@@ -344,7 +344,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 
-		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarInt128())", f.typePhpNs, f.typePhpName, dec)
+		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -404,11 +404,11 @@ func (f field) writeEncoder(w *writer, enc string) {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
 		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
-		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_SINT64:
-		writer = fmt.Sprintf("%s->writeVarInt128ZigZag64($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarintZigZag64($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_SINT32:
-		writer = fmt.Sprintf("%s->writeVarInt128ZigZag32($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarintZigZag32($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		writer = fmt.Sprintf("%s->writeFloat($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
@@ -420,7 +420,7 @@ func (f field) writeEncoder(w *writer, enc string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		writer = fmt.Sprintf("%s->writeBool($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}

@@ -65,7 +65,7 @@ namespace Protobuf\Internal {
       return new Decoder($buf, 0, strlen($buf));
     }
 
-    public function readVarInt128(): int {
+    public function readVarint(): int {
       $val = 0;
       $shift = 0;
       while (true) {
@@ -87,7 +87,7 @@ namespace Protobuf\Internal {
 
     // returns (field number, wire type)
     public function readTag(): (int, int) {
-      $k = $this->readVarInt128();
+      $k = $this->readVarint();
       $fn = $k >> 3;
       if ($fn == 0) {
         throw new \Protobuf\ProtobufException("zero field number");
@@ -104,7 +104,7 @@ namespace Protobuf\Internal {
     }
 
     public function readBool(): bool {
-      return $this->readVarInt128() != 0;
+      return $this->readVarint() != 0;
     }
 
     public function readFloat(): float {
@@ -116,17 +116,17 @@ namespace Protobuf\Internal {
     }
 
     public function readString(): string {
-      return $this->readRaw($this->readVarInt128());
+      return $this->readRaw($this->readVarint());
     }
 
-    public function readVarInt128ZigZag32(): int {
-      $i = $this->readVarInt128();
+    public function readVarintZigZag32(): int {
+      $i = $this->readVarint();
       $i |= ($i & 0xFFFFFFFF);
       return (($i >> 1) & 0x7FFFFFFF) ^ (-($i & 1));
     }
 
-    public function readVarInt128ZigZag64(): int {
-      $i = $this->readVarInt128();
+    public function readVarintZigZag64(): int {
+      $i = $this->readVarint();
       return (($i >> 1) & 0x7FFFFFFFFFFFFFFF) ^ (-($i & 1));
     }
 
@@ -148,7 +148,7 @@ namespace Protobuf\Internal {
     }
 
     public function readDecoder(): Decoder {
-      $size = $this->readVarInt128();
+      $size = $this->readVarint();
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
         throw new \Protobuf\ProtobufException(
@@ -167,13 +167,13 @@ namespace Protobuf\Internal {
     public function skipWireType(int $wt): void {
       switch ($wt) {
         case 0:
-          $this->readVarInt128(); // We could technically optimize this to skip.
+          $this->readVarint(); // We could technically optimize this to skip.
           break;
         case 1:
           $this->offset += 8;
           break;
         case 2:
-          $this->offset += $this->readVarInt128();
+          $this->offset += $this->readVarint();
           break;
         case 5:
           $this->offset += 4;
@@ -195,7 +195,7 @@ namespace Protobuf\Internal {
       $this->buf = "";
     }
 
-    public function writeVarInt128(int $i): void {
+    public function writeVarint(int $i): void {
       if ($i < 0) {
         // Special case: The sign bit is preserved while right shifiting.
         $this->buf .= chr(($i & 0x7F) | 0x80);
@@ -214,7 +214,7 @@ namespace Protobuf\Internal {
     }
 
     public function writeTag(int $fn, int $wt): void {
-      $this->writeVarInt128(($fn << 3) | $wt);
+      $this->writeVarint(($fn << 3) | $wt);
     }
 
     public function writeLittleEndianInt32(int $i): void {
@@ -238,18 +238,18 @@ namespace Protobuf\Internal {
     }
 
     public function writeString(string $s): void {
-      $this->writeVarInt128(strlen($s));
+      $this->writeVarint(strlen($s));
       $this->buf .= $s;
     }
 
-    public function writeVarInt128ZigZag32(int $i): void {
+    public function writeVarintZigZag32(int $i): void {
       $i = $i & 0xFFFFFFFF;
       $i = (($i << 1) ^ ($i << 32 >> 63)) & 0xFFFFFFFF;
-      $this->writeVarInt128($i);
+      $this->writeVarint($i);
     }
 
-    public function writeVarInt128ZigZag64(int $i): void {
-      $this->writeVarInt128(($i << 1) ^ ($i >> 63));
+    public function writeVarintZigZag64(int $i): void {
+      $this->writeVarint(($i << 1) ^ ($i >> 63));
     }
 
     public function writeEncoder(Encoder $e, int $fn): void {
