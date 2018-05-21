@@ -488,9 +488,9 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
 			itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
-			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.camelName(), itos, f.varName())
+			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
-			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.camelName(), f.varName())
+			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
 		}
 		return
 	}
@@ -505,14 +505,10 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 
 	if writer == "Enum" {
 		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
-		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.camelName(), itos, f.varName())
+		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 	} else {
-		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, writer, repeated, f.fd.GetName(), f.camelName(), f.varName())
+		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
 	}
-}
-
-func (f field) camelName() string {
-	return f.fd.GetName()
 }
 
 // writeEnum writes an enumeration type and constants definitions.
