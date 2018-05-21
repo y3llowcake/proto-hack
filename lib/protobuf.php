@@ -296,16 +296,20 @@ namespace Protobuf\Internal {
       $this->o = $o;
     }
 
-    private function encodeMessage(\Protobuf\Message $m): dict<string, mixed> {
+    private function encodeMessage(
+      ?\Protobuf\Message $m,
+    ): dict<string, mixed> {
       $e = new JsonEncoder($this->o);
-      $m->WriteJsonTo($e);
+      if ($m !== null) {
+        $m->WriteJsonTo($e);
+      }
       return $e->a;
     }
 
     public function writeMessage(
       string $oname,
       string $cname,
-      \Protobuf\Message $value,
+      ?\Protobuf\Message $value,
     ): void {
       $a = $this->encodeMessage($value);
       if (count($a) != 0 || $this->o->emit_default_values) {
@@ -316,7 +320,7 @@ namespace Protobuf\Internal {
     public function writeMessageList(
       string $oname,
       string $cname,
-      vec<\Protobuf\Message> $value,
+      vec<?\Protobuf\Message> $value,
     ): void {
       $as = vec[];
       foreach ($value as $v) {
@@ -407,7 +411,7 @@ namespace Protobuf\Internal {
     public function writeMessageMap(
       string $oname,
       string $cname,
-      dict<arraykey, \Protobuf\Message> $value,
+      dict<arraykey, ?\Protobuf\Message> $value,
     ): void {
       $vs = dict[];
       foreach ($value as $k => $v) {

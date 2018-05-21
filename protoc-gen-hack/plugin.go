@@ -487,7 +487,7 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 		_, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
-			itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+			itos := v.typePhpNs + "\\" + v.typePhpName + "::NumbersToNames()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
 			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
