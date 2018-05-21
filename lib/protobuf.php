@@ -85,7 +85,7 @@ namespace Protobuf\Internal {
       return $val;
     }
 
-		public function readVarint32(): int {
+    public function readVarint32(): int {
       # Throw away the upper 32 bits.
       return $this->readVarint() & 0xFFFFFFFF;
     }
@@ -93,7 +93,8 @@ namespace Protobuf\Internal {
     public function readVarint32Signed(): int {
       $i = $this->readVarint32();
       if ($i > 0x7FFFFFFF) {
-        # -int32 to -int64
+        # This is a corner validation case, the writer wrote to the 32 bit, but
+        # we only support 31 bits.
         return $i | (0xFFFFFFFF << 32);
       }
       return $i;
@@ -109,8 +110,12 @@ namespace Protobuf\Internal {
       return tuple($fn, $k & 0x7);
     }
 
-    public function readLittleEndianInt32(): int {
+    public function readLittleEndianInt32Signed(): int {
       return unpack('l', $this->readRaw(4))[1];
+    }
+
+    public function readLittleEndianInt32Unsigned(): int {
+      return unpack('L', $this->readRaw(4))[1];
     }
 
     public function readLittleEndianInt64(): int {
@@ -231,8 +236,12 @@ namespace Protobuf\Internal {
       $this->writeVarint(($fn << 3) | $wt);
     }
 
-    public function writeLittleEndianInt32(int $i): void {
+    public function writeLittleEndianInt32Signed(int $i): void {
       $this->buf .= pack('l', $i);
+    }
+
+    public function writeLittleEndianInt32Unsigned(int $i): void {
+      $this->buf .= pack('L', $i);
     }
 
     public function writeLittleEndianInt64(int $i): void {
