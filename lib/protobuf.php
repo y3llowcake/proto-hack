@@ -7,6 +7,7 @@ namespace Protobuf {
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
     public function WriteTo(Internal\Encoder $e): void;
+    public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
 
   function Unmarshal(string $data, Message $message): void {
@@ -17,6 +18,20 @@ namespace Protobuf {
     $e = new Internal\Encoder();
     $message->WriteTo($e);
     return (string) $e;
+  }
+
+  function MarshalJson(Message $message, int $opt = 0): string {
+    $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
+    $message->WriteJsonTo($e);
+    return (string) $e;
+  }
+
+  class JsonEncode {
+    // https://developers.google.com/protocol-buffers/docs/proto3#json_options
+    const PRETTY_PRINT = 1 << 1;
+    const EMIT_DEFAULT_VALUES = 1 << 2;
+    const PRESERVE_NAMES = 1 << 3;
+    const ENUMS_AS_INTS = 1 << 4;
   }
 }
 // namespace Protobuf
@@ -30,7 +45,12 @@ namespace Protobuf\Internal {
         "unsupported PHP_INT_SIZE size: ".PHP_INT_SIZE,
       );
     }
-    // TODO assert endianness...
+    $end = unpack('l', chr(0x70).chr(0x10).chr(0xF0).chr(0x00))[1];
+    if ($end !== 15732848) {
+      throw new \Protobuf\ProtobufException(
+        "unsupported endianess (is this machine little endian?): ".$end,
+      );
+    }
   }
 
   // https://developers.google.com/protocol-buffers/docs/encoding
@@ -45,7 +65,7 @@ namespace Protobuf\Internal {
       return new Decoder($buf, 0, strlen($buf));
     }
 
-    public function readVarInt128(): int {
+    public function readVarint(): int {
       $val = 0;
       $shift = 0;
       while (true) {
@@ -65,9 +85,24 @@ namespace Protobuf\Internal {
       return $val;
     }
 
+    public function readVarint32(): int {
+      # Throw away the upper 32 bits.
+      return $this->readVarint() & 0xFFFFFFFF;
+    }
+
+    public function readVarint32Signed(): int {
+      $i = $this->readVarint32();
+      if ($i > 0x7FFFFFFF) {
+        # This is a corner validation case, the writer wrote to the 32 bit, but
+        # we only support 31 bits.
+        return $i | (0xFFFFFFFF << 32);
+      }
+      return $i;
+    }
+
     // returns (field number, wire type)
     public function readTag(): (int, int) {
-      $k = $this->readVarInt128();
+      $k = $this->readVarint();
       $fn = $k >> 3;
       if ($fn == 0) {
         throw new \Protobuf\ProtobufException("zero field number");
@@ -75,8 +110,12 @@ namespace Protobuf\Internal {
       return tuple($fn, $k & 0x7);
     }
 
-    public function readLittleEndianInt32(): int {
+    public function readLittleEndianInt32Signed(): int {
       return unpack('l', $this->readRaw(4))[1];
+    }
+
+    public function readLittleEndianInt32Unsigned(): int {
+      return unpack('L', $this->readRaw(4))[1];
     }
 
     public function readLittleEndianInt64(): int {
@@ -84,7 +123,7 @@ namespace Protobuf\Internal {
     }
 
     public function readBool(): bool {
-      return $this->readVarInt128() != 0;
+      return $this->readVarint() != 0;
     }
 
     public function readFloat(): float {
@@ -96,17 +135,17 @@ namespace Protobuf\Internal {
     }
 
     public function readString(): string {
-      return $this->readRaw($this->readVarInt128());
+      return $this->readRaw($this->readVarint());
     }
 
-    public function readVarInt128ZigZag32(): int {
-      $i = $this->readVarInt128();
+    public function readVarintZigZag32(): int {
+      $i = $this->readVarint();
       $i |= ($i & 0xFFFFFFFF);
       return (($i >> 1) & 0x7FFFFFFF) ^ (-($i & 1));
     }
 
-    public function readVarInt128ZigZag64(): int {
-      $i = $this->readVarInt128();
+    public function readVarintZigZag64(): int {
+      $i = $this->readVarint();
       return (($i >> 1) & 0x7FFFFFFFFFFFFFFF) ^ (-($i & 1));
     }
 
@@ -128,7 +167,7 @@ namespace Protobuf\Internal {
     }
 
     public function readDecoder(): Decoder {
-      $size = $this->readVarInt128();
+      $size = $this->readVarint();
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
         throw new \Protobuf\ProtobufException(
@@ -147,13 +186,13 @@ namespace Protobuf\Internal {
     public function skipWireType(int $wt): void {
       switch ($wt) {
         case 0:
-          $this->readVarInt128(); // We could technically optimize this to skip.
+          $this->readVarint(); // We could technically optimize this to skip.
           break;
         case 1:
           $this->offset += 8;
           break;
         case 2:
-          $this->offset += $this->readVarInt128();
+          $this->offset += $this->readVarint();
           break;
         case 5:
           $this->offset += 4;
@@ -175,7 +214,7 @@ namespace Protobuf\Internal {
       $this->buf = "";
     }
 
-    public function writeVarInt128(int $i): void {
+    public function writeVarint(int $i): void {
       if ($i < 0) {
         // Special case: The sign bit is preserved while right shifiting.
         $this->buf .= chr(($i & 0x7F) | 0x80);
@@ -194,11 +233,15 @@ namespace Protobuf\Internal {
     }
 
     public function writeTag(int $fn, int $wt): void {
-      $this->writeVarInt128(($fn << 3) | $wt);
+      $this->writeVarint(($fn << 3) | $wt);
     }
 
-    public function writeLittleEndianInt32(int $i): void {
+    public function writeLittleEndianInt32Signed(int $i): void {
       $this->buf .= pack('l', $i);
+    }
+
+    public function writeLittleEndianInt32Unsigned(int $i): void {
+      $this->buf .= pack('L', $i);
     }
 
     public function writeLittleEndianInt64(int $i): void {
@@ -218,18 +261,18 @@ namespace Protobuf\Internal {
     }
 
     public function writeString(string $s): void {
-      $this->writeVarInt128(strlen($s));
+      $this->writeVarint(strlen($s));
       $this->buf .= $s;
     }
 
-    public function writeVarInt128ZigZag32(int $i): void {
+    public function writeVarintZigZag32(int $i): void {
       $i = $i & 0xFFFFFFFF;
       $i = (($i << 1) ^ ($i << 32 >> 63)) & 0xFFFFFFFF;
-      $this->writeVarInt128($i);
+      $this->writeVarint($i);
     }
 
-    public function writeVarInt128ZigZag64(int $i): void {
-      $this->writeVarInt128(($i << 1) ^ ($i >> 63));
+    public function writeVarintZigZag64(int $i): void {
+      $this->writeVarint(($i << 1) ^ ($i >> 63));
     }
 
     public function writeEncoder(Encoder $e, int $fn): void {
@@ -251,6 +294,184 @@ namespace Protobuf\Internal {
   interface FileDescriptor {
     public function Name(): string;
     public function FileDescriptorProtoBytes(): string;
+  }
+
+  class JsonEncodeOpt {
+    public bool $pretty_print;
+    public bool $emit_default_values;
+    public bool $preserve_names;
+    public bool $enums_as_ints;
+
+    public function __construct(int $opt) {
+      $this->pretty_print =
+        (bool) ($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
+      $this->emit_default_values =
+        (bool) ($opt & \Protobuf\JsonEncode::EMIT_DEFAULT_VALUES);
+      $this->preserve_names = (bool) ($opt &
+                                      \Protobuf\JsonEncode::PRESERVE_NAMES);
+      $this->enums_as_ints = (bool) ($opt &
+                                     \Protobuf\JsonEncode::ENUMS_AS_INTS);
+    }
+  }
+
+  class JsonEncoder {
+    private dict<string, mixed> $a;
+    private JsonEncodeOpt $o;
+
+    // https://developers.google.com/protocol-buffers/docs/proto3#json_options
+    public function __construct(JsonEncodeOpt $o) {
+      $this->a = dict[];
+      $this->o = $o;
+    }
+
+    private function encodeMessage(
+      ?\Protobuf\Message $m,
+    ): dict<string, mixed> {
+      $e = new JsonEncoder($this->o);
+      if ($m !== null) {
+        $m->WriteJsonTo($e);
+      }
+      return $e->a;
+    }
+
+    public function writeMessage(
+      string $oname,
+      string $cname,
+      ?\Protobuf\Message $value,
+    ): void {
+      $a = $this->encodeMessage($value);
+      if (count($a) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
+      }
+    }
+
+    public function writeMessageList(
+      string $oname,
+      string $cname,
+      vec<?\Protobuf\Message> $value,
+    ): void {
+      $as = vec[];
+      foreach ($value as $v) {
+        $as[] = $this->encodeMessage($v);
+      }
+      if (count($as) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
+      }
+    }
+
+    public function writeNum(string $oname, string $cname, num $value): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writeBool(
+      string $oname,
+      string $cname,
+      bool $value,
+    ): void {
+      if ($value != false || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writeString(
+      string $oname,
+      string $cname,
+      string $value,
+    ): void {
+      if ($value != '' || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writePrimitiveList(
+      string $oname,
+      string $cname,
+      vec $value,
+    ): void {
+      if (count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    private function encodeEnum(dict<int, string> $itos, int $v): mixed {
+      return $this->o->enums_as_ints ? $v : $itos[$v];
+    }
+
+    public function writeEnum(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      int $value,
+    ): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          $this->encodeEnum($itos, $value);
+      }
+    }
+
+    public function writeEnumList(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      vec<int> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = $this->encodeEnum($itos, $v);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writePrimitiveMap(
+      string $oname,
+      string $cname,
+      dict $value,
+    ): void {
+      if (count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writeMessageMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, ?\Protobuf\Message> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeMessage($v);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeEnumMap(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      dict<arraykey, int> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeEnum($v, $itos);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function __toString(): string {
+      $opt = JSON_PARTIAL_OUTPUT_ON_ERROR;
+      if ($this->o->pretty_print) {
+        $opt |= JSON_PRETTY_PRINT;
+      }
+      return json_encode($this->a, $opt);
+    }
   }
 }
 // namespace Protobuf/Internal

@@ -7,6 +7,12 @@ namespace fiz\baz;
 newtype AEnum2_EnumType as int = int;
 class AEnum2 {
   const AEnum2_EnumType Z = 0;
+  private static dict<int, string> $itos = dict[
+    0 => 'Z',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): AEnum2_EnumType {
     return $i;
   }
@@ -26,7 +32,7 @@ class example2 implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->zomg = $d->readVarInt128();
+          $this->zomg = $d->readVarint32Signed();
           break;
         default:
           $d->skipWireType($wt);
@@ -37,8 +43,11 @@ class example2 implements \Protobuf\Message {
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     if ($this->zomg !== 0) {
       $e->writeTag(1, 0);
-      $e->writeVarInt128($this->zomg);
+      $e->writeVarint($this->zomg);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeNum('zomg', 'zomg', $this->zomg);
   }
 }
 

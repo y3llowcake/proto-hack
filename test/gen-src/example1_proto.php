@@ -8,6 +8,13 @@ newtype AEnum1_EnumType as int = int;
 class AEnum1 {
   const AEnum1_EnumType A = 0;
   const AEnum1_EnumType B = 2;
+  private static dict<int, string> $itos = dict[
+    0 => 'A',
+    2 => 'B',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): AEnum1_EnumType {
     return $i;
   }
@@ -27,7 +34,7 @@ class example2 implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->aint32 = $d->readVarInt128();
+          $this->aint32 = $d->readVarint32Signed();
           break;
         default:
           $d->skipWireType($wt);
@@ -38,8 +45,11 @@ class example2 implements \Protobuf\Message {
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     if ($this->aint32 !== 0) {
       $e->writeTag(1, 0);
-      $e->writeVarInt128($this->aint32);
+      $e->writeVarint($this->aint32);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeNum('aint32', 'aint32', $this->aint32);
   }
 }
 
@@ -47,6 +57,13 @@ newtype example1_AEnum2_EnumType as int = int;
 class example1_AEnum2 {
   const example1_AEnum2_EnumType C = 0;
   const example1_AEnum2_EnumType D = 10;
+  private static dict<int, string> $itos = dict[
+    0 => 'C',
+    10 => 'D',
+  ];
+  public static function NumbersToNames(): dict<int, string> {
+    return self::$itos;
+  }
   public static function FromInt(int $i): example1_AEnum2_EnumType {
     return $i;
   }
@@ -87,6 +104,9 @@ class example1_example2 implements \Protobuf\Message {
       $e->writeString($this->astring);
     }
   }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeString('astring', 'astring', $this->astring);
+  }
 }
 
 // message AmapEntry
@@ -126,6 +146,10 @@ class example1_AmapEntry implements \Protobuf\Message {
       $e->writeTag(2, 2);
       $e->writeString($this->value);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeString('key', 'key', $this->key);
+    $e->writeString('value', 'value', $this->value);
   }
 }
 
@@ -171,6 +195,10 @@ class example1_Amap2Entry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeString('key', 'key', $this->key);
+    $e->writeMessage('value', 'value', $this->value);
   }
 }
 
@@ -275,31 +303,31 @@ class example1 implements \Protobuf\Message {
           $this->afloat = $d->readFloat();
           break;
         case 3:
-          $this->aint32 = $d->readVarInt128();
+          $this->aint32 = $d->readVarint32Signed();
           break;
         case 4:
-          $this->aint64 = $d->readVarInt128();
+          $this->aint64 = $d->readVarint();
           break;
         case 5:
-          $this->auint32 = $d->readVarInt128();
+          $this->auint32 = $d->readVarint32();
           break;
         case 6:
-          $this->auint64 = $d->readVarInt128();
+          $this->auint64 = $d->readVarint32();
           break;
         case 7:
-          $this->asint32 = $d->readVarInt128ZigZag32();
+          $this->asint32 = $d->readVarintZigZag32();
           break;
         case 8:
-          $this->asint64 = $d->readVarInt128ZigZag64();
+          $this->asint64 = $d->readVarintZigZag64();
           break;
         case 9:
-          $this->afixed32 = $d->readLittleEndianInt32();
+          $this->afixed32 = $d->readLittleEndianInt32Unsigned();
           break;
         case 10:
           $this->afixed64 = $d->readLittleEndianInt64();
           break;
         case 11:
-          $this->asfixed32 = $d->readLittleEndianInt32();
+          $this->asfixed32 = $d->readLittleEndianInt32Signed();
           break;
         case 12:
           $this->asfixed64 = $d->readLittleEndianInt64();
@@ -314,13 +342,13 @@ class example1 implements \Protobuf\Message {
           $this->abytes = $d->readString();
           break;
         case 20:
-          $this->aenum1 = \foo\bar\AEnum1::FromInt($d->readVarInt128());
+          $this->aenum1 = \foo\bar\AEnum1::FromInt($d->readVarint());
           break;
         case 21:
-          $this->aenum2 = \foo\bar\example1_AEnum2::FromInt($d->readVarInt128());
+          $this->aenum2 = \foo\bar\example1_AEnum2::FromInt($d->readVarint());
           break;
         case 22:
-          $this->aenum22 = \fiz\baz\AEnum2::FromInt($d->readVarInt128());
+          $this->aenum22 = \fiz\baz\AEnum2::FromInt($d->readVarint());
           break;
         case 30:
           $this->manystring []= $d->readString();
@@ -329,10 +357,10 @@ class example1 implements \Protobuf\Message {
           if ($wt == 2) {
             $packed = $d->readDecoder();
             while (!$packed->isEOF()) {
-              $this->manyint64 []= $packed->readVarInt128();
+              $this->manyint64 []= $packed->readVarint();
             }
           } else {
-            $this->manyint64 []= $d->readVarInt128();
+            $this->manyint64 []= $d->readVarint();
           }
           break;
         case 40:
@@ -354,7 +382,7 @@ class example1 implements \Protobuf\Message {
           $this->aexample23->MergeFrom($d->readDecoder());
           break;
         case 49:
-          $this->outoforder = $d->readVarInt128();
+          $this->outoforder = $d->readVarint();
           break;
         case 51:
           $obj = new \foo\bar\example1_AmapEntry();
@@ -370,7 +398,7 @@ class example1 implements \Protobuf\Message {
           $this->oostring = $d->readString();
           break;
         case 61:
-          $this->ooint = $d->readVarInt128();
+          $this->ooint = $d->readVarint32Signed();
           break;
         default:
           $d->skipWireType($wt);
@@ -389,31 +417,31 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->aint32 !== 0) {
       $e->writeTag(3, 0);
-      $e->writeVarInt128($this->aint32);
+      $e->writeVarint($this->aint32);
     }
     if ($this->aint64 !== 0) {
       $e->writeTag(4, 0);
-      $e->writeVarInt128($this->aint64);
+      $e->writeVarint($this->aint64);
     }
     if ($this->auint32 !== 0) {
       $e->writeTag(5, 0);
-      $e->writeVarInt128($this->auint32);
+      $e->writeVarint($this->auint32);
     }
     if ($this->auint64 !== 0) {
       $e->writeTag(6, 0);
-      $e->writeVarInt128($this->auint64);
+      $e->writeVarint($this->auint64);
     }
     if ($this->asint32 !== 0) {
       $e->writeTag(7, 0);
-      $e->writeVarInt128ZigZag32($this->asint32);
+      $e->writeVarintZigZag32($this->asint32);
     }
     if ($this->asint64 !== 0) {
       $e->writeTag(8, 0);
-      $e->writeVarInt128ZigZag64($this->asint64);
+      $e->writeVarintZigZag64($this->asint64);
     }
     if ($this->afixed32 !== 0) {
       $e->writeTag(9, 5);
-      $e->writeLittleEndianInt32($this->afixed32);
+      $e->writeLittleEndianInt32Unsigned($this->afixed32);
     }
     if ($this->afixed64 !== 0) {
       $e->writeTag(10, 1);
@@ -421,7 +449,7 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->asfixed32 !== 0) {
       $e->writeTag(11, 5);
-      $e->writeLittleEndianInt32($this->asfixed32);
+      $e->writeLittleEndianInt32Signed($this->asfixed32);
     }
     if ($this->asfixed64 !== 0) {
       $e->writeTag(12, 1);
@@ -441,15 +469,15 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->aenum1 !== \foo\bar\AEnum1::A) {
       $e->writeTag(20, 0);
-      $e->writeVarInt128($this->aenum1);
+      $e->writeVarint($this->aenum1);
     }
     if ($this->aenum2 !== \foo\bar\example1_AEnum2::C) {
       $e->writeTag(21, 0);
-      $e->writeVarInt128($this->aenum2);
+      $e->writeVarint($this->aenum2);
     }
     if ($this->aenum22 !== \fiz\baz\AEnum2::Z) {
       $e->writeTag(22, 0);
-      $e->writeVarInt128($this->aenum22);
+      $e->writeVarint($this->aenum22);
     }
     foreach ($this->manystring as $elem) {
       $e->writeTag(30, 2);
@@ -457,7 +485,7 @@ class example1 implements \Protobuf\Message {
     }
     $packed = new \Protobuf\Internal\Encoder();
     foreach ($this->manyint64 as $elem) {
-      $packed->writeVarInt128($elem);
+      $packed->writeVarint($elem);
     }
     $e->writeEncoder($packed, 31);
     $msg = $this->aexample2;
@@ -480,7 +508,7 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->outoforder !== 0) {
       $e->writeTag(49, 0);
-      $e->writeVarInt128($this->outoforder);
+      $e->writeVarint($this->outoforder);
     }
     foreach ($this->amap as $k => $v) {
       $obj = new \foo\bar\example1_AmapEntry();
@@ -504,8 +532,38 @@ class example1 implements \Protobuf\Message {
     }
     if ($this->ooint !== 0) {
       $e->writeTag(61, 0);
-      $e->writeVarInt128($this->ooint);
+      $e->writeVarint($this->ooint);
     }
+  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeNum('adouble', 'adouble', $this->adouble);
+    $e->writeNum('afloat', 'afloat', $this->afloat);
+    $e->writeNum('aint32', 'aint32', $this->aint32);
+    $e->writeNum('aint64', 'aint64', $this->aint64);
+    $e->writeNum('auint32', 'auint32', $this->auint32);
+    $e->writeNum('auint64', 'auint64', $this->auint64);
+    $e->writeNum('asint32', 'asint32', $this->asint32);
+    $e->writeNum('asint64', 'asint64', $this->asint64);
+    $e->writeNum('afixed32', 'afixed32', $this->afixed32);
+    $e->writeNum('afixed64', 'afixed64', $this->afixed64);
+    $e->writeNum('asfixed32', 'asfixed32', $this->asfixed32);
+    $e->writeNum('asfixed64', 'asfixed64', $this->asfixed64);
+    $e->writeBool('abool', 'abool', $this->abool);
+    $e->writeString('astring', 'astring', $this->astring);
+    $e->writeString('abytes', 'abytes', $this->abytes);
+    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::NumbersToNames(), $this->aenum1);
+    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::NumbersToNames(), $this->aenum2);
+    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::NumbersToNames(), $this->aenum22);
+    $e->writePrimitiveList('manystring', 'manystring', $this->manystring);
+    $e->writePrimitiveList('manyint64', 'manyint64', $this->manyint64);
+    $e->writeMessage('aexample2', 'aexample2', $this->aexample2);
+    $e->writeMessage('aexample22', 'aexample22', $this->aexample22);
+    $e->writeMessage('aexample23', 'aexample23', $this->aexample23);
+    $e->writeNum('outoforder', 'outoforder', $this->outoforder);
+    $e->writePrimitiveMap('amap', 'amap', $this->amap);
+    $e->writeMessageMap('amap2', 'amap2', $this->amap2);
+    $e->writeString('oostring', 'oostring', $this->oostring);
+    $e->writeNum('ooint', 'ooint', $this->ooint);
   }
 
   public function oneof_aoneof(): example1_aoneof_OneofType {

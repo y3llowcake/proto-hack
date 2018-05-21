@@ -108,8 +108,6 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 		writeDescriptor(w, dp, ns, nil)
 	}
 
-	// TODO: top level fields?
-
 	// Write services.
 	if genService {
 		for _, sdp := range fdp.Service {
@@ -196,11 +194,11 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 	return f
 }
 
-func (f field) mapPhpTypes() (string, string) {
+func (f field) mapFields() (field, field) {
 	dp := f.typeDescriptor.(*desc.DescriptorProto)
 	keyField := newField(dp.Field[0], f.typeNs)
 	valueField := newField(dp.Field[1], f.typeNs)
-	return keyField.phpType(), valueField.labeledType()
+	return keyField, valueField
 }
 
 func (f field) phpType() string {
@@ -255,8 +253,8 @@ func (f field) isRepeated() bool {
 
 func (f field) labeledType() string {
 	if f.isMap {
-		k, v := f.mapPhpTypes()
-		return fmt.Sprintf("dict<%s, %s>", k, v)
+		k, v := f.mapFields()
+		return fmt.Sprintf("dict<%s, %s>", k.phpType(), v.labeledType())
 	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
@@ -326,27 +324,36 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	// TODO should we do wiretype checking here?
 	reader := ""
 	switch *f.fd.Type {
-	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
 		reader = fmt.Sprintf("%s->readString()", dec)
-	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
-		reader = fmt.Sprintf("%s->readVarInt128()", dec)
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_UINT64:
+		reader = fmt.Sprintf("%s->readVarint()", dec)
+	case desc.FieldDescriptorProto_TYPE_INT32:
+		reader = fmt.Sprintf("%s->readVarint32Signed()", dec)
+	case desc.FieldDescriptorProto_TYPE_UINT32:
+		reader = fmt.Sprintf("%s->readVarint32()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT64:
-		reader = fmt.Sprintf("%s->readVarInt128ZigZag64()", dec)
+		reader = fmt.Sprintf("%s->readVarintZigZag64()", dec)
 	case desc.FieldDescriptorProto_TYPE_SINT32:
-		reader = fmt.Sprintf("%s->readVarInt128ZigZag32()", dec)
+		reader = fmt.Sprintf("%s->readVarintZigZag32()", dec)
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		reader = fmt.Sprintf("%s->readFloat()", dec)
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		reader = fmt.Sprintf("%s->readDouble()", dec)
-	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
-		reader = fmt.Sprintf("%s->readLittleEndianInt32()", dec)
-	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
+	case desc.FieldDescriptorProto_TYPE_FIXED32:
+		reader = fmt.Sprintf("%s->readLittleEndianInt32Unsigned()", dec)
+	case desc.FieldDescriptorProto_TYPE_SFIXED32:
+		reader = fmt.Sprintf("%s->readLittleEndianInt32Signed()", dec)
+	case desc.FieldDescriptorProto_TYPE_FIXED64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
 		reader = fmt.Sprintf("%s->readLittleEndianInt64()", dec)
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 
-		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarInt128())", f.typePhpNs, f.typePhpName, dec)
+		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -403,26 +410,33 @@ func (f field) writeEncoder(w *writer, enc string) {
 
 	writer := ""
 	switch *f.fd.Type {
-	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
 		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_INT64, desc.FieldDescriptorProto_TYPE_INT32, desc.FieldDescriptorProto_TYPE_UINT64, desc.FieldDescriptorProto_TYPE_UINT32:
-		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_INT32:
+		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_SINT64:
-		writer = fmt.Sprintf("%s->writeVarInt128ZigZag64($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarintZigZag64($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_SINT32:
-		writer = fmt.Sprintf("%s->writeVarInt128ZigZag32($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarintZigZag32($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_FLOAT:
 		writer = fmt.Sprintf("%s->writeFloat($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_DOUBLE:
 		writer = fmt.Sprintf("%s->writeDouble($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_FIXED32, desc.FieldDescriptorProto_TYPE_SFIXED32:
-		writer = fmt.Sprintf("%s->writeLittleEndianInt32($this->%s)", enc, f.varName())
-	case desc.FieldDescriptorProto_TYPE_FIXED64, desc.FieldDescriptorProto_TYPE_SFIXED64:
+	case desc.FieldDescriptorProto_TYPE_FIXED32:
+		writer = fmt.Sprintf("%s->writeLittleEndianInt32Unsigned($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_SFIXED32:
+		writer = fmt.Sprintf("%s->writeLittleEndianInt32Signed($this->%s)", enc, f.varName())
+	case desc.FieldDescriptorProto_TYPE_FIXED64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
 		writer = fmt.Sprintf("%s->writeLittleEndianInt64($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		writer = fmt.Sprintf("%s->writeBool($this->%s)", enc, f.varName())
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		writer = fmt.Sprintf("%s->writeVarInt128($this->%s)", enc, f.varName())
+		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -455,6 +469,64 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+func (f field) jsonWriter() (string, string) {
+	switch t := f.fd.GetType(); t {
+	case desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
+		return "String", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_SINT64,
+		desc.FieldDescriptorProto_TYPE_SINT32,
+		desc.FieldDescriptorProto_TYPE_FIXED32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32,
+		desc.FieldDescriptorProto_TYPE_FIXED64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64,
+		desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_DOUBLE:
+		return "Num", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		return "Bool", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+		return "Message", "Message"
+	case desc.FieldDescriptorProto_TYPE_ENUM:
+		return "Enum", "Enum"
+	default:
+		panic(fmt.Errorf("unexpected proto type: %v", t))
+	}
+}
+
+func (f field) writeJsonEncoder(w *writer, enc string) {
+	if f.isMap {
+		_, v := f.mapFields()
+		_, manyWriter := v.jsonWriter()
+		if manyWriter == "Enum" {
+			itos := v.typePhpNs + "\\" + v.typePhpName + "::NumbersToNames()"
+			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
+		} else {
+			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
+		}
+		return
+	}
+
+	writer, manyWriter := f.jsonWriter()
+
+	repeated := ""
+	if f.isRepeated() {
+		repeated = "List"
+		writer = manyWriter
+	}
+
+	if writer == "Enum" {
+		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
+	} else {
+		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
+	}
+}
+
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
@@ -464,6 +536,18 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	for _, v := range ed.Value {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
+	w.p("private static dict<int, string> $itos = dict[")
+	w.i++
+	for _, v := range ed.Value {
+		w.p("%d => '%s',", v.GetNumber(), v.GetName())
+	}
+	w.i--
+	w.p("];")
+
+	w.p("public static function NumbersToNames(): dict<int, string> {")
+	w.p("return self::$itos;")
+	w.p("}")
+
 	w.p("public static function FromInt(int $i): %s {", typename)
 	w.p("return $i;")
 	w.p("}")
@@ -591,6 +675,13 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeEncoder(w, "$e")
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
+	}
+	w.p("}") // WriteToFunction
+
+	// WriteTo function
+	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
+	for _, f := range fields {
+		f.writeJsonEncoder(w, "$e")
 	}
 	w.p("}") // WriteToFunction
 
