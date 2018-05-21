@@ -34,7 +34,7 @@ class example2 implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->aint32 = $d->readVarint32();
+          $this->aint32 = $d->readVarint32Signed();
           break;
         default:
           $d->skipWireType($wt);
@@ -303,7 +303,7 @@ class example1 implements \Protobuf\Message {
           $this->afloat = $d->readFloat();
           break;
         case 3:
-          $this->aint32 = $d->readVarint32();
+          $this->aint32 = $d->readVarint32Signed();
           break;
         case 4:
           $this->aint64 = $d->readVarint();
@@ -398,7 +398,7 @@ class example1 implements \Protobuf\Message {
           $this->oostring = $d->readString();
           break;
         case 61:
-          $this->ooint = $d->readVarint32();
+          $this->ooint = $d->readVarint32Signed();
           break;
         default:
           $d->skipWireType($wt);

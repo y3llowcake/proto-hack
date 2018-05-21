@@ -85,11 +85,16 @@ namespace Protobuf\Internal {
       return $val;
     }
 
-    public function readVarint32(): int {
-      $i = $this->readVarint();
-      $i &= 0xFFFFFFFF;
+		public function readVarint32(): int {
+      # Throw away the upper 32 bits.
+      return $this->readVarint() & 0xFFFFFFFF;
+    }
+
+    public function readVarint32Signed(): int {
+      $i = $this->readVarint32();
       if ($i > 0x7FFFFFFF) {
-        $i |= (0xFFFFFFFF << 32);
+        # -int32 to -int64
+        return $i | (0xFFFFFFFF << 32);
       }
       return $i;
     }
