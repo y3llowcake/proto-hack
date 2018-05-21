@@ -102,12 +102,14 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     p('parse error: '.$e->getMessage());
     $cresp->parse_error = $e->getMessage();
   }
+  p("response: ".print_r($cresp, true));
   return $cresp;
 }
 
 function testMessageRaw(string $in, WireFormat_EnumType $wf): string {
   $tm = new TestAllTypesProto3();
   Protobuf\Unmarshal($in, $tm);
+  p("remarshaling: ".print_r($tm, true));
   switch ($wf) {
     case WireFormat::PROTOBUF:
       return Protobuf\Marshal($tm);
