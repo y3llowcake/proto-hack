@@ -438,7 +438,7 @@ namespace Protobuf\Internal {
     }
 
     public function __toString(): string {
-      $opt = 0;
+      $opt = JSON_PARTIAL_OUTPUT_ON_ERROR;
       if ($this->o->pretty_print) {
         $opt |= JSON_PRETTY_PRINT;
       }
