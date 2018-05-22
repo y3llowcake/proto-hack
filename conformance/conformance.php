@@ -21,7 +21,7 @@ include
 use conformance\ConformanceRequest;
 use conformance\ConformanceRequest_payload;
 use conformance\WireFormat;
-use conformance\WireFormat_t¡;
+use conformance\¡WireFormat_t;
 use conformance\ConformanceResponse;
 use protobuf_test_messages\proto3\TestAllTypesProto3;
 

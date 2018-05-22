@@ -235,11 +235,11 @@ class example1 implements \Protobuf\Message {
   // field abytes = 15
   public string $abytes;
   // field aenum1 = 20
-  public ¡\foo\bar\AEnum1_t $aenum1;
+  public \foo\bar\¡AEnum1_t $aenum1;
   // field aenum2 = 21
-  public ¡\foo\bar\example1_AEnum2_t $aenum2;
+  public \foo\bar\¡example1_AEnum2_t $aenum2;
   // field aenum22 = 22
-  public ¡\fiz\baz\AEnum2_t $aenum22;
+  public \fiz\baz\¡AEnum2_t $aenum22;
   // field manystring = 30
   public vec<string> $manystring;
   // field manyint64 = 31
