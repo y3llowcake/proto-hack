@@ -483,10 +483,11 @@ func (f field) jsonWriter() (string, string) {
 		desc.FieldDescriptorProto_TYPE_FIXED32,
 		desc.FieldDescriptorProto_TYPE_SFIXED32,
 		desc.FieldDescriptorProto_TYPE_FIXED64,
-		desc.FieldDescriptorProto_TYPE_SFIXED64,
-		desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
+		return "Int", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_FLOAT,
 		desc.FieldDescriptorProto_TYPE_DOUBLE:
-		return "Num", "Primitive"
+		return "Float", "Float"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "Bool", "Primitive"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:

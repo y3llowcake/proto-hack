@@ -127,7 +127,8 @@ namespace Protobuf\Internal {
     }
 
     public function readFloat(): float {
-      return unpack('f', $this->readRaw(4))[1];
+      $f = unpack('f', $this->readRaw(4))[1];
+      return $f;
     }
 
     public function readDouble(): float {
@@ -359,9 +360,58 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeNum(string $oname, string $cname, num $value): void {
+    public function writeInt(string $oname, string $cname, int $value): void {
       if ($value != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public static function encodeFloat(float $value): mixed {
+      if (is_finite($value)) {
+        return $value;
+      }
+      if (is_nan($value)) {
+        return "NaN";
+      }
+      return $value > 0 ? "Infinity" : "-Infinity";
+    }
+
+    public function writeFloat(
+      string $oname,
+      string $cname,
+      float $value,
+    ): void {
+      if ($value != 0.0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          self::encodeFloat($value);
+      }
+    }
+
+    public function writeFloatList(
+      string $oname,
+      string $cname,
+      vec<float> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = self::encodeFloat($v);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeFloatMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, float> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = self::encodeFloat($v);
+      }
+      if (count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
 
