@@ -92,9 +92,9 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
         $cresp->protobuf_payload =
           testMessageRaw($creq->protobuf_payload, $wf);
         break;
-      case WireFormat::JSON:
-        $cresp->json_payload = testMessageRaw($creq->protobuf_payload, $wf);
-        break;
+      //case WireFormat::JSON:
+        //$cresp->json_payload = testMessageRaw($creq->protobuf_payload, $wf);
+        //break;
       default:
         $cresp->skipped = "unsupported output type";
     }

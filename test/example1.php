@@ -121,19 +121,19 @@ function microtime_as_int(): int {
  	return ($gtod['sec'] * 1000000) + $gtod['usec'];
 }
 
-function jsonTests(string $raw): void {
+/*function jsonTests(string $raw): void {
 	$got = new foo\bar\example1();
 	Protobuf\Unmarshal($raw, $got);
 	$j = Protobuf\MarshalJson($got, Protobuf\JsonEncode::PRETTY_PRINT);
 	file_put_contents('./gen-data/example1.pb.json', $j);
-}
+}*/
 
 function test(): void {
 	$raw = file_get_contents('./gen-data/example1.pb.bin');
 	$res = testExample1($raw, "test example1: file");
 	araw($res, $raw, "hack marshal does not match protoc marshal");
 	testExample1($res, "test example1: remarshal");
-	jsonTests($raw);
+	// jsonTests($raw);
 
 	/*for ($i = 0; $i < 10000; $i++){
 		$start = microtime_as_int();
