@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	specialChar   = "¡"
+	specialPrefix = "XXX_"
 	genDebug      = false
 	libNs         = "\\Protobuf"
 	libNsInternal = libNs + "\\Internal"
@@ -120,7 +120,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	w.ln()
 	fdClassName := strings.Replace(fdp.GetName(), "/", "_", -1)
 	fdClassName = strings.Replace(fdClassName, ".", "__", -1)
-	fdClassName = specialChar + "FileDescriptor_" + fdClassName
+	fdClassName = specialPrefix + "FileDescriptor_" + fdClassName
 	w.p("class %s implements %s\\FileDescriptor {", fdClassName, libNsInternal)
 	w.p("const string NAME = '%s';", fdp.GetName())
 	w.p("const string RAW = '%s';", toPhpString(fdp))
@@ -216,7 +216,7 @@ func (f field) phpType() string {
 	case desc.FieldDescriptorProto_TYPE_MESSAGE:
 		return f.typePhpNs + "\\" + f.typePhpName
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return f.typePhpNs + "\\" + specialChar + f.typePhpName + "_t"
+		return f.typePhpNs + "\\" + specialPrefix + f.typePhpName + "_t"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -532,7 +532,7 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
-	typename := specialChar + name + "_t"
+	typename := specialPrefix + name + "_t"
 	w.p("newtype %s as int = int;", typename)
 	w.p("class %s {", name)
 	for _, v := range ed.Value {
@@ -612,7 +612,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		oo := &oneof{
 			descriptor: od,
 			className:  name,
-			typeName:   name + "_OneofType",
+			typeName:   specialPrefix + name + "_t",
 			fields:     oneofFields[int32(i)],
 		}
 		oneofs = append(oneofs, oo)

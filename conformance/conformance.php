@@ -21,7 +21,7 @@ include
 use conformance\ConformanceRequest;
 use conformance\ConformanceRequest_payload;
 use conformance\WireFormat;
-use conformance\¡WireFormat_t;
+use conformance\XXX_WireFormat_t;
 use conformance\ConformanceResponse;
 use protobuf_test_messages\proto3\TestAllTypesProto3;
 
@@ -106,7 +106,7 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-function testMessageRaw(string $in, ¡WireFormat_t $wf): string {
+function testMessageRaw(string $in, XXX_WireFormat_t $wf): string {
   $tm = new TestAllTypesProto3();
   Protobuf\Unmarshal($in, $tm);
   p("remarshaling: ".print_r($tm, true));
