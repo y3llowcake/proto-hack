@@ -682,8 +682,10 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// WriteTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-	for _, f := range fields {
-		f.writeJsonEncoder(w, "$e")
+	if false { // TODO turn it back on
+		for _, f := range fields {
+			f.writeJsonEncoder(w, "$e")
+		}
 	}
 	w.p("}") // WriteToFunction
 
