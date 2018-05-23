@@ -46,9 +46,6 @@ class example2 implements \Protobuf\Message {
       $e->writeVarint($this->zomg);
     }
   }
-  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeInt('zomg', 'zomg', $this->zomg);
-  }
 }
 
 

@@ -7,7 +7,7 @@ namespace Protobuf {
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
     public function WriteTo(Internal\Encoder $e): void;
-    public function WriteJsonTo(Internal\JsonEncoder $e): void;
+    // public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
 
   function Unmarshal(string $data, Message $message): void {
@@ -19,7 +19,7 @@ namespace Protobuf {
     $message->WriteTo($e);
     return (string) $e;
   }
-
+/*
   function MarshalJson(Message $message, int $opt = 0): string {
     $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
     $message->WriteJsonTo($e);
@@ -32,7 +32,8 @@ namespace Protobuf {
     const EMIT_DEFAULT_VALUES = 1 << 2;
     const PRESERVE_NAMES = 1 << 3;
     const ENUMS_AS_INTS = 1 << 4;
-  }
+	}
+ */
 }
 // namespace Protobuf
 
@@ -296,7 +297,7 @@ namespace Protobuf\Internal {
     public function Name(): string;
     public function FileDescriptorProtoBytes(): string;
   }
-
+/*
   class JsonEncodeOpt {
     public bool $pretty_print;
     public bool $emit_default_values;
@@ -508,7 +509,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = dict[];
       foreach ($value as $k => $v) {
-        $vs[$k] = $this->encodeEnum($v, $itos);
+        $vs[$k] = $this->encodeEnum($itos, $v);
       }
       if (count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
@@ -522,6 +523,7 @@ namespace Protobuf\Internal {
       }
       return json_encode($this->a, $opt);
     }
-  }
+	}
+ */
 }
 // namespace Protobuf/Internal
