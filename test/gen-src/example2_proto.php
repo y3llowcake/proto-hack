@@ -57,6 +57,6 @@ class XXX_FileDescriptor_example2__proto implements \Protobuf\Internal\FileDescr
   }
 
   public function FileDescriptorProtoBytes(): string {
-    return (string)gzuncompress(base64_decode(self::RAW));
+    return (string)\gzuncompress(\base64_decode(self::RAW));
   }
 }

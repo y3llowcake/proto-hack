@@ -41,12 +41,12 @@ namespace Protobuf\Internal {
   // AVERT YOUR EYES YE! NOTHING TO SEE BELOW!
 
   function AssertEndiannessAndIntSize(): void {
-    if (PHP_INT_SIZE != 8) {
+    if (\PHP_INT_SIZE != 8) {
       throw new \Protobuf\ProtobufException(
-        "unsupported PHP_INT_SIZE size: ".PHP_INT_SIZE,
+        "unsupported PHP_INT_SIZE size: ".\PHP_INT_SIZE,
       );
     }
-    $end = unpack('l', chr(0x70).chr(0x10).chr(0xF0).chr(0x00))[1];
+    $end = \unpack('l', \chr(0x70).\chr(0x10).\chr(0xF0).\chr(0x00))[1];
     if ($end !== 15732848) {
       throw new \Protobuf\ProtobufException(
         "unsupported endianess (is this machine little endian?): ".$end,
@@ -63,7 +63,7 @@ namespace Protobuf\Internal {
     ) {}
 
     public static function FromString(string $buf): Decoder {
-      return new Decoder($buf, 0, strlen($buf));
+      return new Decoder($buf, 0, \strlen($buf));
     }
 
     public function readVarint(): int {
@@ -75,7 +75,7 @@ namespace Protobuf\Internal {
             "buffer overrun while reading varint-128",
           );
         }
-        $c = ord($this->buf[$this->offset]);
+        $c = \ord($this->buf[$this->offset]);
         $this->offset++;
         $val += (($c & 127) << $shift);
         $shift += 7;
@@ -112,15 +112,15 @@ namespace Protobuf\Internal {
     }
 
     public function readLittleEndianInt32Signed(): int {
-      return unpack('l', $this->readRaw(4))[1];
+      return \unpack('l', $this->readRaw(4))[1];
     }
 
     public function readLittleEndianInt32Unsigned(): int {
-      return unpack('L', $this->readRaw(4))[1];
+      return \unpack('L', $this->readRaw(4))[1];
     }
 
     public function readLittleEndianInt64(): int {
-      return unpack('q', $this->readRaw(8))[1];
+      return \unpack('q', $this->readRaw(8))[1];
     }
 
     public function readBool(): bool {
@@ -128,12 +128,12 @@ namespace Protobuf\Internal {
     }
 
     public function readFloat(): float {
-      $f = unpack('f', $this->readRaw(4))[1];
+      $f = \unpack('f', $this->readRaw(4))[1];
       return $f;
     }
 
     public function readDouble(): float {
-      return unpack('d', $this->readRaw(8))[1];
+      return \unpack('d', $this->readRaw(8))[1];
     }
 
     public function readString(): string {
@@ -163,7 +163,7 @@ namespace Protobuf\Internal {
           "buffer overrun while reading raw: ".$size,
         );
       }
-      $ss = substr($this->buf, $this->offset, $size);
+      $ss = \substr($this->buf, $this->offset, $size);
       $this->offset = $noff;
       return $ss;
     }
@@ -219,7 +219,7 @@ namespace Protobuf\Internal {
     public function writeVarint(int $i): void {
       if ($i < 0) {
         // Special case: The sign bit is preserved while right shifiting.
-        $this->buf .= chr(($i & 0x7F) | 0x80);
+        $this->buf .= \chr(($i & 0x7F) | 0x80);
         // Now shift and move sign bit.
         $i = (($i & 0x7FFFFFFFFFFFFFFF) >> 7) | 0x100000000000000;
       }
@@ -227,10 +227,10 @@ namespace Protobuf\Internal {
         $b = $i & 0x7F; // lower 7 bits
         $i = $i >> 7;
         if ($i == 0) {
-          $this->buf .= chr($b);
+          $this->buf .= \chr($b);
           return;
         }
-        $this->buf .= chr($b | 0x80); // set the top bit.
+        $this->buf .= \chr($b | 0x80); // set the top bit.
       }
     }
 
@@ -239,31 +239,31 @@ namespace Protobuf\Internal {
     }
 
     public function writeLittleEndianInt32Signed(int $i): void {
-      $this->buf .= pack('l', $i);
+      $this->buf .= \pack('l', $i);
     }
 
     public function writeLittleEndianInt32Unsigned(int $i): void {
-      $this->buf .= pack('L', $i);
+      $this->buf .= \pack('L', $i);
     }
 
     public function writeLittleEndianInt64(int $i): void {
-      $this->buf .= pack('q', $i);
+      $this->buf .= \pack('q', $i);
     }
 
     public function writeBool(bool $b): void {
-      $this->buf .= $b ? chr(0x01) : chr(0x00);
+      $this->buf .= $b ? \chr(0x01) : \chr(0x00);
     }
 
     public function writeFloat(float $f): void {
-      $this->buf .= pack('f', $f);
+      $this->buf .= \pack('f', $f);
     }
 
     public function writeDouble(float $d): void {
-      $this->buf .= pack('d', $d);
+      $this->buf .= \pack('d', $d);
     }
 
     public function writeString(string $s): void {
-      $this->writeVarint(strlen($s));
+      $this->writeVarint(\strlen($s));
       $this->buf .= $s;
     }
 
@@ -285,7 +285,7 @@ namespace Protobuf\Internal {
     }
 
     public function isEmpty(): bool {
-      return strlen($this->buf) == 0;
+      return \strlen($this->buf) == 0;
     }
 
     public function __toString(): string {

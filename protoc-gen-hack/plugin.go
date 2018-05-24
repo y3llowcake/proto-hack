@@ -129,7 +129,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	w.p("}")
 	w.ln()
 	w.p("public function FileDescriptorProtoBytes(): string {")
-	w.p("return (string)gzuncompress(base64_decode(self::RAW));")
+	w.p("return (string)\\gzuncompress(\\base64_decode(self::RAW));")
 	w.p("}")
 	w.p("}")
 }

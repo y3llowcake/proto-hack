@@ -27,7 +27,7 @@ namespace Grpc {
     public string $grpc_message;
     public function __construct(Code $code, string $message) {
       parent::__construct(
-        sprintf("grpc exception: %d; %s", $code, $message),
+        \sprintf("grpc exception: %d; %s", $code, $message),
         $code,
       );
       $this->grpc_code = $code;
@@ -82,9 +82,9 @@ namespace Grpc {
     }
 
     public function RegisterService(ServiceDesc $sd): void {
-      if (array_key_exists($sd->name, $this->services)) {
+      if (\array_key_exists($sd->name, $this->services)) {
         throw new \Exception(
-          sprintf("duplicate gRPC service entry for: %s", $sd->name),
+          \sprintf("duplicate gRPC service entry for: %s", $sd->name),
         );
       }
       $methods = dict[];
@@ -96,12 +96,12 @@ namespace Grpc {
 
     private static function SplitFQMethod(string $fq): (string, string) {
       // Strip leading slash, if any.
-      $fq = ltrim($fq, '/');
-      $parts = explode('/', $fq, 2);
-      if (count($parts) < 2) {
+      $fq = \ltrim($fq, '/');
+      $parts = \explode('/', $fq, 2);
+      if (\count($parts) < 2) {
         throw new \Grpc\GrpcException(
           \Grpc\Codes::InvalidArgument,
-          sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
+          \sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
         );
       }
       return tuple($parts[0], $parts[1]);
@@ -113,10 +113,10 @@ namespace Grpc {
       DecoderFunc $dec,
     ): Message {
       list($service_name, $method_name) = Server::SplitFQMethod($fqmethod);
-      if (!array_key_exists($service_name, $this->services)) {
+      if (!\array_key_exists($service_name, $this->services)) {
         throw new \Grpc\GrpcException(
           \Grpc\Codes::Unimplemented,
-          sprintf(
+          \sprintf(
             "service not implemented: '%s' for '%s'",
             $service_name,
             $fqmethod,
@@ -124,10 +124,10 @@ namespace Grpc {
         );
       }
       $service = $this->services[$service_name];
-      if (!array_key_exists($method_name, $service)) {
+      if (!\array_key_exists($method_name, $service)) {
         throw new \Grpc\GrpcException(
           \Grpc\Codes::Unimplemented,
-          sprintf(
+          \sprintf(
             "method not implemented: '%s' for '%s'",
             $method_name,
             $fqmethod,

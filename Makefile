@@ -3,8 +3,13 @@ all: bin
 bin: third_party
 	cd protoc-gen-hack && go install
 
+typecheck: bin
+	$(MAKE) -C test gen
+	hh_client
+	echo "\033[1mTYPECHECKER PASSED\033[0m"
+
 .PHONY: test
-test: bin
+test: typecheck
 	for dir in lib test conformance; do \
 		$(MAKE) -C $$dir test; \
 	done

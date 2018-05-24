@@ -4,11 +4,11 @@ include "protobuf.php";
 
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got !== $exp) {
-    $m = sprintf(
+    $m = \sprintf(
       "%s got:'%s' expected:'%s'",
       $msg,
-      print_r($got, true),
-      print_r($exp, true),
+      \print_r($got, true),
+      \print_r($exp, true),
     );
     throw new \Exception($m);
   }
@@ -17,7 +17,7 @@ function a(mixed $got, mixed $exp, string $msg): void {
 function cat(int ...$is): string {
   $v = '';
   foreach ($is as $i) {
-    $v .= chr($i);
+    $v .= \chr($i);
   }
   return $v;
 }
