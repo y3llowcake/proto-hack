@@ -7,7 +7,7 @@ namespace Protobuf {
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
     public function WriteTo(Internal\Encoder $e): void;
-    // public function WriteJsonTo(Internal\JsonEncoder $e): void;
+    public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
 
   function Unmarshal(string $data, Message $message): void {
@@ -19,20 +19,19 @@ namespace Protobuf {
     $message->WriteTo($e);
     return (string) $e;
   }
-  /*
-   function MarshalJson(Message $message, int $opt = 0): string {
-   $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
-   $message->WriteJsonTo($e);
-   return (string) $e;
-   }
-   class JsonEncode {
-   // https://developers.google.com/protocol-buffers/docs/proto3#json_options
-   const PRETTY_PRINT = 1 << 1;
-   const EMIT_DEFAULT_VALUES = 1 << 2;
-   const PRESERVE_NAMES = 1 << 3;
-   const ENUMS_AS_INTS = 1 << 4;
-   }
-   */
+
+  function MarshalJson(Message $message, int $opt = 0): string {
+    $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
+    $message->WriteJsonTo($e);
+    return (string) $e;
+  }
+  class JsonEncode {
+    // https://developers.google.com/protocol-buffers/docs/proto3#json_options
+    const int PRETTY_PRINT = 1 << 1;
+    const int EMIT_DEFAULT_VALUES = 1 << 2;
+    const int PRESERVE_NAMES = 1 << 3;
+    const int ENUMS_AS_INTS = 1 << 4;
+  }
 }
 // namespace Protobuf
 
@@ -296,212 +295,211 @@ namespace Protobuf\Internal {
     public function Name(): string;
     public function FileDescriptorProtoBytes(): string;
   }
-  /*
-   class JsonEncodeOpt {
-   public bool $pretty_print;
-   public bool $emit_default_values;
-   public bool $preserve_names;
-   public bool $enums_as_ints;
-   public function __construct(int $opt) {
-   $this->pretty_print =
-   (bool) ($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
-   $this->emit_default_values =
-   (bool) ($opt & \Protobuf\JsonEncode::EMIT_DEFAULT_VALUES);
-   $this->preserve_names = (bool) ($opt &
-   \Protobuf\JsonEncode::PRESERVE_NAMES);
-   $this->enums_as_ints = (bool) ($opt &
-   \Protobuf\JsonEncode::ENUMS_AS_INTS);
-   }
-   }
-   class JsonEncoder {
-   private dict<string, mixed> $a;
-   private JsonEncodeOpt $o;
-   // https://developers.google.com/protocol-buffers/docs/proto3#json_options
-   public function __construct(JsonEncodeOpt $o) {
-   $this->a = dict[];
-   $this->o = $o;
-   }
-   private function encodeMessage(
-   ?\Protobuf\Message $m,
-   ): dict<string, mixed> {
-   $e = new JsonEncoder($this->o);
-   if ($m !== null) {
-   $m->WriteJsonTo($e);
-   }
-   return $e->a;
-   }
-   public function writeMessage(
-   string $oname,
-   string $cname,
-   ?\Protobuf\Message $value,
-   ): void {
-   $a = $this->encodeMessage($value);
-   if (count($a) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
-   }
-   }
-   public function writeMessageList(
-   string $oname,
-   string $cname,
-   vec<?\Protobuf\Message> $value,
-   ): void {
-   $as = vec[];
-   foreach ($value as $v) {
-   $as[] = $this->encodeMessage($v);
-   }
-   if (count($as) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
-   }
-   }
-   public function writeInt(string $oname, string $cname, int $value): void {
-   if ($value != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-   }
-   }
-   public static function encodeFloat(float $value): mixed {
-   if (is_finite($value)) {
-   return $value;
-   }
-   if (is_nan($value)) {
-   return "NaN";
-   }
-   return $value > 0 ? "Infinity" : "-Infinity";
-   }
-   public function writeFloat(
-   string $oname,
-   string $cname,
-   float $value,
-   ): void {
-   if ($value != 0.0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] =
-   self::encodeFloat($value);
-   }
-   }
-   public function writeFloatList(
-   string $oname,
-   string $cname,
-   vec<float> $value,
-   ): void {
-   $vs = vec[];
-   foreach ($value as $v) {
-   $vs[] = self::encodeFloat($v);
-   }
-   if (count($vs) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-   }
-   }
-   public function writeFloatMap(
-   string $oname,
-   string $cname,
-   dict<arraykey, float> $value,
-   ): void {
-   $vs = dict[];
-   foreach ($value as $k => $v) {
-   $vs[$k] = self::encodeFloat($v);
-   }
-   if (count($vs) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-   }
-   }
-   public function writeBool(
-   string $oname,
-   string $cname,
-   bool $value,
-   ): void {
-   if ($value != false || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-   }
-   }
-   public function writeString(
-   string $oname,
-   string $cname,
-   string $value,
-   ): void {
-   if ($value != '' || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-   }
-   }
-   public function writePrimitiveList(
-   string $oname,
-   string $cname,
-   vec $value,
-   ): void {
-   if (count($value) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-   }
-   }
-   private function encodeEnum(dict<int, string> $itos, int $v): mixed {
-   return $this->o->enums_as_ints ? $v : $itos[$v];
-   }
-   public function writeEnum(
-   string $oname,
-   string $cname,
-   dict<int, string> $itos,
-   int $value,
-   ): void {
-   if ($value != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] =
-   $this->encodeEnum($itos, $value);
-   }
-   }
-   public function writeEnumList(
-   string $oname,
-   string $cname,
-   dict<int, string> $itos,
-   vec<int> $value,
-   ): void {
-   $vs = vec[];
-   foreach ($value as $v) {
-   $vs[] = $this->encodeEnum($itos, $v);
-   }
-   if (count($vs) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-   }
-   }
-   public function writePrimitiveMap(
-   string $oname,
-   string $cname,
-   dict $value,
-   ): void {
-   if (count($value) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-   }
-   }
-   public function writeMessageMap(
-   string $oname,
-   string $cname,
-   dict<arraykey, ?\Protobuf\Message> $value,
-   ): void {
-   $vs = dict[];
-   foreach ($value as $k => $v) {
-   $vs[$k] = $this->encodeMessage($v);
-   }
-   if (count($vs) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-   }
-   }
-   public function writeEnumMap(
-   string $oname,
-   string $cname,
-   dict<int, string> $itos,
-   dict<arraykey, int> $value,
-   ): void {
-   $vs = dict[];
-   foreach ($value as $k => $v) {
-   $vs[$k] = $this->encodeEnum($itos, $v);
-   }
-   if (count($vs) != 0 || $this->o->emit_default_values) {
-   $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-   }
-   }
-   public function __toString(): string {
-   $opt = JSON_PARTIAL_OUTPUT_ON_ERROR;
-   if ($this->o->pretty_print) {
-   $opt |= JSON_PRETTY_PRINT;
-   }
-   return json_encode($this->a, $opt);
-   }
-   }
-   */
+
+  class JsonEncodeOpt {
+    public bool $pretty_print;
+    public bool $emit_default_values;
+    public bool $preserve_names;
+    public bool $enums_as_ints;
+    public function __construct(int $opt) {
+      $this->pretty_print =
+        (bool) ($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
+      $this->emit_default_values =
+        (bool) ($opt & \Protobuf\JsonEncode::EMIT_DEFAULT_VALUES);
+      $this->preserve_names = (bool) ($opt &
+                                      \Protobuf\JsonEncode::PRESERVE_NAMES);
+      $this->enums_as_ints = (bool) ($opt &
+                                     \Protobuf\JsonEncode::ENUMS_AS_INTS);
+    }
+  }
+  class JsonEncoder {
+    private dict<string, mixed> $a;
+    private JsonEncodeOpt $o;
+    // https://developers.google.com/protocol-buffers/docs/proto3#json_options
+    public function __construct(JsonEncodeOpt $o) {
+      $this->a = dict[];
+      $this->o = $o;
+    }
+    private function encodeMessage(
+      ?\Protobuf\Message $m,
+    ): dict<string, mixed> {
+      $e = new JsonEncoder($this->o);
+      if ($m !== null) {
+        $m->WriteJsonTo($e);
+      }
+      return $e->a;
+    }
+    public function writeMessage(
+      string $oname,
+      string $cname,
+      ?\Protobuf\Message $value,
+    ): void {
+      $a = $this->encodeMessage($value);
+      if (\count($a) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
+      }
+    }
+    public function writeMessageList(
+      string $oname,
+      string $cname,
+      vec<?\Protobuf\Message> $value,
+    ): void {
+      $as = vec[];
+      foreach ($value as $v) {
+        $as[] = $this->encodeMessage($v);
+      }
+      if (\count($as) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
+      }
+    }
+    public function writeInt(string $oname, string $cname, int $value): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+    public static function encodeFloat(float $value): mixed {
+      if (\is_finite($value)) {
+        return $value;
+      }
+      if (\is_nan($value)) {
+        return "NaN";
+      }
+      return $value > 0 ? "Infinity" : "-Infinity";
+    }
+    public function writeFloat(
+      string $oname,
+      string $cname,
+      float $value,
+    ): void {
+      if ($value != 0.0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          self::encodeFloat($value);
+      }
+    }
+    public function writeFloatList(
+      string $oname,
+      string $cname,
+      vec<float> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = self::encodeFloat($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+    public function writeFloatMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, float> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = self::encodeFloat($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+    public function writeBool(
+      string $oname,
+      string $cname,
+      bool $value,
+    ): void {
+      if ($value != false || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+    public function writeString(
+      string $oname,
+      string $cname,
+      string $value,
+    ): void {
+      if ($value != '' || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+    public function writePrimitiveList<T>(
+      string $oname,
+      string $cname,
+      vec<T> $value,
+    ): void {
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+    private function encodeEnum(dict<int, string> $itos, int $v): mixed {
+      return $this->o->enums_as_ints ? $v : $itos[$v];
+    }
+    public function writeEnum(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      int $value,
+    ): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          $this->encodeEnum($itos, $value);
+      }
+    }
+    public function writeEnumList(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      vec<int> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = $this->encodeEnum($itos, $v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+    public function writePrimitiveMap<T>(
+      string $oname,
+      string $cname,
+      dict<arraykey, T> $value,
+    ): void {
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+    public function writeMessageMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, ?\Protobuf\Message> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeMessage($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+    public function writeEnumMap(
+      string $oname,
+      string $cname,
+      dict<int, string> $itos,
+      dict<arraykey, int> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeEnum($itos, $v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+    public function __toString(): string {
+      $opt = \JSON_PARTIAL_OUTPUT_ON_ERROR;
+      if ($this->o->pretty_print) {
+        $opt |= \JSON_PRETTY_PRINT;
+      }
+      return \json_encode($this->a, $opt);
+    }
+  }
 }
 // namespace Protobuf/Internal
