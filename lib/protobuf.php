@@ -25,6 +25,7 @@ namespace Protobuf {
     $message->WriteJsonTo($e);
     return (string) $e;
   }
+
   class JsonEncode {
     // https://developers.google.com/protocol-buffers/docs/proto3#json_options
     const int PRETTY_PRINT = 1 << 1;
@@ -301,6 +302,7 @@ namespace Protobuf\Internal {
     public bool $emit_default_values;
     public bool $preserve_names;
     public bool $enums_as_ints;
+
     public function __construct(int $opt) {
       $this->pretty_print =
         (bool) ($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
@@ -312,14 +314,17 @@ namespace Protobuf\Internal {
                                      \Protobuf\JsonEncode::ENUMS_AS_INTS);
     }
   }
+
   class JsonEncoder {
     private dict<string, mixed> $a;
     private JsonEncodeOpt $o;
+
     // https://developers.google.com/protocol-buffers/docs/proto3#json_options
     public function __construct(JsonEncodeOpt $o) {
       $this->a = dict[];
       $this->o = $o;
     }
+
     private function encodeMessage(
       ?\Protobuf\Message $m,
     ): dict<string, mixed> {
@@ -329,6 +334,7 @@ namespace Protobuf\Internal {
       }
       return $e->a;
     }
+
     public function writeMessage(
       string $oname,
       string $cname,
@@ -339,6 +345,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
       }
     }
+
     public function writeMessageList(
       string $oname,
       string $cname,
@@ -352,11 +359,13 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
       }
     }
+
     public function writeInt(string $oname, string $cname, int $value): void {
       if ($value != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
+
     public static function encodeFloat(float $value): mixed {
       if (\is_finite($value)) {
         return $value;
@@ -366,6 +375,7 @@ namespace Protobuf\Internal {
       }
       return $value > 0 ? "Infinity" : "-Infinity";
     }
+
     public function writeFloat(
       string $oname,
       string $cname,
@@ -376,6 +386,7 @@ namespace Protobuf\Internal {
           self::encodeFloat($value);
       }
     }
+
     public function writeFloatList(
       string $oname,
       string $cname,
@@ -389,6 +400,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
+
     public function writeFloatMap(
       string $oname,
       string $cname,
@@ -402,6 +414,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
+
     public function writeBool(
       string $oname,
       string $cname,
@@ -411,6 +424,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
+
     public function writeString(
       string $oname,
       string $cname,
@@ -420,6 +434,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
+
     public function writePrimitiveList<T>(
       string $oname,
       string $cname,
@@ -429,9 +444,11 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
+
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
       return $this->o->enums_as_ints ? $v : $itos[$v];
     }
+
     public function writeEnum(
       string $oname,
       string $cname,
@@ -443,6 +460,7 @@ namespace Protobuf\Internal {
           $this->encodeEnum($itos, $value);
       }
     }
+
     public function writeEnumList(
       string $oname,
       string $cname,
@@ -457,6 +475,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
+
     public function writePrimitiveMap<T>(
       string $oname,
       string $cname,
@@ -466,6 +485,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
+
     public function writeMessageMap(
       string $oname,
       string $cname,
@@ -479,6 +499,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
+
     public function writeEnumMap(
       string $oname,
       string $cname,
@@ -493,6 +514,7 @@ namespace Protobuf\Internal {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
+
     public function __toString(): string {
       $opt = \JSON_PARTIAL_OUTPUT_ON_ERROR;
       if ($this->o->pretty_print) {
