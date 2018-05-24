@@ -360,13 +360,109 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeInt(string $oname, string $cname, int $value): void {
+    public function writeMessageMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, ?\Protobuf\Message> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = $this->encodeMessage($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeInt32(
+      string $oname,
+      string $cname,
+      int $value,
+    ): void {
       if ($value != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
 
-    public static function encodeFloat(float $value): mixed {
+    public function writeInt64Signed(
+      string $oname,
+      string $cname,
+      int $value,
+    ): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          \sprintf('%d', $value);
+      }
+    }
+
+    public function writeInt64SignedList(
+      string $oname,
+      string $cname,
+      vec<int> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = \sprintf('%d', $v);
+      }
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeInt64SignedMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, int> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = \sprintf('%d', $v);
+      }
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeInt64Unsigned(
+      string $oname,
+      string $cname,
+      int $value,
+    ): void {
+      if ($value != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          \sprintf('%u', $value);
+      }
+    }
+
+    public function writeInt64UnsignedList(
+      string $oname,
+      string $cname,
+      vec<int> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $v) {
+        $vs[] = \sprintf('%u', $v);
+      }
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeInt64UnsignedMap(
+      string $oname,
+      string $cname,
+      dict<arraykey, int> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = \sprintf('%u', $v);
+      }
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    private static function encodeFloat(float $value): mixed {
       if (\is_finite($value)) {
         return $value;
       }
@@ -435,16 +531,6 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writePrimitiveList<T>(
-      string $oname,
-      string $cname,
-      vec<T> $value,
-    ): void {
-      if (\count($value) != 0 || $this->o->emit_default_values) {
-        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-      }
-    }
-
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
       return $this->o->enums_as_ints ? $v : $itos[$v];
     }
@@ -476,30 +562,6 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writePrimitiveMap<T>(
-      string $oname,
-      string $cname,
-      dict<arraykey, T> $value,
-    ): void {
-      if (\count($value) != 0 || $this->o->emit_default_values) {
-        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
-      }
-    }
-
-    public function writeMessageMap(
-      string $oname,
-      string $cname,
-      dict<arraykey, ?\Protobuf\Message> $value,
-    ): void {
-      $vs = dict[];
-      foreach ($value as $k => $v) {
-        $vs[$k] = $this->encodeMessage($v);
-      }
-      if (\count($vs) != 0 || $this->o->emit_default_values) {
-        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
-      }
-    }
-
     public function writeEnumMap(
       string $oname,
       string $cname,
@@ -512,6 +574,26 @@ namespace Protobuf\Internal {
       }
       if (\count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writePrimitiveList<T>(
+      string $oname,
+      string $cname,
+      vec<T> $value,
+    ): void {
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writePrimitiveMap<T>(
+      string $oname,
+      string $cname,
+      dict<arraykey, T> $value,
+    ): void {
+      if (\count($value) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
 
