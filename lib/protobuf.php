@@ -462,9 +462,10 @@ namespace Protobuf\Internal {
       }
     }
 
-    private static function encodeFloat(float $value): mixed {
+    private static function encodeFloat(float $value): string {
       if (\is_finite($value)) {
-        return $value;
+        //return $value;
+        return \sprintf('%.999e', $value);
       }
       if (\is_nan($value)) {
         return "NaN";
