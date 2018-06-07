@@ -17,13 +17,13 @@ namespace Protobuf {
   function Marshal(Message $message): string {
     $e = new Internal\Encoder();
     $message->WriteTo($e);
-    return (string) $e;
+    return (string)$e;
   }
 
   function MarshalJson(Message $message, int $opt = 0): string {
     $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
     $message->WriteJsonTo($e);
-    return (string) $e;
+    return (string)$e;
   }
 
   class JsonEncode {
@@ -136,7 +136,11 @@ namespace Protobuf\Internal {
     }
 
     public function readString(): string {
-      return $this->readRaw($this->readVarint());
+      $len = $this->readVarint();
+      if ($len == 0) {
+        return '';
+      }
+      return $this->readRaw($len);
     }
 
     public function readVarintZigZag32(): int {
@@ -152,9 +156,8 @@ namespace Protobuf\Internal {
 
     private function readRaw(int $size): string {
       if ($this->isEOF()) {
-        throw new \Protobuf\ProtobufException(
-          "buffer overrun while reading raw",
-        );
+        throw
+          new \Protobuf\ProtobufException("buffer overrun while reading raw");
       }
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
@@ -279,7 +282,7 @@ namespace Protobuf\Internal {
     public function writeEncoder(Encoder $e, int $fn): void {
       if (!$e->isEmpty()) {
         $this->writeTag($fn, 2);
-        $this->writeString((string) $e);
+        $this->writeString((string)$e);
       }
     }
 
@@ -297,6 +300,22 @@ namespace Protobuf\Internal {
     public function FileDescriptorProtoBytes(): string;
   }
 
+  function LoadedFileDescriptors(): vec<\Protobuf\Internal\FileDescriptor> {
+    $ret = vec[];
+    foreach (\get_declared_classes() as $cname) {
+      if (\strpos($cname, 'XXX_FileDescriptor_') === false) {
+        continue;
+      }
+      $rc = new \ReflectionClass($cname);
+      if (!$rc->implementsInterface('Protobuf\Internal\FileDescriptor')) {
+        continue;
+      }
+      $ins = $rc->newInstance();
+      $ret[] = $ins;
+    }
+    return $ret;
+  }
+
   class JsonEncodeOpt {
     public bool $pretty_print;
     public bool $emit_default_values;
@@ -304,14 +323,12 @@ namespace Protobuf\Internal {
     public bool $enums_as_ints;
 
     public function __construct(int $opt) {
-      $this->pretty_print =
-        (bool) ($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
+      $this->pretty_print = (bool)($opt & \Protobuf\JsonEncode::PRETTY_PRINT);
       $this->emit_default_values =
-        (bool) ($opt & \Protobuf\JsonEncode::EMIT_DEFAULT_VALUES);
-      $this->preserve_names = (bool) ($opt &
-                                      \Protobuf\JsonEncode::PRESERVE_NAMES);
-      $this->enums_as_ints = (bool) ($opt &
-                                     \Protobuf\JsonEncode::ENUMS_AS_INTS);
+        (bool)($opt & \Protobuf\JsonEncode::EMIT_DEFAULT_VALUES);
+      $this->preserve_names =
+        (bool)($opt & \Protobuf\JsonEncode::PRESERVE_NAMES);
+      $this->enums_as_ints = (bool)($opt & \Protobuf\JsonEncode::ENUMS_AS_INTS);
     }
   }
 
@@ -325,9 +342,7 @@ namespace Protobuf\Internal {
       $this->o = $o;
     }
 
-    private function encodeMessage(
-      ?\Protobuf\Message $m,
-    ): dict<string, mixed> {
+    private function encodeMessage(?\Protobuf\Message $m): dict<string, mixed> {
       $e = new JsonEncoder($this->o);
       if ($m !== null) {
         $m->WriteJsonTo($e);
@@ -374,11 +389,7 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeInt32(
-      string $oname,
-      string $cname,
-      int $value,
-    ): void {
+    public function writeInt32(string $oname, string $cname, int $value): void {
       if ($value != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
@@ -512,11 +523,7 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeBool(
-      string $oname,
-      string $cname,
-      bool $value,
-    ): void {
+    public function writeBool(string $oname, string $cname, bool $value): void {
       if ($value != false || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }

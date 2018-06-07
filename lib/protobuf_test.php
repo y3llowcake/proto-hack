@@ -27,7 +27,7 @@ function testVarint(int $dec, string $enc) {
   a($d->readVarint(), $dec, "read varint");
   $e = new Encoder();
   $e->writeVarint($dec);
-  a((string) $e, $enc, "write varint");
+  a((string)$e, $enc, "write varint");
 }
 
 function testVarintZigZag32(int $dec, string $enc) {
@@ -35,7 +35,7 @@ function testVarintZigZag32(int $dec, string $enc) {
   a($d->readVarintZigZag32(), $dec, "read varint zigzag 32");
   $e = new Encoder();
   $e->writeVarintZigZag32($dec);
-  a((string) $e, $enc, "write varint zigzag 32");
+  a((string)$e, $enc, "write varint zigzag 32");
 }
 
 function testVarintZigZag64(int $dec, string $enc) {
@@ -43,7 +43,7 @@ function testVarintZigZag64(int $dec, string $enc) {
   a($d->readVarintZigZag64(), $dec, "read varint zigzag 64");
   $e = new Encoder();
   $e->writeVarintZigZag64($dec);
-  a((string) $e, $enc, "write varint zigzag 64");
+  a((string)$e, $enc, "write varint zigzag 64");
 }
 
 function testLittleEndianInt32Signed(int $dec, string $enc) {
@@ -51,7 +51,7 @@ function testLittleEndianInt32Signed(int $dec, string $enc) {
   a($d->readLittleEndianInt32Signed(), $dec, "read le int32");
   $e = new Encoder();
   $e->writeLittleEndianInt32Signed($dec);
-  a((string) $e, $enc, "write le int32");
+  a((string)$e, $enc, "write le int32");
 }
 
 function testLittleEndianInt64(int $dec, string $enc) {
@@ -59,7 +59,7 @@ function testLittleEndianInt64(int $dec, string $enc) {
   a($d->readLittleEndianInt64(), $dec, "read le int64");
   $e = new Encoder();
   $e->writeLittleEndianInt64($dec);
-  a((string) $e, $enc, "write le int64");
+  a((string)$e, $enc, "write le int64");
 }
 
 // TODO all the read write funcs.
@@ -98,14 +98,8 @@ function test(): void {
   testLittleEndianInt32Signed(1234567890, cat(0xD2, 0x02, 0x96, 0x49));
   testLittleEndianInt32Signed(-1, cat(0xFF, 0xFF, 0xFF, 0xFF));
 
-  testLittleEndianInt64(
-    0,
-    cat(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  );
-  testLittleEndianInt64(
-    1,
-    cat(0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
-  );
+  testLittleEndianInt64(0, cat(0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00));
+  testLittleEndianInt64(1, cat(0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00));
   testLittleEndianInt64(
     -1,
     cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF),
