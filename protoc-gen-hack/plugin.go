@@ -740,6 +740,8 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		fqname = pkg + "." + fqname
 	}
 
+	isReflectionApi := fqname == "grpc.reflection.v1alpha.ServerReflection"
+
 	// Client
 	w.p("class %sClient {", sdp.GetName())
 	w.p("public function __construct(private \\Grpc\\ClientConn $cc) {")
@@ -761,7 +763,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	// Server
 	w.p("interface %sServer {", sdp.GetName())
 	for _, m := range methods {
-		if m.isStreaming() {
+		if m.isStreaming() && !isReflectionApi {
 			continue
 		}
 		w.p("public function %s(\\Grpc\\Context $ctx, %s $in): %s;", m.PhpName, m.InputPhpName, m.OutputPhpName)
@@ -772,7 +774,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	w.p("function Register%sServer(\\Grpc\\Server $server, %sServer $service): void {", sdp.GetName(), sdp.GetName())
 	w.p("$methods = vec[];")
 	for _, m := range methods {
-		if m.isStreaming() {
+		if m.isStreaming() && !isReflectionApi {
 			continue
 		}
 		w.p("$handler = function(\\Grpc\\Context $ctx, \\Grpc\\DecoderFunc $df): %s\\Message use ($service) {", libNs)
