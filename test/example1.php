@@ -128,12 +128,24 @@ function jsonTests(string $raw): void {
 	file_put_contents('./gen-data/example1.pb.json', $j);
 }
 
+function testDescriptorReflection(): void {
+	$fds = Protobuf\Internal\LoadedFileDescriptors();
+	$names = array();
+	foreach($fds as $fd) {
+		$names []= $fd->Name();
+	}
+	if (!in_array('example1.proto', $names)) {
+		throw new \Exception('missing file descriptor for example1');
+	}
+}
+
 function test(): void {
 	$raw = file_get_contents('./gen-data/example1.pb.bin');
 	$res = testExample1($raw, "test example1: file");
 	araw($res, $raw, "hack marshal does not match protoc marshal");
 	testExample1($res, "test example1: remarshal");
 	jsonTests($raw);
+	testDescriptorReflection();
 
 	/*for ($i = 0; $i < 10000; $i++){
 		$start = microtime_as_int();
