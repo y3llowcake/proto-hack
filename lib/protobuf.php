@@ -136,7 +136,11 @@ namespace Protobuf\Internal {
     }
 
     public function readString(): string {
-      return $this->readRaw($this->readVarint());
+      $len = $this->readVarint();
+      if ($len == 0) {
+        return '';
+      }
+      return $this->readRaw($len);
     }
 
     public function readVarintZigZag32(): int {
