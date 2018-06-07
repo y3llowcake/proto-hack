@@ -133,6 +133,10 @@ function testDescriptorReflection(): void {
 	$names = array();
 	foreach($fds as $fd) {
 		$names []= $fd->Name();
+		$raw = $fd->FileDescriptorProtoBytes();
+		if ($raw == false) {
+			throw new \Exception('descriptor decode failed');
+		}
 	}
 	if (!in_array('example1.proto', $names)) {
 		throw new \Exception('missing file descriptor for example1');
