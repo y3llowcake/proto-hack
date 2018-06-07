@@ -147,7 +147,7 @@ func toPhpString(fdp *desc.FileDescriptorProto) string {
 	if _, err = gz.Write(bfdp); err != nil {
 		panic(err)
 	}
-	if err = gz.Flush(); err != nil {
+	if err = gz.Close(); err != nil {
 		panic(err)
 	}
 	str := base64.RawStdEncoding.EncodeToString(b.Bytes())
