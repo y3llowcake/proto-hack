@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"compress/flate"
+	"compress/zlib"
 	"encoding/base64"
 	"fmt"
 	"github.com/golang/protobuf/proto"
@@ -129,7 +130,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	w.p("}")
 	w.ln()
 	w.p("public function FileDescriptorProtoBytes(): string {")
-	w.p("return (string)\\gzdeflate(\\base64_decode(self::RAW));")
+	w.p("return (string)\\gzuncompress(\\base64_decode(self::RAW));")
 	w.p("}")
 	w.p("}")
 }
@@ -140,14 +141,14 @@ func toPhpString(fdp *desc.FileDescriptorProto) string {
 		panic(err)
 	}
 	var b bytes.Buffer
-	gz, err := flate.NewWriter(&b, flate.BestCompression)
+	gz, err := zlib.NewWriterLevel(&b, flate.BestCompression)
 	if err != nil {
 		panic(err)
 	}
 	if _, err = gz.Write(bfdp); err != nil {
 		panic(err)
 	}
-	if err = gz.Flush(); err != nil {
+	if err = gz.Close(); err != nil {
 		panic(err)
 	}
 	str := base64.RawStdEncoding.EncodeToString(b.Bytes())

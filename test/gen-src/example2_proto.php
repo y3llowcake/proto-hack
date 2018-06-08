@@ -54,12 +54,12 @@ class example2 implements \Protobuf\Message {
 
 class XXX_FileDescriptor_example2__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example2.proto';
-  const string RAW = 'NI+9SsRQEIXn9+bmbDRxKisRK7HYYn0CCxtLS7tdWEUwZhEFyav5cnITbnc+zsw3DM6Pv/vx9HHcbU9f0/cUzev7vD3s55sr5FpFwOZpfLvka7715yXf9UgPj58/4y4c/DLQ0x8jhRGBkcFdKFGUJKGSewBiFGaUGIAacajlARuYkVCoywXO4AUszMUC3YpeyqYSh3ruKmmo90OxO4Xlch1QL1PZN8Xui72VXFZ8FbSilSS0Tc0hLe/f/wMAAP//';
+  const string RAW = 'eNo0j71KxFAQhef35uZsNHEqKxErsdhifQILG0tLu11YRTBmEQXJq/lychNudz7OzDcMzo+/+/H0cdxtT1/T9xTN6/u8PeznmyvkWkXA5ml8u+RrvvXnJd/1SA+Pnz/jLhz8MtDTHyOFEYGRwV0oUZQkoZJ7AGIUZpQYgBpxqOUBG5iRUKjLBc7gBSzMxQLdil7KphKHeu4qaaj3Q7E7heVyHVAvU9k3xe6LvZVcVnwVtKKVJLRNzSEt79//BwAA//+5qBvF';
   public function Name(): string {
     return self::NAME;
   }
 
   public function FileDescriptorProtoBytes(): string {
-    return (string)\gzdeflate(\base64_decode(self::RAW));
+    return (string)\gzuncompress(\base64_decode(self::RAW));
   }
 }
