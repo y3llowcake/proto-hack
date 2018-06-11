@@ -541,12 +541,15 @@ func (f field) jsonWriter() (string, string) {
 
 func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	if f.isMap {
-		_, v := f.mapFields()
+		k, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
 			itos := v.typePhpNs + "\\" + v.typePhpName + "::NumbersToNames()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
+			if k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL {
+				w.p("/* HH_FIXME[4110] bool is not arraykey */") // TODO fix this.
+			}
 			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
 		}
 		return
