@@ -112,6 +112,8 @@ function testExample1($raw, $failmsg): string {
 
 	$exp->outoforder = 1;
 
+	$exp->aoneof = new \foo\bar\example1_oostring("oneofstring");
+
 	a($got, $exp, $failmsg);
 	return Protobuf\Marshal($got);
 }
