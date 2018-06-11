@@ -536,7 +536,7 @@ func (f field) jsonWriter() (string, string) {
 	}
 }
 
-func (f field) writeJsonEncoder(w *writer, enc string) {
+func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	if f.isMap {
 		_, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
@@ -551,17 +551,22 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 
 	writer, manyWriter := f.jsonWriter()
 
+	emitDefault := ", false"
+	if forceEmitDefault {
+		emitDefault = ", true"
+	}
 	repeated := ""
 	if f.isRepeated() {
 		repeated = "List"
 		writer = manyWriter
+		emitDefault = ""
 	}
 
 	if writer == "Enum" {
 		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
-		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
+		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName(), emitDefault)
 	} else {
-		w.p("%s->write%s%s('%s', '%s', $this->%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
+		w.p("%s->write%s%s('%s', '%s', $this->%s%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName(), emitDefault)
 	}
 }
 
@@ -656,7 +661,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 		w.ln()
 
 		w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-		f.writeJsonEncoder(w, "$e")
+		f.writeJsonEncoder(w, "$e", true)
 		w.p("}")
 
 		w.p("}")
@@ -801,7 +806,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		if f.isOneofMember() {
 			continue
 		}
-		f.writeJsonEncoder(w, "$e")
+		f.writeJsonEncoder(w, "$e", false)
 	}
 	for _, oo := range oneofs {
 		w.p("$this->%s->WriteJsonTo($e);", oo.name)

@@ -47,7 +47,7 @@ class example2 implements \Protobuf\Message {
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeInt32('aint32', 'aint32', $this->aint32);
+    $e->writeInt32('aint32', 'aint32', $this->aint32, false);
   }
 }
 
@@ -99,7 +99,7 @@ class example1_oostring implements example1_aoneof {
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeString('oostring', 'oostring', $this->oostring);
+    $e->writeString('oostring', 'oostring', $this->oostring, true);
   }
 }
 
@@ -116,7 +116,7 @@ class example1_ooint implements example1_aoneof {
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeInt32('ooint', 'ooint', $this->ooint);
+    $e->writeInt32('ooint', 'ooint', $this->ooint, true);
   }
 }
 
@@ -147,7 +147,7 @@ class example1_example2 implements \Protobuf\Message {
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeString('astring', 'astring', $this->astring);
+    $e->writeString('astring', 'astring', $this->astring, false);
   }
 }
 
@@ -187,8 +187,8 @@ class example1_AmapEntry implements \Protobuf\Message {
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeString('key', 'key', $this->key);
-    $e->writeString('value', 'value', $this->value);
+    $e->writeString('key', 'key', $this->key, false);
+    $e->writeString('value', 'value', $this->value, false);
   }
 }
 
@@ -233,8 +233,8 @@ class example1_Amap2Entry implements \Protobuf\Message {
     }
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeString('key', 'key', $this->key);
-    $e->writeMessage('value', 'value', $this->value);
+    $e->writeString('key', 'key', $this->key, false);
+    $e->writeMessage('value', 'value', $this->value, false);
   }
 }
 
@@ -534,30 +534,30 @@ class example1 implements \Protobuf\Message {
     $this->aoneof->WriteTo($e);
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeFloat('adouble', 'adouble', $this->adouble);
-    $e->writeFloat('afloat', 'afloat', $this->afloat);
-    $e->writeInt32('aint32', 'aint32', $this->aint32);
-    $e->writeInt64Signed('aint64', 'aint64', $this->aint64);
-    $e->writeInt32('auint32', 'auint32', $this->auint32);
-    $e->writeInt32('auint64', 'auint64', $this->auint64);
-    $e->writeInt32('asint32', 'asint32', $this->asint32);
-    $e->writeInt64Signed('asint64', 'asint64', $this->asint64);
-    $e->writeInt32('afixed32', 'afixed32', $this->afixed32);
-    $e->writeInt64Unsigned('afixed64', 'afixed64', $this->afixed64);
-    $e->writeInt32('asfixed32', 'asfixed32', $this->asfixed32);
-    $e->writeInt64Signed('asfixed64', 'asfixed64', $this->asfixed64);
-    $e->writeBool('abool', 'abool', $this->abool);
-    $e->writeString('astring', 'astring', $this->astring);
-    $e->writeString('abytes', 'abytes', $this->abytes);
-    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::NumbersToNames(), $this->aenum1);
-    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::NumbersToNames(), $this->aenum2);
-    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::NumbersToNames(), $this->aenum22);
+    $e->writeFloat('adouble', 'adouble', $this->adouble, false);
+    $e->writeFloat('afloat', 'afloat', $this->afloat, false);
+    $e->writeInt32('aint32', 'aint32', $this->aint32, false);
+    $e->writeInt64Signed('aint64', 'aint64', $this->aint64, false);
+    $e->writeInt32('auint32', 'auint32', $this->auint32, false);
+    $e->writeInt32('auint64', 'auint64', $this->auint64, false);
+    $e->writeInt32('asint32', 'asint32', $this->asint32, false);
+    $e->writeInt64Signed('asint64', 'asint64', $this->asint64, false);
+    $e->writeInt32('afixed32', 'afixed32', $this->afixed32, false);
+    $e->writeInt64Unsigned('afixed64', 'afixed64', $this->afixed64, false);
+    $e->writeInt32('asfixed32', 'asfixed32', $this->asfixed32, false);
+    $e->writeInt64Signed('asfixed64', 'asfixed64', $this->asfixed64, false);
+    $e->writeBool('abool', 'abool', $this->abool, false);
+    $e->writeString('astring', 'astring', $this->astring, false);
+    $e->writeString('abytes', 'abytes', $this->abytes, false);
+    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::NumbersToNames(), $this->aenum1, false);
+    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::NumbersToNames(), $this->aenum2, false);
+    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::NumbersToNames(), $this->aenum22, false);
     $e->writePrimitiveList('manystring', 'manystring', $this->manystring);
     $e->writeInt64SignedList('manyint64', 'manyint64', $this->manyint64);
-    $e->writeMessage('aexample2', 'aexample2', $this->aexample2);
-    $e->writeMessage('aexample22', 'aexample22', $this->aexample22);
-    $e->writeMessage('aexample23', 'aexample23', $this->aexample23);
-    $e->writeInt64Signed('outoforder', 'outoforder', $this->outoforder);
+    $e->writeMessage('aexample2', 'aexample2', $this->aexample2, false);
+    $e->writeMessage('aexample22', 'aexample22', $this->aexample22, false);
+    $e->writeMessage('aexample23', 'aexample23', $this->aexample23, false);
+    $e->writeInt64Signed('outoforder', 'outoforder', $this->outoforder, false);
     $e->writePrimitiveMap('amap', 'amap', $this->amap);
     $e->writeMessageMap('amap2', 'amap2', $this->amap2);
     $this->aoneof->WriteJsonTo($e);

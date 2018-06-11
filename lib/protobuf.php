@@ -354,9 +354,10 @@ namespace Protobuf\Internal {
       string $oname,
       string $cname,
       ?\Protobuf\Message $value,
+      bool $emit_default,
     ): void {
       $a = $this->encodeMessage($value);
-      if (\count($a) != 0 || $this->o->emit_default_values) {
+      if (\count($a) != 0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
       }
     }
@@ -389,8 +390,13 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeInt32(string $oname, string $cname, int $value): void {
-      if ($value != 0 || $this->o->emit_default_values) {
+    public function writeInt32(
+      string $oname,
+      string $cname,
+      int $value,
+      bool $emit_default,
+    ): void {
+      if ($value != 0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
@@ -399,8 +405,9 @@ namespace Protobuf\Internal {
       string $oname,
       string $cname,
       int $value,
+      bool $emit_default,
     ): void {
-      if ($value != 0 || $this->o->emit_default_values) {
+      if ($value != 0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] =
           \sprintf('%d', $value);
       }
@@ -438,8 +445,9 @@ namespace Protobuf\Internal {
       string $oname,
       string $cname,
       int $value,
+      bool $emit_default,
     ): void {
-      if ($value != 0 || $this->o->emit_default_values) {
+      if ($value != 0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] =
           \sprintf('%u', $value);
       }
@@ -488,8 +496,9 @@ namespace Protobuf\Internal {
       string $oname,
       string $cname,
       float $value,
+      bool $emit_default,
     ): void {
-      if ($value != 0.0 || $this->o->emit_default_values) {
+      if ($value != 0.0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] =
           self::encodeFloat($value);
       }
@@ -523,8 +532,13 @@ namespace Protobuf\Internal {
       }
     }
 
-    public function writeBool(string $oname, string $cname, bool $value): void {
-      if ($value != false || $this->o->emit_default_values) {
+    public function writeBool(
+      string $oname,
+      string $cname,
+      bool $value,
+      bool $emit_default,
+    ): void {
+      if ($value != false || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
@@ -533,8 +547,9 @@ namespace Protobuf\Internal {
       string $oname,
       string $cname,
       string $value,
+      bool $emit_default,
     ): void {
-      if ($value != '' || $this->o->emit_default_values) {
+      if ($value != '' || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
       }
     }
@@ -548,8 +563,9 @@ namespace Protobuf\Internal {
       string $cname,
       dict<int, string> $itos,
       int $value,
+      bool $emit_default,
     ): void {
-      if ($value != 0 || $this->o->emit_default_values) {
+      if ($value != 0 || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] =
           $this->encodeEnum($itos, $value);
       }
