@@ -68,7 +68,7 @@ class example1_AEnum2 {
 }
 
 newtype XXX_example1_aoneof_enum_t = int;
-interface XXX_example1_aoneof_t {
+interface example1_aoneof {
   const XXX_example1_aoneof_enum_t XXX_NOT_SET = 0;
   const XXX_example1_aoneof_enum_t oostring = 60;
   const XXX_example1_aoneof_enum_t ooint = 61;
@@ -77,7 +77,7 @@ interface XXX_example1_aoneof_t {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
 }
 
-class XXX_example1_aoneof_NOT_SET implements XXX_example1_aoneof_t {
+class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
   public function WhichOneof(): XXX_example1_aoneof_enum_t {
     return self::XXX_NOT_SET;
   }
@@ -90,7 +90,7 @@ class XXX_example1_aoneof_NOT_SET implements XXX_example1_aoneof_t {
     throw new \Protobuf\ProtobufException('oneof not set: aoneof');
   }
 }
-class example1_oostring implements XXX_example1_aoneof_t {
+class example1_oostring implements example1_aoneof {
   public function __construct(public string $oostring) {}
 
   public function WhichOneof(): XXX_example1_aoneof_enum_t {
@@ -107,7 +107,7 @@ class example1_oostring implements XXX_example1_aoneof_t {
   }
 }
 
-class example1_ooint implements XXX_example1_aoneof_t {
+class example1_ooint implements example1_aoneof {
   public function __construct(public int $ooint) {}
 
   public function WhichOneof(): XXX_example1_aoneof_enum_t {
@@ -269,7 +269,7 @@ class example1 implements \Protobuf\Message {
   public dict<string, string> $amap;
   public dict<string, ?\fiz\baz\example2> $amap2;
   public int $outoforder;
-  public XXX_example1_aoneof_t $aoneof;
+  public example1_aoneof $aoneof;
 
   public function __construct() {
     $this->adouble = 0.0;

@@ -5,6 +5,7 @@ bin: third_party
 
 typecheck: bin
 	$(MAKE) -C test gen
+	$(MAKE) -C conformance gen
 	hh_client
 	echo "\033[1mTYPECHECKER PASSED\033[0m"
 

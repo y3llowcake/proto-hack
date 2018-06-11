@@ -646,7 +646,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	// An implementation per field.
 	for _, f := range oo.fields {
 		w.p("class %s implements %s {", oo.classNameForField(f), oo.interfaceName)
-		w.p("public function __construct(public %s $%s) {}", f.labeledType(), f.varName())
+		w.p("public function __construct(public %s $%s) {}", f.phpType(), f.varName())
 		w.ln()
 
 		w.p("public function WhichOneof(): %s {", oo.enumTypeName)
@@ -704,7 +704,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			descriptor:    od,
 			name:          od.GetName(),
 			fields:        oneofFields[int32(i)],
-			interfaceName: specialPrefix + oneofName + "_t",
+			interfaceName: oneofName,
 			enumTypeName:  specialPrefix + oneofName + "_enum_t",
 			classPrefix:   strings.Join(nextNames, "_") + "_",
 			notsetClass:   specialPrefix + oneofName + "_" + "NOT_SET",
