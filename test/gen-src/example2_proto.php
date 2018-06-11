@@ -18,9 +18,7 @@ class AEnum2 {
   }
 }
 
-// message example2
 class example2 implements \Protobuf\Message {
-  // field zomg = 1
   public int $zomg;
 
   public function __construct() {

@@ -20,9 +20,7 @@ class AEnum1 {
   }
 }
 
-// message example2
 class example2 implements \Protobuf\Message {
-  // field aint32 = 1
   public int $aint32;
 
   public function __construct() {
@@ -69,16 +67,64 @@ class example1_AEnum2 {
   }
 }
 
-newtype XXX_example1_aoneof_t = int;
-class example1_aoneof {
-  const XXX_example1_aoneof_t NONE = 0;
-  const XXX_example1_aoneof_t oostring = 60;
-  const XXX_example1_aoneof_t ooint = 61;
+newtype XXX_example1_aoneof_enum_t = int;
+interface XXX_example1_aoneof_t {
+  const XXX_example1_aoneof_enum_t XXX_NOT_SET = 0;
+  const XXX_example1_aoneof_enum_t oostring = 60;
+  const XXX_example1_aoneof_enum_t ooint = 61;
+  public function WhichOneof(): XXX_example1_aoneof_enum_t;
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void;
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
 }
 
-// message example2
+class XXX_example1_aoneof_NOT_SET implements XXX_example1_aoneof_t {
+  public function WhichOneof(): XXX_example1_aoneof_enum_t {
+    return self::XXX_NOT_SET;
+  }
+
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    throw new \Protobuf\ProtobufException('oneof not set: aoneof');
+  }
+
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    throw new \Protobuf\ProtobufException('oneof not set: aoneof');
+  }
+}
+class example1_oostring implements XXX_example1_aoneof_t {
+  public function __construct(public string $oostring) {}
+
+  public function WhichOneof(): XXX_example1_aoneof_enum_t {
+    return self::oostring;
+  }
+
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    $e->writeTag(60, 2);;
+    $e->writeString($this->oostring);
+  }
+
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeString('oostring', 'oostring', $this->oostring);
+  }
+}
+
+class example1_ooint implements XXX_example1_aoneof_t {
+  public function __construct(public int $ooint) {}
+
+  public function WhichOneof(): XXX_example1_aoneof_enum_t {
+    return self::ooint;
+  }
+
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    $e->writeTag(61, 0);;
+    $e->writeVarint($this->ooint);
+  }
+
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeInt32('ooint', 'ooint', $this->ooint);
+  }
+}
+
 class example1_example2 implements \Protobuf\Message {
-  // field astring = 1
   public string $astring;
 
   public function __construct() {
@@ -109,11 +155,8 @@ class example1_example2 implements \Protobuf\Message {
   }
 }
 
-// message AmapEntry
 class example1_AmapEntry implements \Protobuf\Message {
-  // field key = 1
   public string $key;
-  // field value = 2
   public string $value;
 
   public function __construct() {
@@ -153,11 +196,8 @@ class example1_AmapEntry implements \Protobuf\Message {
   }
 }
 
-// message Amap2Entry
 class example1_Amap2Entry implements \Protobuf\Message {
-  // field key = 1
   public string $key;
-  // field value = 2
   public ?\fiz\baz\example2 $value;
 
   public function __construct() {
@@ -202,64 +242,34 @@ class example1_Amap2Entry implements \Protobuf\Message {
   }
 }
 
-// message example1
 class example1 implements \Protobuf\Message {
-  // field adouble = 1
   public float $adouble;
-  // field afloat = 2
   public float $afloat;
-  // field aint32 = 3
   public int $aint32;
-  // field aint64 = 4
   public int $aint64;
-  // field auint32 = 5
   public int $auint32;
-  // field auint64 = 6
   public int $auint64;
-  // field asint32 = 7
   public int $asint32;
-  // field asint64 = 8
   public int $asint64;
-  // field afixed32 = 9
   public int $afixed32;
-  // field afixed64 = 10
   public int $afixed64;
-  // field asfixed32 = 11
   public int $asfixed32;
-  // field asfixed64 = 12
   public int $asfixed64;
-  // field abool = 13
   public bool $abool;
-  // field astring = 14
   public string $astring;
-  // field abytes = 15
   public string $abytes;
-  // field aenum1 = 20
   public \foo\bar\XXX_AEnum1_t $aenum1;
-  // field aenum2 = 21
   public \foo\bar\XXX_example1_AEnum2_t $aenum2;
-  // field aenum22 = 22
   public \fiz\baz\XXX_AEnum2_t $aenum22;
-  // field manystring = 30
   public vec<string> $manystring;
-  // field manyint64 = 31
   public vec<int> $manyint64;
-  // field aexample2 = 40
   public ?\foo\bar\example1_example2 $aexample2;
-  // field aexample22 = 41
   public ?\foo\bar\example2 $aexample22;
-  // field aexample23 = 42
   public ?\fiz\baz\example2 $aexample23;
-  // field amap = 51
   public dict<string, string> $amap;
-  // field amap2 = 52
   public dict<string, ?\fiz\baz\example2> $amap2;
-  // field outoforder = 49
   public int $outoforder;
-  // field oostring = 60
-  public string $oostring;
-  // field ooint = 61
-  public int $ooint;
+  public XXX_example1_aoneof_t $aoneof;
 
   public function __construct() {
     $this->adouble = 0.0;
@@ -288,8 +298,7 @@ class example1 implements \Protobuf\Message {
     $this->amap = dict[];
     $this->amap2 = dict[];
     $this->outoforder = 0;
-    $this->oostring = '';
-    $this->ooint = 0;
+    $this->aoneof = new XXX_example1_aoneof_NOT_SET();
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -395,10 +404,10 @@ class example1 implements \Protobuf\Message {
           $this->amap2[$obj->key] = $obj->value;
           break;
         case 60:
-          $this->oostring = $d->readString();
+          $this->aoneof = new example1_oostring($d->readString());
           break;
         case 61:
-          $this->ooint = $d->readVarint32Signed();
+          $this->aoneof = new example1_ooint($d->readVarint32Signed());
           break;
         default:
           $d->skipWireType($wt);
@@ -526,14 +535,7 @@ class example1 implements \Protobuf\Message {
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 52);
     }
-    if ($this->oostring !== '') {
-      $e->writeTag(60, 2);
-      $e->writeString($this->oostring);
-    }
-    if ($this->ooint !== 0) {
-      $e->writeTag(61, 0);
-      $e->writeVarint($this->ooint);
-    }
+    $this->aoneof->WriteTo($e);
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeFloat('adouble', 'adouble', $this->adouble);
@@ -562,18 +564,7 @@ class example1 implements \Protobuf\Message {
     $e->writeInt64Signed('outoforder', 'outoforder', $this->outoforder);
     $e->writePrimitiveMap('amap', 'amap', $this->amap);
     $e->writeMessageMap('amap2', 'amap2', $this->amap2);
-    $e->writeString('oostring', 'oostring', $this->oostring);
-    $e->writeInt32('ooint', 'ooint', $this->ooint);
-  }
-
-  public function oneof_aoneof(): XXX_example1_aoneof_t {
-    if ($this->oostring != '') {
-      return example1_aoneof::oostring;
-    }
-    if ($this->ooint != 0) {
-      return example1_aoneof::ooint;
-    }
-    return example1_aoneof::NONE;
+    $this->aoneof->WriteJsonTo($e);
   }
 }
 

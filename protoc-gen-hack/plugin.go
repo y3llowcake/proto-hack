@@ -166,10 +166,11 @@ type field struct {
 	typeNs                 *Namespace
 	typeEnumDefault        string
 	isMap                  bool
+	oneof                  *oneof
 }
 
-func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
-	f := field{
+func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
+	f := &field{
 		fd: fd,
 	}
 	if fd.GetTypeName() != "" {
@@ -196,7 +197,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) field {
 	return f
 }
 
-func (f field) mapFields() (field, field) {
+func (f field) mapFields() (*field, *field) {
 	dp := f.typeDescriptor.(*desc.DescriptorProto)
 	keyField := newField(dp.Field[0], f.typeNs)
 	valueField := newField(dp.Field[1], f.typeNs)
@@ -268,7 +269,7 @@ func (f field) labeledType() string {
 }
 
 func (f field) varName() string {
-	return *f.fd.Name
+	return f.fd.GetName()
 }
 
 // Default is 0
@@ -301,7 +302,7 @@ var isPackable = map[desc.FieldDescriptorProto_Type]bool{
 	desc.FieldDescriptorProto_TYPE_ENUM:     true,
 }
 
-func (f field) writeDecoder(w *writer, dec, wt string) {
+func (f *field) writeDecoder(w *writer, dec, wt string) {
 	if f.isMap {
 		w.p("$obj = new %s();", f.phpType())
 		w.p("$obj->MergeFrom(%s->readDecoder());", dec)
@@ -315,10 +316,15 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 			w.p("$obj->MergeFrom(%s->readDecoder());", dec)
 			w.p("$this->%s []= $obj;", f.varName())
 		} else {
-			w.p("if ($this->%s == null) {", f.varName())
-			w.p("$this->%s = new %s();", f.varName(), f.phpType())
-			w.p("}")
-			w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
+			if f.isOneofMember() {
+				// w.p("")
+				// ZOMG CY YOU WERE HERE TODO TODO TODO
+			} else {
+				w.p("if ($this->%s == null) {", f.varName())
+				w.p("$this->%s = new %s();", f.varName(), f.phpType())
+				w.p("}")
+				w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
+			}
 		}
 		return
 	}
@@ -359,6 +365,10 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
+	if f.isOneofMember() {
+		w.p("$this->%s = new %s(%s);", f.oneof.name, f.oneof.classNameForField(f), reader)
+		return
+	}
 	if !f.isRepeated() {
 		w.p("$this->%s = %s;", f.varName(), reader)
 		return
@@ -381,35 +391,7 @@ func (f field) writeDecoder(w *writer, dec, wt string) {
 	}
 }
 
-func (f field) writeEncoder(w *writer, enc string) {
-	if f.isMap {
-		w.p("foreach ($this->%s as $k => $v) {", f.varName())
-		w.p("$obj = new %s();", f.phpType())
-		w.p("$obj->key = $k;")
-		w.p("$obj->value = $v;")
-		w.p("$nested = new %s\\Encoder();", libNsInternal)
-		w.p("$obj->WriteTo($nested);")
-		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
-		w.p("}")
-		return
-	}
-
-	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
-		// This is different enough we handle it on it's own.
-		// TODO we could optimize to not to string copies.
-		if f.isRepeated() {
-			w.p("foreach ($this->%s as $msg) {", f.varName())
-		} else {
-			w.p("$msg = $this->%s;", f.varName())
-			w.p("if ($msg != null) {")
-		}
-		w.p("$nested = new %s\\Encoder();", libNsInternal)
-		w.p("$msg->WriteTo($nested);")
-		w.p("%s->writeEncoder($nested, %d);", enc, *f.fd.Number)
-		w.p("}")
-		return
-	}
-
+func (f field) primitiveWriters(enc string) (string, string) {
 	writer := ""
 	switch *f.fd.Type {
 	case desc.FieldDescriptorProto_TYPE_STRING,
@@ -442,7 +424,55 @@ func (f field) writeEncoder(w *writer, enc string) {
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
-	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[*f.fd.Type])
+	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[f.fd.GetType()])
+	return tagWriter, writer
+}
+
+// Oneofs are a subset of all field types, and they serialize their default
+// value to the wire.
+func (f field) writeEncoderForOneof(w *writer, enc string) {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		w.p("$nested = new %s\\Encoder();", libNsInternal)
+		w.p("$this->%s->WriteTo($nested);", f.fd.GetName())
+		w.p("%s->writeEncoder($nested, %d);", enc, f.fd.GetNumber())
+		return
+	}
+
+	tagWriter, writer := f.primitiveWriters("$e")
+	w.p(tagWriter + ";")
+	w.p(writer + ";")
+}
+
+func (f field) writeEncoder(w *writer, enc string) {
+	if f.isMap {
+		w.p("foreach ($this->%s as $k => $v) {", f.varName())
+		w.p("$obj = new %s();", f.phpType())
+		w.p("$obj->key = $k;")
+		w.p("$obj->value = $v;")
+		w.p("$nested = new %s\\Encoder();", libNsInternal)
+		w.p("$obj->WriteTo($nested);")
+		w.p("%s->writeEncoder($nested, %d);", enc, f.fd.GetNumber())
+		w.p("}")
+		return
+	}
+
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		// This is different enough we handle it on it's own.
+		// TODO we could optimize to not to string copies.
+		if f.isRepeated() {
+			w.p("foreach ($this->%s as $msg) {", f.varName())
+		} else {
+			w.p("$msg = $this->%s;", f.varName())
+			w.p("if ($msg != null) {")
+		}
+		w.p("$nested = new %s\\Encoder();", libNsInternal)
+		w.p("$msg->WriteTo($nested);")
+		w.p("%s->writeEncoder($nested, %d);", enc, f.fd.GetNumber())
+		w.p("}")
+		return
+	}
+
+	tagWriter, writer := f.primitiveWriters(enc)
 
 	if !f.isRepeated() {
 		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
@@ -535,6 +565,10 @@ func (f field) writeJsonEncoder(w *writer, enc string) {
 	}
 }
 
+func (f field) isOneofMember() bool {
+	return f.fd.OneofIndex != nil
+}
+
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
@@ -564,23 +598,74 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 }
 
 type oneof struct {
-	descriptor *desc.OneofDescriptorProto
-	className  string
-	typeName   string
-	fields     []field
+	descriptor                                                  *desc.OneofDescriptorProto
+	fields                                                      []*field
+	name, interfaceName, enumTypeName, classPrefix, notsetClass string
+	// v2
 }
 
-// writeOneofEnum writes an enumeration type and constants definitions for
-// proto "oneof" annotations.
-func writeOneofEnum(w *writer, oo *oneof) {
-	w.p("newtype %s = int;", oo.typeName)
-	w.p("class %s {", oo.className)
-	w.p("const %s NONE = 0;", oo.typeName)
+const notsetEnum = specialPrefix + "NOT_SET"
+
+func (o *oneof) classNameForField(f *field) string {
+	return o.classPrefix + f.fd.GetName()
+}
+
+func writeOneofTypes(w *writer, oo *oneof) {
+	// The interface.
+	w.p("newtype %s = int;", oo.enumTypeName)
+	w.p("interface %s {", oo.interfaceName)
+	w.p("const %s %s = 0;", oo.enumTypeName, notsetEnum)
 	for _, field := range oo.fields {
-		w.p("const %s %s = %d;", oo.typeName, field.fd.GetName(), field.fd.GetNumber())
+		w.p("const %s %s = %d;", oo.enumTypeName, field.fd.GetName(), field.fd.GetNumber())
 	}
+
+	w.p("public function WhichOneof(): %s;", oo.enumTypeName)
+	w.p("public function WriteTo(%s\\Encoder $e): void;", libNsInternal)
+	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void;", libNsInternal)
+	w.p("}")
+
+	w.ln()
+	// Notset case:
+	w.p("class %s implements %s {", oo.notsetClass, oo.interfaceName)
+
+	w.p("public function WhichOneof(): %s {", oo.enumTypeName)
+	w.p("return self::%s;", notsetEnum)
 	w.p("}")
 	w.ln()
+
+	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
+	w.p("throw new %s\\ProtobufException('oneof not set: %s');", libNs, oo.name)
+	w.p("}")
+	w.ln()
+
+	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
+	w.p("throw new %s\\ProtobufException('oneof not set: %s');", libNs, oo.name)
+	w.p("}")
+	w.p("}")
+
+	// An implementation per field.
+	for _, f := range oo.fields {
+		w.p("class %s implements %s {", oo.classNameForField(f), oo.interfaceName)
+		w.p("public function __construct(public %s $%s) {}", f.labeledType(), f.varName())
+		w.ln()
+
+		w.p("public function WhichOneof(): %s {", oo.enumTypeName)
+		w.p("return self::%s;", f.fd.GetName())
+		w.p("}")
+		w.ln()
+
+		w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
+		f.writeEncoderForOneof(w, "$e")
+		w.p("}")
+		w.ln()
+
+		w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
+		f.writeJsonEncoder(w, "$e")
+		w.p("}")
+
+		w.p("}")
+		w.ln()
+	}
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
@@ -594,15 +679,15 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	}
 
 	// Wrap fields in our own struct.
-	fields := []field{}
+	fields := []*field{}
 	for _, fd := range dp.Field {
 		fields = append(fields, newField(fd, ns))
 	}
 
 	// Oneofs: first group each field by it's corresponding oneof.
-	oneofFields := map[int32][]field{}
+	oneofFields := map[int32][]*field{}
 	for _, field := range fields {
-		if field.fd.OneofIndex == nil {
+		if !field.isOneofMember() {
 			continue
 		}
 		i := field.fd.GetOneofIndex()
@@ -611,18 +696,28 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		oneofFields[i] = l
 	}
 
-	// Write a oneof enum.
+	// Write oneof types.
 	oneofs := []*oneof{}
 	for i, od := range dp.OneofDecl {
-		name := strings.Join(append(nextNames, *od.Name), "_")
+		oneofName := strings.Join(append(nextNames, od.GetName()), "_")
 		oo := &oneof{
-			descriptor: od,
-			className:  name,
-			typeName:   specialPrefix + name + "_t",
-			fields:     oneofFields[int32(i)],
+			descriptor:    od,
+			name:          od.GetName(),
+			fields:        oneofFields[int32(i)],
+			interfaceName: specialPrefix + oneofName + "_t",
+			enumTypeName:  specialPrefix + oneofName + "_enum_t",
+			classPrefix:   strings.Join(nextNames, "_") + "_",
+			notsetClass:   specialPrefix + oneofName + "_" + "NOT_SET",
 		}
 		oneofs = append(oneofs, oo)
-		writeOneofEnum(w, oo)
+		writeOneofTypes(w, oo)
+	}
+
+	// Now point each field at it's oneof.
+	for _, field := range fields {
+		if field.isOneofMember() {
+			field.oneof = oneofs[field.fd.GetOneofIndex()]
+		}
 	}
 
 	// Nested Types.
@@ -630,20 +725,32 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		writeDescriptor(w, ndp, ns, nextNames)
 	}
 
-	w.p("// message %s", dp.GetName())
+	// w.p("// message %s", dp.GetName())
 	w.p("class %s implements %s\\Message {", name, libNs)
 
 	// Members
 	for _, f := range fields {
-		w.p("// field %s = %d", f.fd.GetName(), f.fd.GetNumber())
+		if f.isOneofMember() {
+			continue
+		}
+		// w.p("// field %s = %d", f.fd.GetName(), f.fd.GetNumber())
 		w.p("public %s $%s;", f.labeledType(), f.varName())
+	}
+	for _, oo := range oneofs {
+		w.p("public %s $%s;", oo.interfaceName, oo.name)
 	}
 	w.ln()
 
 	// Constructor.
 	w.p("public function __construct() {")
 	for _, f := range fields {
+		if f.isOneofMember() {
+			continue
+		}
 		w.p("$this->%s = %s;", f.varName(), f.defaultValue())
+	}
+	for _, oo := range oneofs {
+		w.p("$this->%s = new %s();", oo.name, oo.notsetClass)
 	}
 	w.p("}")
 	w.ln()
@@ -680,31 +787,30 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
+		if f.isOneofMember() {
+			continue
+		}
 		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 		f.writeEncoder(w, "$e")
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
+	}
+	for _, oo := range oneofs {
+		w.p("$this->%s->WriteTo($e);", oo.name)
 	}
 	w.p("}") // WriteToFunction
 
 	// WriteJsonTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
 	for _, f := range fields {
+		if f.isOneofMember() {
+			continue
+		}
 		f.writeJsonEncoder(w, "$e")
 	}
-	w.p("}") // WriteJsonToFunction
-
-	// Oneof enum helpers.
-	for _, oneof := range oneofs {
-		w.ln()
-		w.p("public function oneof_%s(): %s {", oneof.descriptor.GetName(), oneof.typeName)
-		for _, field := range oneof.fields {
-			w.p("if ($this->%s != %s) {", field.varName(), field.defaultValue())
-			w.p("return %s::%s;", oneof.className, field.fd.GetName())
-			w.p("}")
-		}
-		w.p("return %s::NONE;", oneof.className)
-		w.p("}")
+	for _, oo := range oneofs {
+		w.p("$this->%s->WriteJsonTo($e);", oo.name)
 	}
+	w.p("}") // WriteJsonToFunction
 
 	w.p("}") // class
 	w.ln()
@@ -800,7 +906,11 @@ func (w *writer) p(format string, a ...interface{}) {
 	if strings.HasPrefix(format, "}") {
 		w.i--
 	}
-	indent := strings.Repeat("  ", w.i)
+	i := w.i
+	if i < 0 {
+		i = 0
+	}
+	indent := strings.Repeat("  ", i)
 	fmt.Fprintf(w.w, indent+format, a...)
 	w.ln()
 	if strings.HasSuffix(format, "{") {
