@@ -633,14 +633,10 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.p("}")
 	w.ln()
 
-	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
-	w.p("throw new %s\\ProtobufException('oneof not set: %s');", libNs, oo.name)
-	w.p("}")
+	w.p("public function WriteTo(%s\\Encoder $e): void {}", libNsInternal)
 	w.ln()
 
-	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-	w.p("throw new %s\\ProtobufException('oneof not set: %s');", libNs, oo.name)
-	w.p("}")
+	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {}", libNsInternal)
 	w.p("}")
 
 	// An implementation per field.

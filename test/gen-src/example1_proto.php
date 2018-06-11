@@ -82,13 +82,9 @@ class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
     return self::XXX_NOT_SET;
   }
 
-  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
-    throw new \Protobuf\ProtobufException('oneof not set: aoneof');
-  }
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
 
-  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    throw new \Protobuf\ProtobufException('oneof not set: aoneof');
-  }
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {}
 }
 class example1_oostring implements example1_aoneof {
   public function __construct(public string $oostring) {}
