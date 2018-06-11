@@ -45,3 +45,5 @@ amap {
 }
 
 outoforder: 1
+
+oostring: "oneofstring"

@@ -1,2 +1,2 @@
-ignored_paths=["conformance"]
+#ignored_paths=["conformance"]
 assume_php=false
