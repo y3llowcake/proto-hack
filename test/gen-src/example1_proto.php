@@ -265,6 +265,7 @@ class example1 implements \Protobuf\Message {
   public dict<string, string> $amap;
   public dict<string, ?\fiz\baz\example2> $amap2;
   public int $outoforder;
+  public ?\google\protobuf\Any $anany;
   public example1_aoneof $aoneof;
 
   public function __construct() {
@@ -294,6 +295,7 @@ class example1 implements \Protobuf\Message {
     $this->amap = dict[];
     $this->amap2 = dict[];
     $this->outoforder = 0;
+    $this->anany = null;
     $this->aoneof = new XXX_example1_aoneof_NOT_SET();
   }
 
@@ -404,6 +406,12 @@ class example1 implements \Protobuf\Message {
           break;
         case 61:
           $this->aoneof = new example1_ooint($d->readVarint32Signed());
+          break;
+        case 80:
+          if ($this->anany == null) {
+            $this->anany = new \google\protobuf\Any();
+          }
+          $this->anany->MergeFrom($d->readDecoder());
           break;
         default:
           $d->skipWireType($wt);
@@ -531,6 +539,12 @@ class example1 implements \Protobuf\Message {
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 52);
     }
+    $msg = $this->anany;
+    if ($msg != null) {
+      $nested = new \Protobuf\Internal\Encoder();
+      $msg->WriteTo($nested);
+      $e->writeEncoder($nested, 80);
+    }
     $this->aoneof->WriteTo($e);
   }
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -560,6 +574,7 @@ class example1 implements \Protobuf\Message {
     $e->writeInt64Signed('outoforder', 'outoforder', $this->outoforder, false);
     $e->writePrimitiveMap('amap', 'amap', $this->amap);
     $e->writeMessageMap('amap2', 'amap2', $this->amap2);
+    $e->writeMessage('anany', 'anany', $this->anany, false);
     $this->aoneof->WriteJsonTo($e);
   }
 }
@@ -592,7 +607,7 @@ function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer
 
 class XXX_FileDescriptor_example1__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example1.proto';
-  const string RAW = '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';
+  const string RAW = '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';
   public function Name(): string {
     return self::NAME;
   }
