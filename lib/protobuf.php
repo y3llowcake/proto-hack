@@ -6,12 +6,17 @@ namespace Protobuf {
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
+    public function MergeJsonFrom(Internal\JsonDecoder $d): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
 
   function Unmarshal(string $data, Message $message): void {
     $message->MergeFrom(Internal\Decoder::FromString($data));
+  }
+
+  function UnmarshalJson(string $data, Message $message): void {
+    $message->MergeJsonFrom(new Internal\JsonDecoder($data));
   }
 
   function Marshal(Message $message): string {
@@ -628,6 +633,34 @@ namespace Protobuf\Internal {
       }
       return \json_encode($this->a, $opt);
     }
-  }
+  } // class JsonEncoder
+
+	class JsonDecoder {
+		/* HH_FIXME[4045] can't refine to array<mixed, mixed>? */
+		private array $a;
+
+		public function __construct(string $str) {
+			$this->a = array();
+			$data = \json_decode($str, true, 512 /* todo make optional*/);
+			if ($data !== null && is_array($data)) {
+				$this->a = $data;
+			} else {
+				throw new \Protobuf\ProtobufException(\sprintf("json_decode failed; got %s expected array: %s", \gettype($data), \json_last_error_msg()));
+			}
+		}
+
+    public function readStrings(
+      string $oname,
+      string $cname,
+		): ?string {
+			$v = $this->readString($cname);
+			return $v !== null ? $v : $this->readString($oname);
+		}
+
+    private function readString(string $n): ?string {
+			$v = $this->a[$n];
+			return is_string($v) ? $v : null;
+		}
+	}
 }
 // namespace Protobuf/Internal

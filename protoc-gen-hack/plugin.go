@@ -504,6 +504,10 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+func (f *field) writeJsonDecoder(w *writer, dec string) {
+
+}
+
 func (f field) jsonWriter() (string, string) {
 	switch t := f.fd.GetType(); t {
 	case desc.FieldDescriptorProto_TYPE_STRING,
@@ -818,6 +822,13 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("$this->%s->WriteJsonTo($e);", oo.name)
 	}
 	w.p("}") // WriteJsonToFunction
+
+	// MergeJsonFrom function
+	w.p("public function MergeJsonFrom(%s\\JsonDecoder $d): void {", libNsInternal)
+	for _, f := range fields {
+		f.writeJsonDecoder(w, "$d")
+	}
+	w.p("}")
 
 	w.p("}") // class
 	w.ln()

@@ -49,6 +49,8 @@ class example2 implements \Protobuf\Message {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeInt32('aint32', 'aint32', $this->aint32, false);
   }
+  public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+  }
 }
 
 newtype XXX_example1_AEnum2_t as int = int;
@@ -149,6 +151,8 @@ class example1_example2 implements \Protobuf\Message {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('astring', 'astring', $this->astring, false);
   }
+  public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+  }
 }
 
 class example1_AmapEntry implements \Protobuf\Message {
@@ -189,6 +193,8 @@ class example1_AmapEntry implements \Protobuf\Message {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('key', 'key', $this->key, false);
     $e->writeString('value', 'value', $this->value, false);
+  }
+  public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
   }
 }
 
@@ -235,6 +241,8 @@ class example1_Amap2Entry implements \Protobuf\Message {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('key', 'key', $this->key, false);
     $e->writeMessage('value', 'value', $this->value, false);
+  }
+  public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
   }
 }
 
@@ -576,6 +584,8 @@ class example1 implements \Protobuf\Message {
     $e->writeMessageMap('amap2', 'amap2', $this->amap2);
     $e->writeMessage('anany', 'anany', $this->anany, false);
     $this->aoneof->WriteJsonTo($e);
+  }
+  public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
   }
 }
 
