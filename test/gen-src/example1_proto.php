@@ -50,6 +50,8 @@ class example2 implements \Protobuf\Message {
     $e->writeInt32('aint32', 'aint32', $this->aint32, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    $v = $d->readInt32('aint32', 'aint32');
+    if ($v !== null) { $this->aint32 = $v; }
   }
 }
 
@@ -152,6 +154,8 @@ class example1_example2 implements \Protobuf\Message {
     $e->writeString('astring', 'astring', $this->astring, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    $v = $d->readString('astring', 'astring');
+    if ($v !== null) { $this->astring = $v; }
   }
 }
 
@@ -195,6 +199,10 @@ class example1_AmapEntry implements \Protobuf\Message {
     $e->writeString('value', 'value', $this->value, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    $v = $d->readString('key', 'key');
+    if ($v !== null) { $this->key = $v; }
+    $v = $d->readString('value', 'value');
+    if ($v !== null) { $this->value = $v; }
   }
 }
 
@@ -243,6 +251,8 @@ class example1_Amap2Entry implements \Protobuf\Message {
     $e->writeMessage('value', 'value', $this->value, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    $v = $d->readString('key', 'key');
+    if ($v !== null) { $this->key = $v; }
   }
 }
 
@@ -586,6 +596,29 @@ class example1 implements \Protobuf\Message {
     $this->aoneof->WriteJsonTo($e);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    $v = $d->readInt32('aint32', 'aint32');
+    if ($v !== null) { $this->aint32 = $v; }
+    $v = $d->readInt32('auint32', 'auint32');
+    if ($v !== null) { $this->auint32 = $v; }
+    $v = $d->readInt32('auint64', 'auint64');
+    if ($v !== null) { $this->auint64 = $v; }
+    $v = $d->readInt32('asint32', 'asint32');
+    if ($v !== null) { $this->asint32 = $v; }
+    $v = $d->readInt32('afixed32', 'afixed32');
+    if ($v !== null) { $this->afixed32 = $v; }
+    $v = $d->readInt32('asfixed32', 'asfixed32');
+    if ($v !== null) { $this->asfixed32 = $v; }
+    $v = $d->readString('astring', 'astring');
+    if ($v !== null) { $this->astring = $v; }
+    $v = $d->readString('abytes', 'abytes');
+    if ($v !== null) { $this->abytes = $v; }
+    foreach ($d->readStringList('manystring', 'manystring') as $v) {
+      $this->manystring []= $v;
+    }
+    $v = $d->readString('oostring', 'oostring');
+    if ($v !== null) { $this->aoneof = new example1_oostring($v); }
+    $v = $d->readInt32('ooint', 'ooint');
+    if ($v !== null) { $this->aoneof = new example1_ooint($v); }
   }
 }
 

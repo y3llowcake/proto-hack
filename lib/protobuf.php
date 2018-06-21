@@ -649,17 +649,113 @@ namespace Protobuf\Internal {
 			}
 		}
 
-    public function readStrings(
+    public function readString(
       string $oname,
       string $cname,
 		): ?string {
-			$v = $this->readString($cname);
-			return $v !== null ? $v : $this->readString($oname);
+			$v = $this->parseString($cname);
+			return $v !== null ? $v : $this->parseString($oname);
 		}
 
-    private function readString(string $n): ?string {
+    private function parseString(string $n): ?string {
 			$v = $this->a[$n];
 			return is_string($v) ? $v : null;
+		}
+
+    public function readStringList(
+      string $oname,
+      string $cname,
+		): vec<string> {
+			$v = $this->parseStringList($cname);
+			if ($v == null) {
+				$v = $this->parseStringList($oname);
+			}
+			return $v !== null ? $v : vec[];
+		}
+
+		private function parseStringList(string $n): ?vec<string> {
+			$a = $this->a[$n];
+			if (is_array($a)) {
+				$ret = vec[];
+				foreach($a as $v){
+					if (is_string($v)){
+						$ret []= $v;
+					}
+				}
+			}
+			return null;
+		}
+
+		private static function normalizeInt(mixed $v, bool $unsigned64): ?int {
+			if (\is_string($v)) {
+				$a = \sscanf($v, $unsigned64 ? '%u' : '%d');
+				if (\count($a) > 0) {
+					return $a[0];
+				}
+			} else if (\is_int($v)) {
+				return $v;
+			}
+			return null;
+		}
+
+    public function readInt32(
+      string $oname,
+      string $cname,
+		): ?int {
+			$v = $this->parseInt32($cname);
+			return $v !== null ? $v : $this->parseInt32($oname);
+		}
+
+		private function parseInt32(string $n): ?int {
+			return self::normalizeInt($this->a[$n], false);
+		}
+
+    public function readInt32List(
+      string $oname,
+      string $cname,
+		): vec<int> {
+			$v = $this->parseInt32List($cname);
+			if ($v == null) {
+				$v = $this->parseInt32List($oname);
+			}
+			return $v !== null ? $v : vec[];
+		}
+
+		private function parseInt32List(string $n): ?vec<int> {
+			$a = $this->a[$n];
+			if (is_array($a)) {
+				$ret = vec[];
+				foreach($a as $v){
+					$i = self::normalizeInt($v, false);
+					if ($i !== null) {
+						$ret []= $i;
+					}
+				}
+			}
+			return null;
+		}
+
+		private function parseMap(string $n): ?dict<arraykey, mixed> {
+			$a = $this->a[$n];
+			if (is_array($a)) {
+				$d = dict[]; // TODO someday don't copy.
+				foreach ($a as $k => $v) {
+					$v[$k] = $v;
+				}
+				return $d;
+			}
+			return null;
+		}
+
+    public function readMap(
+      string $oname,
+      string $cname,
+		): ?dict<arraykey, mixed> {
+			$v = $this->parseMap($cname);
+			if ($v == null) {
+				$v = $this->parseMap($oname);
+			}
+			return $v;
 		}
 	}
 }

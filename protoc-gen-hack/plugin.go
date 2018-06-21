@@ -505,7 +505,41 @@ func (f field) writeEncoder(w *writer, enc string) {
 }
 
 func (f *field) writeJsonDecoder(w *writer, dec string) {
+	readerType := ""
+	switch f.fd.GetType() {
+	case
+		desc.FieldDescriptorProto_TYPE_STRING,
+		desc.FieldDescriptorProto_TYPE_BYTES:
+		readerType = "String"
+	case
+		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_SINT32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32,
+		desc.FieldDescriptorProto_TYPE_FIXED32:
+		readerType = "Int32"
+	default:
+		return // todo
+	}
+	if f.isRepeated() {
+		readerType += "List"
+	}
+	readCall := fmt.Sprintf("%s->read%s('%s', '%s')", dec, readerType, f.fd.GetName(), f.fd.GetJsonName())
 
+	if f.isRepeated() {
+		w.p("foreach (%s as $v) {", readCall)
+		w.p("$this->%s []= $v;", f.varName())
+		w.p("}")
+	} else {
+		w.p("$v = %s;", readCall)
+		if f.isOneofMember() {
+			// TODO: Subtle: technically this doesn't merge, it overwrites! Maybe consider
+			// fixing this.
+			w.p("if ($v !== null) { $this->%s = new %s($v); }", f.oneof.name, f.oneof.classNameForField(f))
+		} else {
+			w.p("if ($v !== null) { $this->%s = $v; }", f.varName())
+		}
+	}
 }
 
 func (f field) jsonWriter() (string, string) {
@@ -652,6 +686,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.ln()
 
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {}", libNsInternal)
+	// todo!
 	w.p("}")
 
 	// An implementation per field.
