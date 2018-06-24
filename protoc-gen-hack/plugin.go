@@ -309,7 +309,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 		w.p("$this->%s[$obj->key] = $obj->value;", f.varName())
 		return
 	}
-	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
@@ -504,22 +504,75 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
-func (f *field) writeJsonDecoder(w *writer, dec string) {
-	readerType := ""
+func (f *field) jsonReader() string {
 	switch f.fd.GetType() {
 	case
 		desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
-		readerType = "String"
-	case
-		desc.FieldDescriptorProto_TYPE_UINT32,
-		desc.FieldDescriptorProto_TYPE_INT32,
-		desc.FieldDescriptorProto_TYPE_SINT32,
-		desc.FieldDescriptorProto_TYPE_SFIXED32,
-		desc.FieldDescriptorProto_TYPE_FIXED32:
-		readerType = "Int32"
+		return "String"
+		/*	case
+			desc.FieldDescriptorProto_TYPE_UINT32,
+			desc.FieldDescriptorProto_TYPE_INT32,
+			desc.FieldDescriptorProto_TYPE_SINT32,
+			desc.FieldDescriptorProto_TYPE_SFIXED32,
+			desc.FieldDescriptorProto_TYPE_FIXED32:
+			return "Int32"*/
 	default:
-		return // todo
+		// todo panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
+		return ""
+	}
+}
+
+func (f *field) writeJsonDecoder(w *writer, dec string) {
+
+	/*	if f.isMap {
+		k, _ := f.mapFields()
+		w.p("$m = %s->readMap('%s', '%s');", dec, f.fd.GetName(), f.fd.GetJsonName())
+		w.p("if ($m != null) {")
+		w.p("foreach ($m as $k => $v) {")
+		kReader := ""
+		vReader := ""
+		switch jr := k.jsonReader(); jr {
+		case "String":
+			kReader = "$k"
+		case "Bool":
+			// todo
+		case "Int32":
+			kReader = fmt.Sprintf("self::normalizeInt")
+		default:
+			panic(fmt.Errorf("unexpected map key type for json decoder: %v", jr))
+		}
+		w.p("$this->%s[%s] = %s;", f.varName(), kReader, vReader)
+		w.p("}")
+		w.p("}")
+		return
+	}*/
+
+	/*	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		if f.isRepeated() {
+			w.p("$obj = new %s();", f.phpType())
+			w.p("$obj->MergeFrom(%s->readDecoder());", dec)
+			w.p("$this->%s []= $obj;", f.varName())
+		} else {
+			if f.isOneofMember() {
+				// TODO: Subtle: technically this doesn't merge, it overwrites! Maybe consider
+				// fixing this.
+				w.p("$obj = new %s();", f.phpType())
+				w.p("$obj->MergeFrom(%s->readDecoder());", dec)
+				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
+			} else {
+				w.p("if ($this->%s == null) {", f.varName())
+				w.p("$this->%s = new %s();", f.varName(), f.phpType())
+				w.p("}")
+				w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
+			}
+		}
+		return
+	}*/
+
+	readerType := f.jsonReader()
+	if readerType == "" { // todo panic instead
+		return
 	}
 	if f.isRepeated() {
 		readerType += "List"

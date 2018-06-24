@@ -48,8 +48,6 @@ class example2 implements \Protobuf\Message {
     $e->writeInt32('zomg', 'zomg', $this->zomg, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
-    $v = $d->readInt32('zomg', 'zomg');
-    if ($v !== null) { $this->zomg = $v; }
   }
 }
 
