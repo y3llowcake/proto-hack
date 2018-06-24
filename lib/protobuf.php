@@ -16,7 +16,7 @@ namespace Protobuf {
   }
 
   function UnmarshalJson(string $data, Message $message): void {
-    $message->MergeJsonFrom(new Internal\JsonDecoder($data));
+    $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
   }
 
   function Marshal(Message $message): string {
@@ -636,151 +636,72 @@ namespace Protobuf\Internal {
   } // class JsonEncoder
 
 	class JsonDecoder {
-		private dict<string, mixed> $a;
+		public function __construct(
+			public dict<string, mixed> $d,
+			// TODO consider extending IteratorAggregate
+		) {}
 
-		public function __construct(string $str) {
-			$this->a = dict[];
+		public static function FromString(string $str) : JsonDecoder {
 			$data = \json_decode($str, true, 512 /* todo make optional*/);
-			if ($data !== null && is_array($data)) {
-				// TODO someday don't copy. (use is, as?)
-				foreach ($data as $k => $v) {
-					$this->a[(string)$k] = $v;
+			if ($data !== null) {
+				$v = self::readObjectOrNull($data);
+				if ($v !== null) {
+					return new JsonDecoder($v);
 				}
-			} else {
-				throw new \Protobuf\ProtobufException(\sprintf("json_decode failed; got %s expected array: %s", \gettype($data), \json_last_error_msg()));
 			}
+			throw new \Protobuf\ProtobufException(\sprintf("json_decode failed; got %s expected array: %s", \gettype($data), \json_last_error_msg()));
 		}
 
-    public function readString(
-      string $oname,
-      string $cname,
-		): ?string {
-			$v = $this->parseString($cname);
-			return $v !== null ? $v : $this->parseString($oname);
-		}
-
-    private function parseString(string $n): ?string {
-			$v = $this->a[$n];
-			return is_string($v) ? $v : null;
-		}
-
-    public function readStringList(
-      string $oname,
-      string $cname,
-		): vec<string> {
-			$v = $this->parseStringList($cname);
-			if ($v == null) {
-				$v = $this->parseStringList($oname);
-			}
-			return $v !== null ? $v : vec[];
-		}
-
-		private function parseStringList(string $n): ?vec<string> {
-			$a = $this->a[$n];
-			if (is_array($a)) {
-				$ret = vec[];
-				foreach($a as $v){
-					if (is_string($v)){
-						$ret []= $v;
-					}
+		private static function readObjectOrNull(mixed $m): ?dict<string, mixed> {
+			if (is_array($m)) {
+				$ret = dict[];
+				foreach($m as $k => $v) {
+					// TODO, I could check for objects by seeing if the key is int.
+					$ret [(string)$k]= $v;
 				}
+				return $ret;
 			}
 			return null;
 		}
 
-		private static function normalizeInt32(mixed $v): ?int {
-			// TODO reduce to 32 bits?
-			return self::normalizeInt($v, false);
+		public static function readObject(mixed $m): dict<string, mixed> {
+			$ret = self::readObjectOrNull($m);
+			return $ret === null ? dict[] : $ret;
 		}
 
-		private static function normalizeInt(mixed $v, bool $unsigned64): ?int {
-			if (\is_string($v)) {
-				$a = \sscanf($v, $unsigned64 ? '%u' : '%d');
-				if (\count($a) > 0) {
-					return $a[0];
-				}
-			} else if (\is_int($v)) {
-				return $v;
-			}
-			return null;
+		public static function readDecoder(mixed $m): JsonDecoder {
+			return new JsonDecoder(self::readObject($m));
 		}
 
-    public function readInt32(
-      string $oname,
-      string $cname,
-		): ?int {
-			$v = $this->parseInt32($cname);
-			return $v !== null ? $v : $this->parseInt32($oname);
-		}
-
-		private function parseInt32(string $n): ?int {
-			return self::normalizeInt($this->a[$n], false);
-		}
-
-    public function readInt32List(
-      string $oname,
-      string $cname,
-		): vec<int> {
+		public static function readList(mixed $m): vec<mixed> {
 			$ret = vec[];
-			$l = $this->readList($oname, $cname);
-			if ($l !== null) {
-				foreach($l as $v){
-					$i = self::normalizeInt($v, false);
-					if ($i !== null) {
-						$ret []= $i;
-					}
-					
+			if (is_array($m)) {
+				foreach($m as $v) {
+					// TODO, I could check for objects by seeing if the key is string.
+					$ret []= $v;
 				}
 			}
 			return $ret;
 		}
 
-    public function readMap(
-      string $oname,
-      string $cname,
-		): ?dict<string, mixed> {
-			$v = $this->parseMap($cname);
-			if ($v == null) {
-				$v = $this->parseMap($oname);
-			}
-			return $v;
+		public static function readString(mixed $m): string {
+			return (string) $m;
 		}
 
-		private function parseMap(string $n): ?dict<string, mixed> {
-			$a = $this->a[$n];
-			if (is_array($a)) {
-				$d = dict[]; // TODO someday don't copy. (is, as support)
-				foreach ($a as $k => $v) {
-					$v[(string)$k] = $v;
+		private static function readInt(mixed $m, bool $unsigned64): int {
+			if (\is_string($m)) {
+				$a = \sscanf($m, $unsigned64 ? '%u' : '%d');
+				if (\count($a) > 0) {
+					return $a[0];
 				}
-				return $d;
+			} else if (\is_int($m)) {
+				return $m;
 			}
-			return null;
+			return 0;
 		}
 
-    public function readList(
-      string $oname,
-      string $cname,
-		): ?vec<mixed> {
-			$v = $this->parseList($cname);
-			if ($v == null) {
-				$v = $this->parseList($oname);
-			}
-			return $v;
-		}
-
-		private function parseList(string $n): ?vec<mixed> {
-			$a = $this->a[$n];
-			if (is_array($a)) {
-				$l = vec[];
-				foreach ($a as $v) {
-					// Technically we could check if k is string, and then we'd know this
-					// is an object not a list. Consider failing?
-					$l []= $v;
-				}
-				return $l;
-			}
-			return null;
+		public static function readInt32(mixed $m): int {
+			return self::readInt($m, false);
 		}
 	}
 }

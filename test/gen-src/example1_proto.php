@@ -50,6 +50,13 @@ class example2 implements \Protobuf\Message {
     $e->writeInt32('aint32', 'aint32', $this->aint32, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
+    foreach ($d->d as $k => $v) {
+      switch ($k) {
+        case 'aint32':
+          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+      }
+    }
   }
 }
 
@@ -152,8 +159,13 @@ class example1_example2 implements \Protobuf\Message {
     $e->writeString('astring', 'astring', $this->astring, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
-    $v = $d->readString('astring', 'astring');
-    if ($v !== null) { $this->astring = $v; }
+    foreach ($d->d as $k => $v) {
+      switch ($k) {
+        case 'astring':
+          $this->astring = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+      }
+    }
   }
 }
 
@@ -197,10 +209,16 @@ class example1_AmapEntry implements \Protobuf\Message {
     $e->writeString('value', 'value', $this->value, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
-    $v = $d->readString('key', 'key');
-    if ($v !== null) { $this->key = $v; }
-    $v = $d->readString('value', 'value');
-    if ($v !== null) { $this->value = $v; }
+    foreach ($d->d as $k => $v) {
+      switch ($k) {
+        case 'key':
+          $this->key = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+        case 'value':
+          $this->value = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+      }
+    }
   }
 }
 
@@ -221,9 +239,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
           $this->key = $d->readString();
           break;
         case 2:
-          if ($this->value == null) {
-            $this->value = new \fiz\baz\example2();
-          }
+          if ($this->value == null) $this->value = new \fiz\baz\example2();
           $this->value->MergeFrom($d->readDecoder());
           break;
         default:
@@ -249,8 +265,17 @@ class example1_Amap2Entry implements \Protobuf\Message {
     $e->writeMessage('value', 'value', $this->value, false);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
-    $v = $d->readString('key', 'key');
-    if ($v !== null) { $this->key = $v; }
+    foreach ($d->d as $k => $v) {
+      switch ($k) {
+        case 'key':
+          $this->key = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+        case 'value':
+          if ($this->value == null) $this->value = new \fiz\baz\example2();
+          $this->value->MergeJsonFrom(\Protobuf\Internal\JsonDecoder::readDecoder($v));
+          break;
+      }
+    }
   }
 }
 
@@ -387,21 +412,15 @@ class example1 implements \Protobuf\Message {
           }
           break;
         case 40:
-          if ($this->aexample2 == null) {
-            $this->aexample2 = new \foo\bar\example1_example2();
-          }
+          if ($this->aexample2 == null) $this->aexample2 = new \foo\bar\example1_example2();
           $this->aexample2->MergeFrom($d->readDecoder());
           break;
         case 41:
-          if ($this->aexample22 == null) {
-            $this->aexample22 = new \foo\bar\example2();
-          }
+          if ($this->aexample22 == null) $this->aexample22 = new \foo\bar\example2();
           $this->aexample22->MergeFrom($d->readDecoder());
           break;
         case 42:
-          if ($this->aexample23 == null) {
-            $this->aexample23 = new \fiz\baz\example2();
-          }
+          if ($this->aexample23 == null) $this->aexample23 = new \fiz\baz\example2();
           $this->aexample23->MergeFrom($d->readDecoder());
           break;
         case 49:
@@ -424,9 +443,7 @@ class example1 implements \Protobuf\Message {
           $this->aoneof = new example1_ooint($d->readVarint32Signed());
           break;
         case 80:
-          if ($this->anany == null) {
-            $this->anany = new \google\protobuf\Any();
-          }
+          if ($this->anany == null) $this->anany = new \google\protobuf\Any();
           $this->anany->MergeFrom($d->readDecoder());
           break;
         default:
@@ -594,15 +611,89 @@ class example1 implements \Protobuf\Message {
     $this->aoneof->WriteJsonTo($e);
   }
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
-    $v = $d->readString('astring', 'astring');
-    if ($v !== null) { $this->astring = $v; }
-    $v = $d->readString('abytes', 'abytes');
-    if ($v !== null) { $this->abytes = $v; }
-    foreach ($d->readStringList('manystring', 'manystring') as $v) {
-      $this->manystring []= $v;
+    foreach ($d->d as $k => $v) {
+      switch ($k) {
+        case 'adouble':
+          break;
+        case 'afloat':
+          break;
+        case 'aint32':
+          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'aint64':
+          break;
+        case 'auint32':
+          $this->auint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'auint64':
+          $this->auint64 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'asint32':
+          $this->asint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'asint64':
+          break;
+        case 'afixed32':
+          $this->afixed32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'afixed64':
+          break;
+        case 'asfixed32':
+          $this->asfixed32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          break;
+        case 'asfixed64':
+          break;
+        case 'abool':
+          break;
+        case 'astring':
+          $this->astring = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+        case 'abytes':
+          $this->abytes = \Protobuf\Internal\JsonDecoder::readString($v);
+          break;
+        case 'aenum1':
+          break;
+        case 'aenum2':
+          break;
+        case 'aenum22':
+          break;
+        case 'manystring':
+          foreach(\Protobuf\Internal\JsonDecoder::readList($v) as $vv) {
+            $this->manystring []= \Protobuf\Internal\JsonDecoder::readString($vv);
+          }
+          break;
+        case 'manyint64':
+          break;
+        case 'aexample2':
+          if ($this->aexample2 == null) $this->aexample2 = new \foo\bar\example1_example2();
+          $this->aexample2->MergeJsonFrom(\Protobuf\Internal\JsonDecoder::readDecoder($v));
+          break;
+        case 'aexample22':
+          if ($this->aexample22 == null) $this->aexample22 = new \foo\bar\example2();
+          $this->aexample22->MergeJsonFrom(\Protobuf\Internal\JsonDecoder::readDecoder($v));
+          break;
+        case 'aexample23':
+          if ($this->aexample23 == null) $this->aexample23 = new \fiz\baz\example2();
+          $this->aexample23->MergeJsonFrom(\Protobuf\Internal\JsonDecoder::readDecoder($v));
+          break;
+        case 'outoforder':
+          break;
+        case 'amap':
+          break;
+        case 'amap2':
+          break;
+        case 'oostring':
+          $this->aoneof = new example1_oostring(\Protobuf\Internal\JsonDecoder::readString($v));
+          break;
+        case 'ooint':
+          $this->aoneof = new example1_ooint(\Protobuf\Internal\JsonDecoder::readInt32($v));
+          break;
+        case 'anany':
+          if ($this->anany == null) $this->anany = new \google\protobuf\Any();
+          $this->anany->MergeJsonFrom(\Protobuf\Internal\JsonDecoder::readDecoder($v));
+          break;
+      }
     }
-    $v = $d->readString('oostring', 'oostring');
-    if ($v !== null) { $this->aoneof = new example1_oostring($v); }
   }
 }
 

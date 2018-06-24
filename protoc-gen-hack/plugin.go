@@ -323,9 +323,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 				w.p("$obj->MergeFrom(%s->readDecoder());", dec)
 				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
 			} else {
-				w.p("if ($this->%s == null) {", f.varName())
-				w.p("$this->%s = new %s();", f.varName(), f.phpType())
-				w.p("}")
+				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
 				w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
 			}
 		}
@@ -510,20 +508,62 @@ func (f *field) jsonReader() string {
 		desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
 		return "String"
-		/*	case
-			desc.FieldDescriptorProto_TYPE_UINT32,
-			desc.FieldDescriptorProto_TYPE_INT32,
-			desc.FieldDescriptorProto_TYPE_SINT32,
-			desc.FieldDescriptorProto_TYPE_SFIXED32,
-			desc.FieldDescriptorProto_TYPE_FIXED32:
-			return "Int32"*/
+	case
+		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_SINT32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32,
+		desc.FieldDescriptorProto_TYPE_FIXED32:
+		return "Int32"
 	default:
 		// todo panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
 		return ""
 	}
 }
 
-func (f *field) writeJsonDecoder(w *writer, dec string) {
+func (f *field) writeJsonDecoder(w *writer, v string) {
+	if f.isMap {
+		// todo fix
+		return
+	}
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		if f.isRepeated() {
+			w.p("$obj = new %s();", f.phpType())
+			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+			w.p("$this->%s []= $obj;", f.varName())
+		} else {
+			if f.isOneofMember() {
+				// TODO: Subtle: technically this doesn't merge, it overwrites!
+				w.p("$obj = new %s();", f.phpType())
+				w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
+			} else {
+				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
+				w.p("$this->%s->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", f.varName(), libNsInternal, v)
+			}
+		}
+		return
+	}
+
+	readerType := f.jsonReader()
+	if readerType == "" {
+		// TODO fix
+		return
+	}
+	singleReader := fmt.Sprintf("%s\\JsonDecoder::read%s(%s)", libNsInternal, readerType, "%s")
+
+	if f.isRepeated() {
+		w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
+		w.p("$this->%s []= "+singleReader+";", f.varName(), "$vv")
+		w.p("}")
+	} else {
+		if f.isOneofMember() {
+			// TODO: Subtle: technically this doesn't merge, it overwrites!
+			w.p("$this->%s = new %s("+singleReader+");", f.oneof.name, f.oneof.classNameForField(f), v)
+		} else {
+			w.p("$this->%s = "+singleReader+";", f.varName(), v)
+		}
+	}
 
 	/*	if f.isMap {
 		k, _ := f.mapFields()
@@ -547,52 +587,6 @@ func (f *field) writeJsonDecoder(w *writer, dec string) {
 		w.p("}")
 		return
 	}*/
-
-	/*	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
-		if f.isRepeated() {
-			w.p("$obj = new %s();", f.phpType())
-			w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-			w.p("$this->%s []= $obj;", f.varName())
-		} else {
-			if f.isOneofMember() {
-				// TODO: Subtle: technically this doesn't merge, it overwrites! Maybe consider
-				// fixing this.
-				w.p("$obj = new %s();", f.phpType())
-				w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
-			} else {
-				w.p("if ($this->%s == null) {", f.varName())
-				w.p("$this->%s = new %s();", f.varName(), f.phpType())
-				w.p("}")
-				w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
-			}
-		}
-		return
-	}*/
-
-	readerType := f.jsonReader()
-	if readerType == "" { // todo panic instead
-		return
-	}
-	if f.isRepeated() {
-		readerType += "List"
-	}
-	readCall := fmt.Sprintf("%s->read%s('%s', '%s')", dec, readerType, f.fd.GetName(), f.fd.GetJsonName())
-
-	if f.isRepeated() {
-		w.p("foreach (%s as $v) {", readCall)
-		w.p("$this->%s []= $v;", f.varName())
-		w.p("}")
-	} else {
-		w.p("$v = %s;", readCall)
-		if f.isOneofMember() {
-			// TODO: Subtle: technically this doesn't merge, it overwrites! Maybe consider
-			// fixing this.
-			w.p("if ($v !== null) { $this->%s = new %s($v); }", f.oneof.name, f.oneof.classNameForField(f))
-		} else {
-			w.p("if ($v !== null) { $this->%s = $v; }", f.varName())
-		}
-	}
 }
 
 func (f field) jsonWriter() (string, string) {
@@ -913,9 +907,22 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// MergeJsonFrom function
 	w.p("public function MergeJsonFrom(%s\\JsonDecoder $d): void {", libNsInternal)
+	w.p("foreach ($d->d as $k => $v) {")
+	w.p("switch ($k) {")
 	for _, f := range fields {
-		f.writeJsonDecoder(w, "$d")
+		ca := fmt.Sprintf("case '%s':", f.fd.GetName())
+		if f.fd.GetName() != f.fd.GetJsonName() {
+			ca += fmt.Sprintf(" case '%s':", f.fd.GetJsonName())
+		}
+		w.p(ca)
+		w.i++
+
+		f.writeJsonDecoder(w, "$v")
+		w.p("break;")
+		w.i--
 	}
+	w.p("}")
+	w.p("}")
 	w.p("}")
 
 	w.p("}") // class
