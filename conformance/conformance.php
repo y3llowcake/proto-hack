@@ -73,13 +73,6 @@ function conformanceRaw(string $raw): string {
 
 function conformance(ConformanceRequest $creq): ConformanceResponse {
   $cresp = new ConformanceResponse();
-  if (
-    $creq->payload->WhichOneof() != ConformanceRequest_payload::protobuf_payload
-  ) {
-    $cresp->result =
-      new ConformanceResponse_skipped("unsupported payload type");
-    return $cresp;
-	}
 	$payload = "";
 	$wfi = -1;
   if ($creq->payload instanceof ConformanceRequest_protobuf_payload) {
