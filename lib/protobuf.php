@@ -560,10 +560,10 @@ namespace Protobuf\Internal {
     }
 
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
-			if (!$this->o->enums_as_ints) {
-				return idx($itos, $v, $v);
-			}
-			return $v;
+      if (!$this->o->enums_as_ints) {
+        return idx($itos, $v, $v);
+      }
+      return $v;
     }
 
     public function writeEnum(
@@ -638,87 +638,91 @@ namespace Protobuf\Internal {
     }
   } // class JsonEncoder
 
-	class JsonDecoder {
-		public function __construct(
-			public dict<string, mixed> $d,
-			// TODO consider extending IteratorAggregate
-		) {}
+  class JsonDecoder {
+    public function __construct(
+      public dict<string, mixed> $d,
+      // TODO consider extending IteratorAggregate
+    ) {}
 
-		public static function FromString(string $str) : JsonDecoder {
-			$data = \json_decode($str, true, 512 /* todo make optional*/);
-			if ($data !== null) {
-				$v = self::readObjectOrNull($data);
-				if ($v !== null) {
-					return new JsonDecoder($v);
-				}
-			}
-			throw new \Protobuf\ProtobufException(\sprintf("json_decode failed; got %s expected array: %s", \gettype($data), \json_last_error_msg()));
-		}
+    public static function FromString(string $str): JsonDecoder {
+      $data = \json_decode($str, true, 512 /* todo make optional*/);
+      if ($data !== null) {
+        $v = self::readObjectOrNull($data);
+        if ($v !== null) {
+          return new JsonDecoder($v);
+        }
+      }
+      throw new \Protobuf\ProtobufException(\sprintf(
+        "json_decode failed; got %s expected array: %s",
+        \gettype($data),
+        \json_last_error_msg(),
+      ));
+    }
 
-		private static function readObjectOrNull(mixed $m): ?dict<string, mixed> {
-			if (is_array($m)) {
-				$ret = dict[];
-				foreach($m as $k => $v) {
-					// TODO, I could check for objects by seeing if the key is int.
-					$ret [(string)$k]= $v;
-				}
-				return $ret;
-			}
-			return null;
-		}
+    private static function readObjectOrNull(mixed $m): ?dict<string, mixed> {
+      if (is_array($m)) {
+        $ret = dict[];
+        foreach ($m as $k => $v) {
+          // TODO, I could check for objects by seeing if the key is int.
+          $ret[(string)$k] = $v;
+        }
+        return $ret;
+      }
+      return null;
+    }
 
-		public static function readObject(mixed $m): dict<string, mixed> {
-			$ret = self::readObjectOrNull($m);
-			return $ret === null ? dict[] : $ret;
-		}
+    public static function readObject(mixed $m): dict<string, mixed> {
+      $ret = self::readObjectOrNull($m);
+      return $ret === null ? dict[] : $ret;
+    }
 
-		public static function readDecoder(mixed $m): JsonDecoder {
-			return new JsonDecoder(self::readObject($m));
-		}
+    public static function readDecoder(mixed $m): JsonDecoder {
+      return new JsonDecoder(self::readObject($m));
+    }
 
-		public static function readList(mixed $m): vec<mixed> {
-			$ret = vec[];
-			if (is_array($m)) {
-				foreach($m as $v) {
-					// TODO, I could check for objects by seeing if the key is string.
-					$ret []= $v;
-				}
-			}
-			return $ret;
-		}
+    public static function readList(mixed $m): vec<mixed> {
+      $ret = vec[];
+      if (is_array($m)) {
+        foreach ($m as $v) {
+          // TODO, I could check for objects by seeing if the key is string.
+          $ret[] = $v;
+        }
+      }
+      return $ret;
+    }
 
-		public static function readString(mixed $m): string {
-			return (string) $m;
-		}
+    public static function readString(mixed $m): string {
+      return (string)$m;
+    }
 
-		private static function readInt(mixed $m, bool $unsigned64): int {
-			if (\is_string($m)) {
-				$a = \sscanf($m, $unsigned64 ? '%u' : '%d');
-				if (\count($a) > 0) {
-					return $a[0];
-				}
-			} else if (\is_int($m)) {
-				return $m;
-			}
-			return 0;
-		}
+    private static function readInt(mixed $m, bool $unsigned64): int {
+      if (\is_string($m)) {
+        $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
+        if (\count($a) > 0) {
+          return $a[0];
+        }
+      } else if (\is_int($m)) {
+        return $m;
+      }
+      return 0;
+    }
 
-		public static function readInt32(mixed $m): int {
-			return self::readInt($m, false);
-		}
-		public static function readInt64Unsigned(mixed $m): int {
-			return self::readInt($m, true);
-		}
-		public static function readInt64Signed(mixed $m): int {
-			return self::readInt($m, false);
-		}
-		public static function readFloat(mixed $m): float {
-			return (float) $m;
-		}
-		public static function readBool(mixed $m): bool {
-			// todo this could be better.
-			return (bool) $m;
-		}
-	}
+    public static function readInt32(mixed $m): int {
+      return self::readInt($m, false);
+    }
+    public static function readInt64Unsigned(mixed $m): int {
+      return self::readInt($m, true);
+    }
+    public static function readInt64Signed(mixed $m): int {
+      return self::readInt($m, false);
+    }
+    public static function readFloat(mixed $m): float {
+      return (float)$m;
+    }
+    public static function readBool(mixed $m): bool {
+      // todo this could be better.
+      return (bool)$m;
+    }
+  }
 }
 // namespace Protobuf/Internal
