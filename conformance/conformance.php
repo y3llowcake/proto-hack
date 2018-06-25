@@ -85,6 +85,9 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   if ($creq->payload instanceof ConformanceRequest_protobuf_payload) {
 		$payload = $creq->payload->protobuf_payload;
 		$wfi = WireFormat::PROTOBUF;
+	} else if ($creq->payload instanceof ConformanceRequest_json_payload) {
+		$payload = $creq->payload->json_payload;
+		$wfi = WireFormat::JSON;
 	}
   $wfo = $creq->requested_output_format;
   try {
