@@ -72,28 +72,34 @@ function conformanceRaw(string $raw): string {
 }
 
 function conformance(ConformanceRequest $creq): ConformanceResponse {
-	$cresp = new ConformanceResponse();
-  if ($creq->payload->WhichOneof() !=
-      ConformanceRequest_payload::protobuf_payload) {
-    $cresp->result = new ConformanceResponse_skipped("unsupported payload type");
+  $cresp = new ConformanceResponse();
+  if (
+    $creq->payload->WhichOneof() != ConformanceRequest_payload::protobuf_payload
+  ) {
+    $cresp->result =
+      new ConformanceResponse_skipped("unsupported payload type");
     return $cresp;
-	}
-	invariant($creq->payload instanceof ConformanceRequest_protobuf_payload, "bad if not!");
+  }
+  invariant(
+    $creq->payload instanceof ConformanceRequest_protobuf_payload,
+    "bad if not!",
+  );
   $wf = $creq->requested_output_format;
   try {
     switch ($wf) {
       case WireFormat::PROTOBUF:
-        $cresp->result = new ConformanceResponse_protobuf_payload(				
-					testMessageRaw($creq->payload->protobuf_payload, $wf)
-				);
+        $cresp->result = new ConformanceResponse_protobuf_payload(
+          testMessageRaw($creq->payload->protobuf_payload, $wf),
+        );
         break;
       case WireFormat::JSON:
-				$cresp->result = new ConformanceResponse_json_payload(
-					testMessageRaw($creq->payload->protobuf_payload, $wf)
-				);
+        $cresp->result = new ConformanceResponse_json_payload(
+          testMessageRaw($creq->payload->protobuf_payload, $wf),
+        );
         break;
       default:
-        $cresp->result = new ConformanceResponse_skipped("unsupported output type");
+        $cresp->result =
+          new ConformanceResponse_skipped("unsupported output type");
     }
   } catch (\Exception $e) {
     p('parse error: '.$e->getMessage());
