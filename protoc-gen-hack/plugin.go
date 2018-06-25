@@ -5,6 +5,7 @@ import (
 	"compress/flate"
 	"compress/zlib"
 	"encoding/base64"
+	"flag"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
@@ -17,13 +18,21 @@ import (
 )
 
 const (
+	Version       = "undefined" // go build -ldflags "-X main.Version=1"
 	specialPrefix = "XXX_"
 	genDebug      = false
 	libNs         = "\\Protobuf"
 	libNsInternal = libNs + "\\Internal"
 )
 
+var fversion = flag.Bool("version", false, "print version and exit")
+
 func main() {
+	flag.Parse()
+	if *fversion {
+		fmt.Println(Version)
+		return
+	}
 	var buf bytes.Buffer
 	_, err := buf.ReadFrom(os.Stdin)
 	if err != nil {
