@@ -560,7 +560,10 @@ namespace Protobuf\Internal {
     }
 
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
-      return $this->o->enums_as_ints ? $v : $itos[$v];
+			if (!$this->o->enums_as_ints) {
+				return idx($itos, $v, $v);
+			}
+			return $v;
     }
 
     public function writeEnum(
@@ -702,6 +705,19 @@ namespace Protobuf\Internal {
 
 		public static function readInt32(mixed $m): int {
 			return self::readInt($m, false);
+		}
+		public static function readInt64Unsigned(mixed $m): int {
+			return self::readInt($m, true);
+		}
+		public static function readInt64Signed(mixed $m): int {
+			return self::readInt($m, false);
+		}
+		public static function readFloat(mixed $m): float {
+			return (float) $m;
+		}
+		public static function readBool(mixed $m): bool {
+			// todo this could be better.
+			return (bool) $m;
 		}
 	}
 }

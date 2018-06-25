@@ -5,15 +5,23 @@ namespace fiz\baz;
 // Source: example2.proto
 
 newtype XXX_AEnum2_t as int = int;
-class AEnum2 {
+abstract class AEnum2 {
   const XXX_AEnum2_t Z = 0;
-  private static dict<int, string> $itos = dict[
+  private static dict<int, string> $XXX_itos = dict[
     0 => 'Z',
   ];
-  public static function NumbersToNames(): dict<int, string> {
-    return self::$itos;
+  public static function XXX_ItoS(): dict<int, string> {
+    return self::$XXX_itos;
   }
-  public static function FromInt(int $i): XXX_AEnum2_t {
+  private static dict<string, int> $XXX_stoi = dict[
+    'Z' => 0,
+  ];
+  public static function XXX_FromMixed(mixed $m): XXX_AEnum2_t {
+    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if (is_int($m)) return $m;
+    return 0;
+  }
+  public static function XXX_FromInt(int $i): XXX_AEnum2_t {
     return $i;
   }
 }
@@ -44,9 +52,11 @@ class example2 implements \Protobuf\Message {
       $e->writeVarint($this->zomg);
     }
   }
+
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeInt32('zomg', 'zomg', $this->zomg, false);
   }
+
   public function MergeJsonFrom(\Protobuf\Internal\JsonDecoder $d): void {
     foreach ($d->d as $k => $v) {
       switch ($k) {

@@ -361,8 +361,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-
-		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
+		reader = fmt.Sprintf("%s\\%s::XXX_FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -502,28 +501,55 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
-func (f *field) jsonReader() string {
+func (f *field) jsonReader(v string) string {
+	rt := ""
 	switch f.fd.GetType() {
 	case
 		desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
-		return "String"
+		rt = "String"
 	case
 		desc.FieldDescriptorProto_TYPE_UINT32,
 		desc.FieldDescriptorProto_TYPE_INT32,
 		desc.FieldDescriptorProto_TYPE_SINT32,
 		desc.FieldDescriptorProto_TYPE_SFIXED32,
 		desc.FieldDescriptorProto_TYPE_FIXED32:
-		return "Int32"
+		rt = "Int32"
+	case
+		desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_SINT64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
+		rt = "Int64Signed"
+	case
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_FIXED64:
+		rt = "Int64Unsigned"
+	case desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_DOUBLE:
+		rt = "Float"
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		rt = "Bool"
+	case
+		desc.FieldDescriptorProto_TYPE_ENUM:
+		return fmt.Sprintf("%s\\%s::XXX_FromMixed(%s)", f.typePhpNs, f.typePhpName, v)
 	default:
-		// todo panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
-		return ""
+		panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
 	}
+	return fmt.Sprintf("%s\\JsonDecoder::read%s(%s)", libNsInternal, rt, v)
 }
 
 func (f *field) writeJsonDecoder(w *writer, v string) {
 	if f.isMap {
-		// todo fix
+		k, vv := f.mapFields()
+		w.p("foreach (%s\\JsonDecoder::readObject(%s) as $k => $v) {", libNsInternal, v)
+		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+			w.p("$obj = new %s();", vv.phpType())
+			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), k.jsonReader("$k"))
+		} else {
+			w.p("$this->%s[%s] = %s;", f.fd.GetName(), k.jsonReader("$k"), vv.jsonReader("$v"))
+		}
+		w.p("}")
 		return
 	}
 	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
@@ -545,48 +571,18 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		return
 	}
 
-	readerType := f.jsonReader()
-	if readerType == "" {
-		// TODO fix
-		return
-	}
-	singleReader := fmt.Sprintf("%s\\JsonDecoder::read%s(%s)", libNsInternal, readerType, "%s")
-
 	if f.isRepeated() {
 		w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
-		w.p("$this->%s []= "+singleReader+";", f.varName(), "$vv")
+		w.p("$this->%s []= %s;", f.varName(), f.jsonReader("$vv"))
 		w.p("}")
 	} else {
 		if f.isOneofMember() {
 			// TODO: Subtle: technically this doesn't merge, it overwrites!
-			w.p("$this->%s = new %s("+singleReader+");", f.oneof.name, f.oneof.classNameForField(f), v)
+			w.p("$this->%s = new %s(%s);", f.oneof.name, f.oneof.classNameForField(f), f.jsonReader(v))
 		} else {
-			w.p("$this->%s = "+singleReader+";", f.varName(), v)
+			w.p("$this->%s = %s;", f.varName(), f.jsonReader(v))
 		}
 	}
-
-	/*	if f.isMap {
-		k, _ := f.mapFields()
-		w.p("$m = %s->readMap('%s', '%s');", dec, f.fd.GetName(), f.fd.GetJsonName())
-		w.p("if ($m != null) {")
-		w.p("foreach ($m as $k => $v) {")
-		kReader := ""
-		vReader := ""
-		switch jr := k.jsonReader(); jr {
-		case "String":
-			kReader = "$k"
-		case "Bool":
-			// todo
-		case "Int32":
-			kReader = fmt.Sprintf("self::normalizeInt")
-		default:
-			panic(fmt.Errorf("unexpected map key type for json decoder: %v", jr))
-		}
-		w.p("$this->%s[%s] = %s;", f.varName(), kReader, vReader)
-		w.p("}")
-		w.p("}")
-		return
-	}*/
 }
 
 func (f field) jsonWriter() (string, string) {
@@ -629,7 +625,7 @@ func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 		k, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
-			itos := v.typePhpNs + "\\" + v.typePhpName + "::NumbersToNames()"
+			itos := v.typePhpNs + "\\" + v.typePhpName + "::XXX_ItoS()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
 			if k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL {
@@ -654,7 +650,7 @@ func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	}
 
 	if writer == "Enum" {
-		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+		itos := f.typePhpNs + "\\" + f.typePhpName + "::XXX_ItoS()"
 		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName(), emitDefault)
 	} else {
 		w.p("%s->write%s%s('%s', '%s', $this->%s%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName(), emitDefault)
@@ -670,11 +666,12 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
 	typename := specialPrefix + name + "_t"
 	w.p("newtype %s as int = int;", typename)
-	w.p("class %s {", name)
+	w.p("abstract class %s {", name)
 	for _, v := range ed.Value {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
-	w.p("private static dict<int, string> $itos = dict[")
+
+	w.p("private static dict<int, string> $XXX_itos = dict[")
 	w.i++
 	for _, v := range ed.Value {
 		w.p("%d => '%s',", v.GetNumber(), v.GetName())
@@ -682,11 +679,25 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.i--
 	w.p("];")
 
-	w.p("public static function NumbersToNames(): dict<int, string> {")
-	w.p("return self::$itos;")
+	w.p("public static function XXX_ItoS(): dict<int, string> {")
+	w.p("return self::$XXX_itos;")
 	w.p("}")
 
-	w.p("public static function FromInt(int $i): %s {", typename)
+	w.p("private static dict<string, int> $XXX_stoi = dict[")
+	w.i++
+	for _, v := range ed.Value {
+		w.p("'%s' => %d,", v.GetName(), v.GetNumber())
+	}
+	w.i--
+	w.p("];")
+
+	w.p("public static function XXX_FromMixed(mixed $m): %s {", typename)
+	w.p("if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);")
+	w.p("if (is_int($m)) return $m;")
+	w.p("return 0;")
+	w.p("}")
+
+	w.p("public static function XXX_FromInt(int $i): %s {", typename)
 	w.p("return $i;")
 	w.p("}")
 	w.p("}")
@@ -891,6 +902,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("$this->%s->WriteTo($e);", oo.name)
 	}
 	w.p("}") // WriteToFunction
+	w.ln()
 
 	// WriteJsonTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
@@ -904,6 +916,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("$this->%s->WriteJsonTo($e);", oo.name)
 	}
 	w.p("}") // WriteJsonToFunction
+	w.ln()
 
 	// MergeJsonFrom function
 	w.p("public function MergeJsonFrom(%s\\JsonDecoder $d): void {", libNsInternal)
