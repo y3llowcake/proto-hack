@@ -554,9 +554,11 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 	}
 	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		if f.isRepeated() {
+			w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
 			w.p("$obj = new %s();", f.phpType())
-			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, "$vv")
 			w.p("$this->%s []= $obj;", f.varName())
+			w.p("}")
 		} else {
 			if f.isOneofMember() {
 				// TODO: Subtle: technically this doesn't merge, it overwrites!
