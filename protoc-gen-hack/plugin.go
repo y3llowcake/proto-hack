@@ -18,19 +18,21 @@ import (
 )
 
 const (
-	Version       = "undefined" // go build -ldflags "-X main.Version=1"
 	specialPrefix = "XXX_"
 	genDebug      = false
 	libNs         = "\\Protobuf"
 	libNsInternal = libNs + "\\Internal"
 )
 
-var fversion = flag.Bool("version", false, "print version and exit")
+var (
+	version  = "undefined" // go build -ldflags "-X main.version=1"
+	fversion = flag.Bool("version", false, "print version and exit")
+)
 
 func main() {
 	flag.Parse()
 	if *fversion {
-		fmt.Println(Version)
+		fmt.Println(version)
 		return
 	}
 	var buf bytes.Buffer
