@@ -70,6 +70,10 @@ namespace Protobuf\Internal {
       return new Decoder($buf, 0, \strlen($buf));
     }
 
+		private static function base64_url_encode(string $d): string { 
+		  return \strtr(\base64_encode($d), '+/', '-_'); 
+		} 
+
     public function readVarint(): int {
       $val = 0;
       $shift = 0;
@@ -645,6 +649,7 @@ namespace Protobuf\Internal {
     ) {}
 
     public static function FromString(string $str): JsonDecoder {
+      //$data = \json_decode($str, true, 512 /* todo make optional*/, \JSON_OBJECT_AS_ARRAY | \JSON_BIGINT_AS_STRING);
       $data = \json_decode($str, true, 512 /* todo make optional*/);
       if ($data !== null) {
         $v = self::readObjectOrNull($data);
@@ -693,8 +698,24 @@ namespace Protobuf\Internal {
 			throw new \Protobuf\ProtobufException(\sprintf("expected list got %s", \gettype($m)));
     }
 
+		public static function readBytes(mixed $m): string {
+			if ($m === null) return '';
+			if (is_string($m)) {
+				return self::base64_url_decode($m);
+			}
+      throw new \Protobuf\ProtobufException(\sprintf("expected string got %s", \gettype($m)));
+		}
+
+		private static function base64_url_decode(string $d): string { 
+			$b = \base64_decode(\str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT));
+			if (is_string($b)) return $b;
+      throw new \Protobuf\ProtobufException("base64 decode failed");
+		}
+
 		public static function readString(mixed $m): string {
-      return (string)$m;
+			if ($m === null) return '';
+			if (is_string($m)) return $m;
+      throw new \Protobuf\ProtobufException(\sprintf("expected string got %s", \gettype($m)));
     }
 
 		private static function readInt(mixed $m, bool $unsigned64): int {

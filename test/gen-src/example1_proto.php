@@ -684,7 +684,7 @@ class example1 implements \Protobuf\Message {
           $this->astring = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
         case 'abytes':
-          $this->abytes = \Protobuf\Internal\JsonDecoder::readString($v);
+          $this->abytes = \Protobuf\Internal\JsonDecoder::readBytes($v);
           break;
         case 'aenum1':
           $this->aenum1 = \foo\bar\AEnum1::XXX_FromMixed($v);

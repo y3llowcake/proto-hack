@@ -515,10 +515,10 @@ func (f field) writeEncoder(w *writer, enc string) {
 func (f *field) jsonReader(v string) string {
 	rt := ""
 	switch f.fd.GetType() {
-	case
-		desc.FieldDescriptorProto_TYPE_STRING,
-		desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING:
 		rt = "String"
+	case desc.FieldDescriptorProto_TYPE_BYTES:
+		rt = "Bytes"
 	case
 		desc.FieldDescriptorProto_TYPE_UINT32,
 		desc.FieldDescriptorProto_TYPE_INT32,
