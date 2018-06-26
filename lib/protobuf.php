@@ -775,6 +775,11 @@ namespace Protobuf\Internal {
       if ($m === null)
         return 0;
       if (\is_string($m)) {
+        if (!\ctype_digit($m)) {
+          throw new \Protobuf\ProtobufException(
+            "non digit charecter encountered in integer string",
+          );
+        }
         $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
         if (\count($a) > 0) {
           if (is_int($a[0]))
@@ -792,12 +797,15 @@ namespace Protobuf\Internal {
     public static function readInt32(mixed $m): int {
       return self::readInt($m, false);
     }
+
     public static function readInt64Unsigned(mixed $m): int {
       return self::readInt($m, true);
     }
+
     public static function readInt64Signed(mixed $m): int {
       return self::readInt($m, false);
     }
+
     public static function readFloat(mixed $m): float {
       if ($m === null)
         return 0.0;
@@ -811,9 +819,11 @@ namespace Protobuf\Internal {
       }
       return (float)$m;
     }
+
     public static function readMapKeyBool(mixed $m): bool {
       return $m === "true";
     }
+
     public static function readBool(mixed $m): bool {
       if ($m === null)
         return false;
