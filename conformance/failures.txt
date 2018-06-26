@@ -2,10 +2,6 @@ Recommended.FieldMaskNumbersDontRoundTrip.JsonOutput
 Recommended.FieldMaskPathsDontRoundTrip.JsonOutput
 Recommended.FieldMaskTooManyUnderscore.JsonOutput
 Recommended.Proto2.ProtobufInput.OneofZeroMessage.ProtobufOutput
-Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedFalse
-Recommended.Proto3.JsonInput.BoolFieldDoubleQuotedTrue
-Recommended.Proto3.JsonInput.BoolFieldIntegerOne
-Recommended.Proto3.JsonInput.BoolFieldIntegerZero
 Recommended.Proto3.JsonInput.BytesFieldBase64Url.JsonOutput
 Recommended.Proto3.JsonInput.BytesFieldBase64Url.ProtobufOutput
 Recommended.Proto3.JsonInput.DurationHas3FractionalDigits.Validator
@@ -58,12 +54,6 @@ Required.Proto3.JsonInput.BoolMapField.JsonOutput
 Required.Proto3.JsonInput.BoolMapField.ProtobufOutput
 Required.Proto3.JsonInput.BytesField.ProtobufOutput
 Required.Proto3.JsonInput.BytesRepeatedField.ProtobufOutput
-Required.Proto3.JsonInput.DoubleFieldInfinity.JsonOutput
-Required.Proto3.JsonInput.DoubleFieldInfinity.ProtobufOutput
-Required.Proto3.JsonInput.DoubleFieldNan.JsonOutput
-Required.Proto3.JsonInput.DoubleFieldNan.ProtobufOutput
-Required.Proto3.JsonInput.DoubleFieldNegativeInfinity.JsonOutput
-Required.Proto3.JsonInput.DoubleFieldNegativeInfinity.ProtobufOutput
 Required.Proto3.JsonInput.DoubleFieldTooSmall
 Required.Proto3.JsonInput.DurationJsonInputTooLarge
 Required.Proto3.JsonInput.DurationJsonInputTooSmall
@@ -76,12 +66,6 @@ Required.Proto3.JsonInput.DurationRepeatedValue.JsonOutput
 Required.Proto3.JsonInput.DurationRepeatedValue.ProtobufOutput
 Required.Proto3.JsonInput.FieldMask.JsonOutput
 Required.Proto3.JsonInput.FieldMask.ProtobufOutput
-Required.Proto3.JsonInput.FloatFieldInfinity.JsonOutput
-Required.Proto3.JsonInput.FloatFieldInfinity.ProtobufOutput
-Required.Proto3.JsonInput.FloatFieldNan.JsonOutput
-Required.Proto3.JsonInput.FloatFieldNan.ProtobufOutput
-Required.Proto3.JsonInput.FloatFieldNegativeInfinity.JsonOutput
-Required.Proto3.JsonInput.FloatFieldNegativeInfinity.ProtobufOutput
 Required.Proto3.JsonInput.FloatFieldTooLarge
 Required.Proto3.JsonInput.FloatFieldTooSmall
 Required.Proto3.JsonInput.Int32FieldExponentialFormat.JsonOutput

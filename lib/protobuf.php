@@ -691,17 +691,16 @@ namespace Protobuf\Internal {
       return $ret;
     }
 
-    public static function readString(mixed $m): string {
+		public static function readString(mixed $m): string {
       return (string)$m;
     }
 
-    private static function readInt(mixed $m, bool $unsigned64): int {
+		private static function readInt(mixed $m, bool $unsigned64): int {
+			if ($m === null) return 0;
       if (\is_string($m)) {
         $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
 				if (\count($a) > 0) {
-					if (is_int($a[0])) {
-						return $a[0];
-					}
+					if (is_int($a[0])) return $a[0];
         }
       } else if (\is_int($m)) {
         return $m;
@@ -718,12 +717,22 @@ namespace Protobuf\Internal {
     public static function readInt64Signed(mixed $m): int {
       return self::readInt($m, false);
     }
-    public static function readFloat(mixed $m): float {
-      return (float)$m;
+		public static function readFloat(mixed $m): float {
+			if ($m === null) return 0.0;
+			if (is_string($m)){
+				if ($m == "NaN") return \NAN;
+				if ($m == "Infinity") return \INF;
+				if ($m == "-Infinity") return -\INF;
+			}
+			return (float) $m;
     }
-    public static function readBool(mixed $m): bool {
-      // todo this could be better.
-      return (bool)$m;
+		public static function readMapKeyBool(mixed $m): bool {
+			return $m === "true";
+		}
+		public static function readBool(mixed $m): bool {
+			if ($m === null) return false;
+			if (is_bool($m)) return $m;
+      throw new \Protobuf\ProtobufException(\sprintf("expected bool got %s", \gettype($m)));
     }
   }
 }
