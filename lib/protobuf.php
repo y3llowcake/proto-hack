@@ -681,14 +681,16 @@ namespace Protobuf\Internal {
     }
 
     public static function readList(mixed $m): vec<mixed> {
-      $ret = vec[];
+			$ret = vec[];
+			if ($m === null) return $ret;
       if (is_array($m)) {
         foreach ($m as $v) {
           // TODO, I could check for objects by seeing if the key is string.
           $ret[] = $v;
-        }
-      }
-      return $ret;
+				}
+	     	return $ret;
+			}
+			throw new \Protobuf\ProtobufException(\sprintf("expected list got %s", \gettype($m)));
     }
 
 		public static function readString(mixed $m): string {
@@ -704,8 +706,9 @@ namespace Protobuf\Internal {
         }
       } else if (\is_int($m)) {
         return $m;
-      }
-      return 0;
+			}
+      throw new \Protobuf\ProtobufException(\sprintf("expected int got %s", \gettype($m)));
+      // return 0;
     }
 
     public static function readInt32(mixed $m): int {

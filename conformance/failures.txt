@@ -77,7 +77,6 @@ Required.Proto3.JsonInput.Int32FieldMaxFloatValue.JsonOutput
 Required.Proto3.JsonInput.Int32FieldMaxFloatValue.ProtobufOutput
 Required.Proto3.JsonInput.Int32FieldMinFloatValue.JsonOutput
 Required.Proto3.JsonInput.Int32FieldMinFloatValue.ProtobufOutput
-Required.Proto3.JsonInput.Int32FieldNotInteger
 Required.Proto3.JsonInput.Int32FieldNotNumber
 Required.Proto3.JsonInput.Int32FieldTooLarge
 Required.Proto3.JsonInput.Int32FieldTooSmall
@@ -113,9 +112,6 @@ Required.Proto3.JsonInput.RepeatedBytesWrapper.JsonOutput
 Required.Proto3.JsonInput.RepeatedBytesWrapper.ProtobufOutput
 Required.Proto3.JsonInput.RepeatedDoubleWrapper.JsonOutput
 Required.Proto3.JsonInput.RepeatedDoubleWrapper.ProtobufOutput
-Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingIntegersGotBool
-Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingIntegersGotMessage
-Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingIntegersGotString
 Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingMessagesGotBool
 Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingMessagesGotInt
 Required.Proto3.JsonInput.RepeatedFieldWrongElementTypeExpectingMessagesGotString
@@ -155,7 +151,6 @@ Required.Proto3.JsonInput.TimestampWithPositiveOffset.JsonOutput
 Required.Proto3.JsonInput.TimestampWithPositiveOffset.ProtobufOutput
 Required.Proto3.JsonInput.Uint32FieldMaxFloatValue.JsonOutput
 Required.Proto3.JsonInput.Uint32FieldMaxFloatValue.ProtobufOutput
-Required.Proto3.JsonInput.Uint32FieldNotInteger
 Required.Proto3.JsonInput.Uint32FieldNotNumber
 Required.Proto3.JsonInput.Uint32FieldTooLarge
 Required.Proto3.JsonInput.Uint64FieldMaxValue.JsonOutput
@@ -164,7 +159,6 @@ Required.Proto3.JsonInput.Uint64FieldMaxValueNotQuoted.JsonOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValueNotQuoted.ProtobufOutput
 Required.Proto3.JsonInput.Uint64FieldNotInteger
 Required.Proto3.JsonInput.Uint64FieldNotNumber
-Required.Proto3.JsonInput.Uint64FieldTooLarge
 Required.Proto3.JsonInput.ValueAcceptBool.JsonOutput
 Required.Proto3.JsonInput.ValueAcceptBool.ProtobufOutput
 Required.Proto3.JsonInput.ValueAcceptFloat.JsonOutput
