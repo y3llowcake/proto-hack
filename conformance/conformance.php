@@ -29,13 +29,31 @@ function main(array<string> $argv): void {
     $in = $argv[1];
     echo 'raw input: "'.$in.'"'."\n";
     $in = \stripcslashes($in);
-    if ($argv[2] != 'json') {
-      $result = testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
-      $result = \addcslashes($result, $result);
-      echo "output: \"$result\"\n";
-    } else {
-      $result = testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::JSON);
-      echo "output: '$result'\n";
+    $mode = "proto:proto";
+    if ($argv[2] != "")
+      $mode = $argv[2];
+    switch ($mode) {
+      case 'proto:proto':
+        $result =
+          testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
+        $result = \addcslashes($result, $result);
+        echo "output: \"$result\"\n";
+        break;
+      case 'proto:json':
+        $result = testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::JSON);
+        echo "output: '$result'\n";
+        break;
+      case 'json:proto':
+        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::PROTOBUF);
+        $result = \addcslashes($result, $result);
+        echo "output: \"$result\"\n";
+        break;
+      case 'json:json':
+        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::JSON);
+        echo "output: '$result'\n";
+        break;
+      default:
+        die("unsupported mode $mode");
     }
     \exit();
   } else {
@@ -73,15 +91,15 @@ function conformanceRaw(string $raw): string {
 
 function conformance(ConformanceRequest $creq): ConformanceResponse {
   $cresp = new ConformanceResponse();
-	$payload = "";
-	$wfi = -1;
+  $payload = "";
+  $wfi = -1;
   if ($creq->payload instanceof ConformanceRequest_protobuf_payload) {
-		$payload = $creq->payload->protobuf_payload;
-		$wfi = WireFormat::PROTOBUF;
-	} else if ($creq->payload instanceof ConformanceRequest_json_payload) {
-		$payload = $creq->payload->json_payload;
-		$wfi = WireFormat::JSON;
-	}
+    $payload = $creq->payload->protobuf_payload;
+    $wfi = WireFormat::PROTOBUF;
+  } else if ($creq->payload instanceof ConformanceRequest_json_payload) {
+    $payload = $creq->payload->json_payload;
+    $wfi = WireFormat::JSON;
+  }
   $wfo = $creq->requested_output_format;
   try {
     switch ($wfo) {
@@ -109,15 +127,15 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
 
 function testMessageRaw(string $in, int $wfi, int $wfo): string {
   $tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
-	switch ($wfi) {
+  switch ($wfi) {
     case WireFormat::PROTOBUF:
-			\Protobuf\Unmarshal($in, $tm);
-			break;
+      \Protobuf\Unmarshal($in, $tm);
+      break;
     case WireFormat::JSON:
-			\Protobuf\UnmarshalJson($in, $tm);
-			break;
-		default:
-			throw new \Exception('wtf');
+      \Protobuf\UnmarshalJson($in, $tm);
+      break;
+    default:
+      throw new \Exception('wtf');
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
