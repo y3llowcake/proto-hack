@@ -788,6 +788,9 @@ namespace Protobuf\Internal {
       } else if (\is_int($m)) {
         return $m;
 			} else if (\is_float($m)) {
+				if (\fmod($m, 1) !== 0.00) {
+		      throw new \Protobuf\ProtobufException('non integral float');
+				}
 				return (int)$m;
 			}
       throw new \Protobuf\ProtobufException(
