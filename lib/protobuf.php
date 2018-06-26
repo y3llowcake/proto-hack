@@ -787,11 +787,12 @@ namespace Protobuf\Internal {
         }
       } else if (\is_int($m)) {
         return $m;
-      }
+			} else if (\is_float($m)) {
+				return (int)$m;
+			}
       throw new \Protobuf\ProtobufException(
         \sprintf("expected int got %s", \gettype($m)),
       );
-      // return 0;
     }
 
     public static function readInt32(mixed $m): int {
