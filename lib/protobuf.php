@@ -698,8 +698,10 @@ namespace Protobuf\Internal {
     private static function readInt(mixed $m, bool $unsigned64): int {
       if (\is_string($m)) {
         $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
-        if (\count($a) > 0) {
-          return $a[0];
+				if (\count($a) > 0) {
+					if (is_int($a[0])) {
+						return $a[0];
+					}
         }
       } else if (\is_int($m)) {
         return $m;
