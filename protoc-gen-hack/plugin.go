@@ -600,9 +600,10 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 
 func (f field) jsonWriter() (string, string) {
 	switch t := f.fd.GetType(); t {
-	case desc.FieldDescriptorProto_TYPE_STRING,
-		desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING:
 		return "String", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_BYTES:
+		return "Bytes", "Bytes"
 	case
 		desc.FieldDescriptorProto_TYPE_UINT32,
 		desc.FieldDescriptorProto_TYPE_INT32,

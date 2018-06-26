@@ -622,7 +622,7 @@ class example1 implements \Protobuf\Message {
     $e->writeInt64Signed('asfixed64', 'asfixed64', $this->asfixed64, false);
     $e->writeBool('abool', 'abool', $this->abool, false);
     $e->writeString('astring', 'astring', $this->astring, false);
-    $e->writeString('abytes', 'abytes', $this->abytes, false);
+    $e->writeBytes('abytes', 'abytes', $this->abytes, false);
     $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::XXX_ItoS(), $this->aenum1, false);
     $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::XXX_ItoS(), $this->aenum2, false);
     $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::XXX_ItoS(), $this->aenum22, false);

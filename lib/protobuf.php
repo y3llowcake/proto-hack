@@ -70,10 +70,6 @@ namespace Protobuf\Internal {
       return new Decoder($buf, 0, \strlen($buf));
     }
 
-		private static function base64_url_encode(string $d): string { 
-		  return \strtr(\base64_encode($d), '+/', '-_'); 
-		} 
-
     public function readVarint(): int {
       $val = 0;
       $shift = 0;
@@ -563,6 +559,22 @@ namespace Protobuf\Internal {
       }
     }
 
+    private static function base64_url_encode(string $d): string {
+      return \strtr(\base64_encode($d), '+/', '-_');
+    }
+
+    public function writeBytes(
+      string $oname,
+      string $cname,
+      string $value,
+      bool $emit_default,
+    ): void {
+      if ($value != '' || $emit_default || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          self::base64_url_encode($value);
+      }
+    }
+
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
       if (!$this->o->enums_as_ints) {
         return idx($itos, $v, $v);
@@ -620,6 +632,34 @@ namespace Protobuf\Internal {
     ): void {
       if (\count($value) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $value;
+      }
+    }
+
+    public function writeBytesMap<T>(
+      string $oname,
+      string $cname,
+      dict<arraykey, string> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = self::base64_url_encode($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeBytesList<T>(
+      string $oname,
+      string $cname,
+      vec<string> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $k => $v) {
+        $vs[] = self::base64_url_encode($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
       }
     }
 
@@ -686,49 +726,66 @@ namespace Protobuf\Internal {
     }
 
     public static function readList(mixed $m): vec<mixed> {
-			$ret = vec[];
-			if ($m === null) return $ret;
+      $ret = vec[];
+      if ($m === null)
+        return $ret;
       if (is_array($m)) {
         foreach ($m as $v) {
           // TODO, I could check for objects by seeing if the key is string.
           $ret[] = $v;
-				}
-	     	return $ret;
-			}
-			throw new \Protobuf\ProtobufException(\sprintf("expected list got %s", \gettype($m)));
+        }
+        return $ret;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected list got %s", \gettype($m)),
+      );
     }
 
-		public static function readBytes(mixed $m): string {
-			if ($m === null) return '';
-			if (is_string($m)) {
-				return self::base64_url_decode($m);
-			}
-      throw new \Protobuf\ProtobufException(\sprintf("expected string got %s", \gettype($m)));
-		}
+    public static function readBytes(mixed $m): string {
+      if ($m === null)
+        return '';
+      if (is_string($m)) {
+        return self::base64_url_decode($m);
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
 
-		private static function base64_url_decode(string $d): string { 
-			$b = \base64_decode(\str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT));
-			if (is_string($b)) return $b;
+    private static function base64_url_decode(string $d): string {
+      $b = \base64_decode(
+        \str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT),
+      );
+      if (is_string($b))
+        return $b;
       throw new \Protobuf\ProtobufException("base64 decode failed");
-		}
-
-		public static function readString(mixed $m): string {
-			if ($m === null) return '';
-			if (is_string($m)) return $m;
-      throw new \Protobuf\ProtobufException(\sprintf("expected string got %s", \gettype($m)));
     }
 
-		private static function readInt(mixed $m, bool $unsigned64): int {
-			if ($m === null) return 0;
+    public static function readString(mixed $m): string {
+      if ($m === null)
+        return '';
+      if (is_string($m))
+        return $m;
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
+
+    private static function readInt(mixed $m, bool $unsigned64): int {
+      if ($m === null)
+        return 0;
       if (\is_string($m)) {
         $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
-				if (\count($a) > 0) {
-					if (is_int($a[0])) return $a[0];
+        if (\count($a) > 0) {
+          if (is_int($a[0]))
+            return $a[0];
         }
       } else if (\is_int($m)) {
         return $m;
-			}
-      throw new \Protobuf\ProtobufException(\sprintf("expected int got %s", \gettype($m)));
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected int got %s", \gettype($m)),
+      );
       // return 0;
     }
 
@@ -741,22 +798,30 @@ namespace Protobuf\Internal {
     public static function readInt64Signed(mixed $m): int {
       return self::readInt($m, false);
     }
-		public static function readFloat(mixed $m): float {
-			if ($m === null) return 0.0;
-			if (is_string($m)){
-				if ($m == "NaN") return \NAN;
-				if ($m == "Infinity") return \INF;
-				if ($m == "-Infinity") return -\INF;
-			}
-			return (float) $m;
+    public static function readFloat(mixed $m): float {
+      if ($m === null)
+        return 0.0;
+      if (is_string($m)) {
+        if ($m == "NaN")
+          return \NAN;
+        if ($m == "Infinity")
+          return \INF;
+        if ($m == "-Infinity")
+          return -\INF;
+      }
+      return (float)$m;
     }
-		public static function readMapKeyBool(mixed $m): bool {
-			return $m === "true";
-		}
-		public static function readBool(mixed $m): bool {
-			if ($m === null) return false;
-			if (is_bool($m)) return $m;
-      throw new \Protobuf\ProtobufException(\sprintf("expected bool got %s", \gettype($m)));
+    public static function readMapKeyBool(mixed $m): bool {
+      return $m === "true";
+    }
+    public static function readBool(mixed $m): bool {
+      if ($m === null)
+        return false;
+      if (is_bool($m))
+        return $m;
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected bool got %s", \gettype($m)),
+      );
     }
   }
 }

@@ -2,7 +2,6 @@ Recommended.FieldMaskNumbersDontRoundTrip.JsonOutput
 Recommended.FieldMaskPathsDontRoundTrip.JsonOutput
 Recommended.FieldMaskTooManyUnderscore.JsonOutput
 Recommended.Proto2.ProtobufInput.OneofZeroMessage.ProtobufOutput
-Recommended.Proto3.JsonInput.BytesFieldBase64Url.JsonOutput
 Recommended.Proto3.JsonInput.DurationHas3FractionalDigits.Validator
 Recommended.Proto3.JsonInput.DurationHas6FractionalDigits.Validator
 Recommended.Proto3.JsonInput.DurationHas9FractionalDigits.Validator
@@ -51,8 +50,6 @@ Required.Proto3.JsonInput.BoolMapEscapedKey.JsonOutput
 Required.Proto3.JsonInput.BoolMapEscapedKey.ProtobufOutput
 Required.Proto3.JsonInput.BoolMapField.JsonOutput
 Required.Proto3.JsonInput.BoolMapField.ProtobufOutput
-Required.Proto3.JsonInput.BytesField.JsonOutput
-Required.Proto3.JsonInput.BytesRepeatedField.JsonOutput
 Required.Proto3.JsonInput.DoubleFieldTooSmall
 Required.Proto3.JsonInput.DurationJsonInputTooLarge
 Required.Proto3.JsonInput.DurationJsonInputTooSmall
