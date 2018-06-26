@@ -13,4 +13,5 @@ go_binary(
         "@com_github_golang_protobuf//protoc-gen-go/descriptor:go_default_library",
         "@com_github_golang_protobuf//protoc-gen-go/plugin:go_default_library",
     ],
+    out = 'protoc-gen-hack',
 )
