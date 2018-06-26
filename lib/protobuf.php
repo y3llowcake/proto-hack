@@ -798,8 +798,20 @@ namespace Protobuf\Internal {
       );
     }
 
-    public static function readInt32(mixed $m): int {
-      return self::readInt($m, false);
+    public static function readInt32Signed(mixed $m): int {
+			$i = self::readInt($m, false);
+			if ($i > 2147483647) {
+		  	throw new \Protobuf\ProtobufException('int32 > 2147483647');
+			}
+			return $i;
+    }
+
+    public static function readInt32Unsigned(mixed $m): int {
+			$i = self::readInt($m, false);
+			if ($i > 4294967295) {
+		  	throw new \Protobuf\ProtobufException('int32 > 4294967295');
+			}
+			return $i;
     }
 
     public static function readInt64Unsigned(mixed $m): int {
