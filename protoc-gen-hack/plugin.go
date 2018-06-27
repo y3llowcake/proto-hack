@@ -825,9 +825,32 @@ func customMergeJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v strin
 		w.p("$struct->fields = $dict;")
 		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
 		w.p("}")
-		return true
+	case ".google.protobuf.BoolValue":
+		w.p("$this->value = %s\\JsonDecoder::readBool(%s);", libNsInternal, v)
+	case ".google.protobuf.StringValue":
+		w.p("$this->value = %s\\JsonDecoder::readString(%s);", libNsInternal, v)
+	case ".google.protobuf.BytesValue":
+		w.p("$this->value = %s\\JsonDecoder::readBytes(%s);", libNsInternal, v)
+	case ".google.protobuf.DoubleValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.FloatValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.Int64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Int32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Duration":
+		w.p("$parts = %s\\JsonDecoder::readDuration(%s);", libNsInternal, v)
+		w.p("$this->seconds = $parts[0];")
+		w.p("$this->nanos = $parts[1];")
+	default:
+		return false
 	}
-	return false
+	return true
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go

@@ -855,7 +855,12 @@ namespace Protobuf\Internal {
         if ($m == "-Infinity")
           return -\INF;
       }
-      return (float)$m;
+      if (is_numeric($m)) {
+        return (float)$m;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected float got %s", \gettype($m)),
+      );
     }
 
     public static function readMapKeyBool(mixed $m): bool {
@@ -869,6 +874,32 @@ namespace Protobuf\Internal {
         return $m;
       throw new \Protobuf\ProtobufException(
         \sprintf("expected bool got %s", \gettype($m)),
+      );
+    }
+
+    public static function readDuration(mixed $m): (int, int) {
+      if ($m === null)
+        return tuple(0, 0);
+      if (is_string($m)) {
+        $parts = \explode('.', $m);
+        if (\count($parts) == 2) {
+          if (\substr($parts[1], -1) == 's') {
+            $s = (int)$parts[0];
+            $ns = (int)\substr($parts[1], 0, -1);
+            if (
+              $s >= -315576000000 &&
+              $s <= 315576000000 &&
+              $ns > -999999999 &&
+              $ns < 999999999
+            ) {
+              return tuple(0, 0);
+              // return tuple($s, $ns);
+            }
+          }
+        }
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
       );
     }
   }
