@@ -771,55 +771,92 @@ namespace Protobuf\Internal {
       );
     }
 
-    private static function readInt(mixed $m, bool $unsigned64): int {
+    private static function isDigitString(string $s, bool $signed): bool {
+      if ($signed && $s[0] === '-') {
+        return \ctype_digit(\substr($s, 1));
+      }
+      return \ctype_digit($s);
+    }
+
+    private static function readInt(mixed $m, bool $signed, bool $b64): int {
       if ($m === null)
         return 0;
+      if (\is_int($m))
+        return $m;
       if (\is_string($m)) {
-        if (!\ctype_digit($m)) {
+        if ($m === '') {
+          throw new \Protobuf\ProtobufException('empty integer string');
+        }
+
+        if (!self::isDigitString($m, $signed)) {
+          throw
+            new \Protobuf\ProtobufException('invalid char in integer string');
+        }
+
+        if ($b64) {
+          // sscanf behaves unexpectedly when the input exceeds int64 bounds.
+          if ($signed) {
+            if (
+              bccomp($m, '9223372036854775807') > 0 ||
+              bccomp($m, '-9223372036854775808') < 0
+            ) {
+              throw new \Protobuf\ProtobufException('int64 out of bounds');
+            }
+          } else {
+            if (bccomp($m, '9223372036854775807') > 0) {
+              if (bccomp($m, '18446744073709551615') > 0) {
+                throw new \Protobuf\ProtobufException('uint64 out of bounds');
+              }
+              // TODO SPECIAL CASE PARSE
+            }
+          }
+        }
+
+        $a = \sscanf($m, '%d');
+        if (\count($a) > 0) {
+          if (is_int($a[0])) {
+            return $a[0];
+          }
+        }
+        throw new \Protobuf\ProtobufException(
+          \sprintf("expected int got weird string"),
+        );
+      }
+      if (\is_float($m)) {
+        if (\fmod($m, 1) !== 0.00) {
           throw new \Protobuf\ProtobufException(
-            "non digit charecter encountered in integer string",
+            'expected int got non integral float',
           );
         }
-        $a = \sscanf($m, $unsigned64 ? '%u' : '%d');
-        if (\count($a) > 0) {
-          if (is_int($a[0]))
-            return $a[0];
-        }
-      } else if (\is_int($m)) {
-        return $m;
-			} else if (\is_float($m)) {
-				if (\fmod($m, 1) !== 0.00) {
-		      throw new \Protobuf\ProtobufException('non integral float');
-				}
-				return (int)$m;
-			}
+        return (int)$m;
+      }
       throw new \Protobuf\ProtobufException(
         \sprintf("expected int got %s", \gettype($m)),
       );
     }
 
     public static function readInt32Signed(mixed $m): int {
-			$i = self::readInt($m, false);
-			if ($i > 2147483647) {
-		  	throw new \Protobuf\ProtobufException('int32 > 2147483647');
-			}
-			return $i;
+      $i = self::readInt($m, true, false);
+      if ($i > 2147483647 || $i < -2147483648) {
+        throw new \Protobuf\ProtobufException('int32 out of bounds');
+      }
+      return $i;
     }
 
     public static function readInt32Unsigned(mixed $m): int {
-			$i = self::readInt($m, false);
-			if ($i > 4294967295) {
-		  	throw new \Protobuf\ProtobufException('int32 > 4294967295');
-			}
-			return $i;
+      $i = self::readInt($m, false, false);
+      if ($i > 4294967295) {
+        throw new \Protobuf\ProtobufException('uint32 out of bounds');
+      }
+      return $i;
     }
 
     public static function readInt64Unsigned(mixed $m): int {
-      return self::readInt($m, true);
+      return self::readInt($m, false, true);
     }
 
     public static function readInt64Signed(mixed $m): int {
-      return self::readInt($m, false);
+      return self::readInt($m, true, true);
     }
 
     public static function readFloat(mixed $m): float {

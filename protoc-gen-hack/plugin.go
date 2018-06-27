@@ -520,12 +520,14 @@ func (f *field) jsonReader(v string) string {
 	case desc.FieldDescriptorProto_TYPE_BYTES:
 		rt = "Bytes"
 	case
-		desc.FieldDescriptorProto_TYPE_UINT32,
+		desc.FieldDescriptorProto_TYPE_UINT32:
+		rt = "Int32Unsigned"
+	case
 		desc.FieldDescriptorProto_TYPE_INT32,
 		desc.FieldDescriptorProto_TYPE_SINT32,
 		desc.FieldDescriptorProto_TYPE_SFIXED32,
 		desc.FieldDescriptorProto_TYPE_FIXED32:
-		rt = "Int32"
+		rt = "Int32Signed"
 	case
 		desc.FieldDescriptorProto_TYPE_INT64,
 		desc.FieldDescriptorProto_TYPE_SINT64,

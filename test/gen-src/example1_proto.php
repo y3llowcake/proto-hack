@@ -64,7 +64,7 @@ class example2 implements \Protobuf\Message {
     foreach ($d->d as $k => $v) {
       switch ($k) {
         case 'aint32':
-          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
       }
     }
@@ -648,31 +648,31 @@ class example1 implements \Protobuf\Message {
           $this->afloat = \Protobuf\Internal\JsonDecoder::readFloat($v);
           break;
         case 'aint32':
-          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
         case 'aint64':
           $this->aint64 = \Protobuf\Internal\JsonDecoder::readInt64Signed($v);
           break;
         case 'auint32':
-          $this->auint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->auint32 = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($v);
           break;
         case 'auint64':
-          $this->auint64 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->auint64 = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($v);
           break;
         case 'asint32':
-          $this->asint32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->asint32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
         case 'asint64':
           $this->asint64 = \Protobuf\Internal\JsonDecoder::readInt64Signed($v);
           break;
         case 'afixed32':
-          $this->afixed32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->afixed32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
         case 'afixed64':
           $this->afixed64 = \Protobuf\Internal\JsonDecoder::readInt64Unsigned($v);
           break;
         case 'asfixed32':
-          $this->asfixed32 = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->asfixed32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
         case 'asfixed64':
           $this->asfixed64 = \Protobuf\Internal\JsonDecoder::readInt64Signed($v);
@@ -736,7 +736,7 @@ class example1 implements \Protobuf\Message {
           $this->aoneof = new example1_oostring(\Protobuf\Internal\JsonDecoder::readString($v));
           break;
         case 'ooint':
-          $this->aoneof = new example1_ooint(\Protobuf\Internal\JsonDecoder::readInt32($v));
+          $this->aoneof = new example1_ooint(\Protobuf\Internal\JsonDecoder::readInt32Signed($v));
           break;
         case 'anany':
           if ($this->anany == null) $this->anany = new \google\protobuf\Any();

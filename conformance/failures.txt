@@ -64,8 +64,6 @@ Required.Proto3.JsonInput.FieldMask.JsonOutput
 Required.Proto3.JsonInput.FieldMask.ProtobufOutput
 Required.Proto3.JsonInput.FloatFieldTooLarge
 Required.Proto3.JsonInput.FloatFieldTooSmall
-Required.Proto3.JsonInput.Int64FieldTooLarge
-Required.Proto3.JsonInput.Int64FieldTooSmall
 Required.Proto3.JsonInput.OneofFieldDuplicate
 Required.Proto3.JsonInput.OptionalBoolWrapper.JsonOutput
 Required.Proto3.JsonInput.OptionalBoolWrapper.ProtobufOutput
@@ -128,7 +126,6 @@ Required.Proto3.JsonInput.TimestampWithPositiveOffset.JsonOutput
 Required.Proto3.JsonInput.TimestampWithPositiveOffset.ProtobufOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.JsonOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.ProtobufOutput
-Required.Proto3.JsonInput.Uint64FieldTooLarge
 Required.Proto3.JsonInput.ValueAcceptBool.JsonOutput
 Required.Proto3.JsonInput.ValueAcceptBool.ProtobufOutput
 Required.Proto3.JsonInput.ValueAcceptFloat.JsonOutput

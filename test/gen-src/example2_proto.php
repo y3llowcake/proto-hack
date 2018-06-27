@@ -61,7 +61,7 @@ class example2 implements \Protobuf\Message {
     foreach ($d->d as $k => $v) {
       switch ($k) {
         case 'zomg':
-          $this->zomg = \Protobuf\Internal\JsonDecoder::readInt32($v);
+          $this->zomg = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
       }
     }
