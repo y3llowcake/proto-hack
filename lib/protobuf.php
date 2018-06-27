@@ -684,37 +684,37 @@ namespace Protobuf\Internal {
 
   abstract class JsonDecoder {
     public static function FromString(string $str): mixed {
-			if ($str === "null") {
-				return null;
-			}
-			$data = \json_decode($str, true, 512 /* todo make optional*/);
+      if ($str === "null") {
+        return null;
+      }
+      $data = \json_decode($str, true, 512, \JSON_FB_HACK_ARRAYS);
       if ($data !== null) {
-				return $data;
-			}
+        return $data;
+      }
       throw new \Protobuf\ProtobufException(
-        "json_decode failed; " . \json_last_error_msg());
+        "json_decode failed; ".\json_last_error_msg(),
+      );
     }
 
     public static function readObject(mixed $m): dict<string, mixed> {
-      if (is_array($m)) {
+      if (\is_dict($m)) {
         $ret = dict[];
         foreach ($m as $k => $v) {
           // TODO, I could check for objects by seeing if the key is int.
           $ret[(string)$k] = $v;
         }
         return $ret;
-			}
-      throw new \Protobuf\ProtobufException(\sprintf(
-        "expected array got %s",
-        \gettype($m),
-      ));
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected dict got %s", \gettype($m)),
+      );
     }
 
     public static function readList(mixed $m): vec<mixed> {
       $ret = vec[];
       if ($m === null)
         return $ret;
-      if (is_array($m)) {
+      if (\is_vec($m)) {
         foreach ($m as $v) {
           // TODO, I could check for objects by seeing if the key is string.
           $ret[] = $v;
@@ -722,7 +722,7 @@ namespace Protobuf\Internal {
         return $ret;
       }
       throw new \Protobuf\ProtobufException(
-        \sprintf("expected list got %s", \gettype($m)),
+        \sprintf("expected vec got %s", \gettype($m)),
       );
     }
 
