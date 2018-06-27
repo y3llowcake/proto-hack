@@ -554,14 +554,16 @@ func (f *field) jsonReader(v string) string {
 func (f *field) writeJsonDecoder(w *writer, v string) {
 	if f.isMap {
 		k, vv := f.mapFields()
+		w.p("if (%s !== null) {", v)
 		w.p("foreach (%s\\JsonDecoder::readObject(%s) as $k => $v) {", libNsInternal, v)
 		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 			w.p("$obj = new %s();", vv.phpType())
-			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+			w.p("$obj->MergeJsonFrom(%s);", v)
 			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), k.jsonReader("$k"))
 		} else {
 			w.p("$this->%s[%s] = %s;", f.fd.GetName(), k.jsonReader("$k"), vv.jsonReader("$v"))
 		}
+		w.p("}")
 		w.p("}")
 		return
 	}
@@ -569,18 +571,18 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		if f.isRepeated() {
 			w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
 			w.p("$obj = new %s();", f.phpType())
-			w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, "$vv")
+			w.p("$obj->MergeJsonFrom(%s);", "$vv")
 			w.p("$this->%s []= $obj;", f.varName())
 			w.p("}")
 		} else {
 			if f.isOneofMember() {
 				// TODO: Subtle: technically this doesn't merge, it overwrites!
 				w.p("$obj = new %s();", f.phpType())
-				w.p("$obj->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", libNsInternal, v)
+				w.p("$obj->MergeJsonFrom(%s);", v)
 				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
 			} else {
 				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
-				w.p("$this->%s->MergeJsonFrom(%s\\JsonDecoder::readDecoder(%s));", f.varName(), libNsInternal, v)
+				w.p("$this->%s->MergeJsonFrom(%s);", f.varName(), v)
 			}
 		}
 		return
@@ -938,8 +940,10 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	// MergeJsonFrom function
-	w.p("public function MergeJsonFrom(%s\\JsonDecoder $d): void {", libNsInternal)
-	w.p("foreach ($d->d as $k => $v) {")
+	w.p("public function MergeJsonFrom(mixed $m): void {")
+	w.p("if ($m === null) return;")
+	w.p("$d = %s\\JsonDecoder::readObject($m);", libNsInternal)
+	w.p("foreach ($d as $k => $v) {")
 	w.p("switch ($k) {")
 	for _, f := range fields {
 		ca := fmt.Sprintf("case '%s':", f.fd.GetName())

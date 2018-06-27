@@ -6,7 +6,7 @@ namespace Protobuf {
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
-    public function MergeJsonFrom(Internal\JsonDecoder $d): void;
+    public function MergeJsonFrom(mixed $m): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
@@ -682,29 +682,20 @@ namespace Protobuf\Internal {
     }
   } // class JsonEncoder
 
-  class JsonDecoder {
-    public function __construct(
-      public dict<string, mixed> $d,
-      // TODO consider extending IteratorAggregate
-    ) {}
-
-    public static function FromString(string $str): JsonDecoder {
-      //$data = \json_decode($str, true, 512 /* todo make optional*/, \JSON_OBJECT_AS_ARRAY | \JSON_BIGINT_AS_STRING);
-      $data = \json_decode($str, true, 512 /* todo make optional*/);
+  abstract class JsonDecoder {
+    public static function FromString(string $str): mixed {
+			if ($str === "null") {
+				return null;
+			}
+			$data = \json_decode($str, true, 512 /* todo make optional*/);
       if ($data !== null) {
-        $v = self::readObjectOrNull($data);
-        if ($v !== null) {
-          return new JsonDecoder($v);
-        }
-      }
-      throw new \Protobuf\ProtobufException(\sprintf(
-        "json_decode failed; got %s expected array: %s",
-        \gettype($data),
-        \json_last_error_msg(),
-      ));
+				return $data;
+			}
+      throw new \Protobuf\ProtobufException(
+        "json_decode failed; " . \json_last_error_msg());
     }
 
-    private static function readObjectOrNull(mixed $m): ?dict<string, mixed> {
+    public static function readObject(mixed $m): dict<string, mixed> {
       if (is_array($m)) {
         $ret = dict[];
         foreach ($m as $k => $v) {
@@ -712,17 +703,11 @@ namespace Protobuf\Internal {
           $ret[(string)$k] = $v;
         }
         return $ret;
-      }
-      return null;
-    }
-
-    public static function readObject(mixed $m): dict<string, mixed> {
-      $ret = self::readObjectOrNull($m);
-      return $ret === null ? dict[] : $ret;
-    }
-
-    public static function readDecoder(mixed $m): JsonDecoder {
-      return new JsonDecoder(self::readObject($m));
+			}
+      throw new \Protobuf\ProtobufException(\sprintf(
+        "expected array got %s",
+        \gettype($m),
+      ));
     }
 
     public static function readList(mixed $m): vec<mixed> {
