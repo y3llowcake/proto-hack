@@ -792,6 +792,24 @@ func writeOneofTypes(w *writer, oo *oneof) {
 
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
+func customMergeJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
+	fqn := ns.Fqn + dp.GetName()
+	switch fqn {
+	case ".google.protobuf.Value":
+		w.p("if (%s === null) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_null_value(\\google\\protobuf\\NullValue::NULL_VALUE);")
+		w.p("} else if (is_string(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_string_value(%s);", v)
+		w.p("} else if (is_bool(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_bool_value(%s);", v)
+		w.p("} else if (is_float(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_number_value(%s);", v)
+		w.p("}")
+
+		return true
+	}
+	return false
+}
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
@@ -941,24 +959,26 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// MergeJsonFrom function
 	w.p("public function MergeJsonFrom(mixed $m): void {")
-	w.p("if ($m === null) return;")
-	w.p("$d = %s\\JsonDecoder::readObject($m);", libNsInternal)
-	w.p("foreach ($d as $k => $v) {")
-	w.p("switch ($k) {")
-	for _, f := range fields {
-		ca := fmt.Sprintf("case '%s':", f.fd.GetName())
-		if f.fd.GetName() != f.fd.GetJsonName() {
-			ca += fmt.Sprintf(" case '%s':", f.fd.GetJsonName())
-		}
-		w.p(ca)
-		w.i++
+	if !customMergeJson(w, dp, ns, "$m") {
+		w.p("if ($m === null) return;")
+		w.p("$d = %s\\JsonDecoder::readObject($m);", libNsInternal)
+		w.p("foreach ($d as $k => $v) {")
+		w.p("switch ($k) {")
+		for _, f := range fields {
+			ca := fmt.Sprintf("case '%s':", f.fd.GetName())
+			if f.fd.GetName() != f.fd.GetJsonName() {
+				ca += fmt.Sprintf(" case '%s':", f.fd.GetJsonName())
+			}
+			w.p(ca)
+			w.i++
 
-		f.writeJsonDecoder(w, "$v")
-		w.p("break;")
-		w.i--
+			f.writeJsonDecoder(w, "$v")
+			w.p("break;")
+			w.i--
+		}
+		w.p("}")
+		w.p("}")
 	}
-	w.p("}")
-	w.p("}")
 	w.p("}")
 
 	w.p("}") // class
