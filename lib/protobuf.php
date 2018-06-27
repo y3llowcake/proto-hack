@@ -797,14 +797,14 @@ namespace Protobuf\Internal {
           // sscanf behaves unexpectedly when the input exceeds int64 bounds.
           if ($signed) {
             if (
-              bccomp($m, '9223372036854775807') > 0 ||
-              bccomp($m, '-9223372036854775808') < 0
+              \bccomp($m, '9223372036854775807') > 0 ||
+              \bccomp($m, '-9223372036854775808') < 0
             ) {
               throw new \Protobuf\ProtobufException('int64 out of bounds');
             }
           } else {
-            if (bccomp($m, '9223372036854775807') > 0) {
-              if (bccomp($m, '18446744073709551615') > 0) {
+            if (\bccomp($m, '9223372036854775807') > 0) {
+              if (\bccomp($m, '18446744073709551615') > 0) {
                 throw new \Protobuf\ProtobufException('uint64 out of bounds');
               }
               // TODO SPECIAL CASE PARSE

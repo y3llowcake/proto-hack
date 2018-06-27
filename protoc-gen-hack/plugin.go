@@ -788,6 +788,9 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	}
 }
 
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
+
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
