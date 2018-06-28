@@ -512,6 +512,80 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
+func customWriteJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
+	fqn := ns.Fqn + dp.GetName()
+	switch fqn {
+	case ".google.protobuf.BoolValue":
+	default:
+		return false
+	}
+
+	return false
+}
+
+func customMergeJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
+	fqn := ns.Fqn + dp.GetName()
+	switch fqn {
+	case ".google.protobuf.Value":
+		w.p("if (%s === null) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_null_value(\\google\\protobuf\\NullValue::NULL_VALUE);")
+		w.p("} else if (is_string(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_string_value(%s);", v)
+		w.p("} else if (is_bool(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_bool_value(%s);", v)
+		w.p("} else if (is_numeric(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_number_value((float)%s);", v)
+		w.p("} else if (\\is_vec(%s)) {", v)
+		w.p("$vec = vec[];")
+		w.p("foreach (%s as $vv) {", v)
+		w.p("$val = new \\google\\protobuf\\Value();")
+		w.p("$val->MergeJsonFrom($vv);")
+		w.p("$vec []= $val;")
+		w.p("}")
+		w.p("$lv = new \\google\\protobuf\\ListValue();")
+		w.p("$lv->values = $vec;")
+		w.p("$this->kind = new \\google\\protobuf\\Value_list_value($lv);")
+		w.p("} else if (\\is_dict(%s)) {", v)
+		w.p("$dict = dict[];")
+		w.p("foreach (%s as $k => $vv) {", v)
+		w.p("$val = new \\google\\protobuf\\Value();")
+		w.p("$val->MergeJsonFrom($vv);")
+		w.p("$dict[(string)$k] = $val;")
+		w.p("}")
+		w.p("$struct = new \\google\\protobuf\\Struct();")
+		w.p("$struct->fields = $dict;")
+		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
+		w.p("}")
+	case ".google.protobuf.BoolValue":
+		w.p("$this->value = %s\\JsonDecoder::readBool(%s);", libNsInternal, v)
+	case ".google.protobuf.StringValue":
+		w.p("$this->value = %s\\JsonDecoder::readString(%s);", libNsInternal, v)
+	case ".google.protobuf.BytesValue":
+		w.p("$this->value = %s\\JsonDecoder::readBytes(%s);", libNsInternal, v)
+	case ".google.protobuf.DoubleValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.FloatValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.Int64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Int32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Duration":
+		w.p("$parts = %s\\JsonDecoder::readDuration(%s);", libNsInternal, v)
+		w.p("$this->seconds = $parts[0];")
+		w.p("$this->nanos = $parts[1];")
+	default:
+		return false
+	}
+	return true
+}
+
 func (f *field) jsonReader(v string) string {
 	rt := ""
 	switch f.fd.GetType() {
@@ -790,69 +864,6 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	}
 }
 
-// https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
-// https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
-func customMergeJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
-	fqn := ns.Fqn + dp.GetName()
-	switch fqn {
-	case ".google.protobuf.Value":
-		w.p("if (%s === null) {", v)
-		w.p("$this->kind = new \\google\\protobuf\\Value_null_value(\\google\\protobuf\\NullValue::NULL_VALUE);")
-		w.p("} else if (is_string(%s)) {", v)
-		w.p("$this->kind = new \\google\\protobuf\\Value_string_value(%s);", v)
-		w.p("} else if (is_bool(%s)) {", v)
-		w.p("$this->kind = new \\google\\protobuf\\Value_bool_value(%s);", v)
-		w.p("} else if (is_numeric(%s)) {", v)
-		w.p("$this->kind = new \\google\\protobuf\\Value_number_value((float)%s);", v)
-		w.p("} else if (\\is_vec(%s)) {", v)
-		w.p("$vec = vec[];")
-		w.p("foreach (%s as $vv) {", v)
-		w.p("$val = new \\google\\protobuf\\Value();")
-		w.p("$val->MergeJsonFrom($vv);")
-		w.p("$vec []= $val;")
-		w.p("}")
-		w.p("$lv = new \\google\\protobuf\\ListValue();")
-		w.p("$lv->values = $vec;")
-		w.p("$this->kind = new \\google\\protobuf\\Value_list_value($lv);")
-		w.p("} else if (\\is_dict(%s)) {", v)
-		w.p("$dict = dict[];")
-		w.p("foreach (%s as $k => $vv) {", v)
-		w.p("$val = new \\google\\protobuf\\Value();")
-		w.p("$val->MergeJsonFrom($vv);")
-		w.p("$dict[(string)$k] = $val;")
-		w.p("}")
-		w.p("$struct = new \\google\\protobuf\\Struct();")
-		w.p("$struct->fields = $dict;")
-		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
-		w.p("}")
-	case ".google.protobuf.BoolValue":
-		w.p("$this->value = %s\\JsonDecoder::readBool(%s);", libNsInternal, v)
-	case ".google.protobuf.StringValue":
-		w.p("$this->value = %s\\JsonDecoder::readString(%s);", libNsInternal, v)
-	case ".google.protobuf.BytesValue":
-		w.p("$this->value = %s\\JsonDecoder::readBytes(%s);", libNsInternal, v)
-	case ".google.protobuf.DoubleValue":
-		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
-	case ".google.protobuf.FloatValue":
-		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
-	case ".google.protobuf.Int64Value":
-		w.p("$this->value = %s\\JsonDecoder::readInt64Signed(%s);", libNsInternal, v)
-	case ".google.protobuf.UInt64Value":
-		w.p("$this->value = %s\\JsonDecoder::readInt64Unsigned(%s);", libNsInternal, v)
-	case ".google.protobuf.Int32Value":
-		w.p("$this->value = %s\\JsonDecoder::readInt32Signed(%s);", libNsInternal, v)
-	case ".google.protobuf.UInt32Value":
-		w.p("$this->value = %s\\JsonDecoder::readInt32Unsigned(%s);", libNsInternal, v)
-	case ".google.protobuf.Duration":
-		w.p("$parts = %s\\JsonDecoder::readDuration(%s);", libNsInternal, v)
-		w.p("$this->seconds = $parts[0];")
-		w.p("$this->nanos = $parts[1];")
-	default:
-		return false
-	}
-	return true
-}
-
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
@@ -987,14 +998,16 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// WriteJsonTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-	for _, f := range fields {
-		if f.isOneofMember() {
-			continue
+	if !customWriteJson(w, dp, ns, "$e") {
+		for _, f := range fields {
+			if f.isOneofMember() {
+				continue
+			}
+			f.writeJsonEncoder(w, "$e", false)
 		}
-		f.writeJsonEncoder(w, "$e", false)
-	}
-	for _, oo := range oneofs {
-		w.p("$this->%s->WriteJsonTo($e);", oo.name)
+		for _, oo := range oneofs {
+			w.p("$this->%s->WriteJsonTo($e);", oo.name)
+		}
 	}
 	w.p("}") // WriteJsonToFunction
 	w.ln()
