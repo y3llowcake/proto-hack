@@ -1,5 +1,5 @@
 <?hh // strict
-
+ 
 namespace Protobuf {
 
   class ProtobufException extends \Exception {}
