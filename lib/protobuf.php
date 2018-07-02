@@ -800,34 +800,28 @@ namespace Protobuf\Internal {
             new \Protobuf\ProtobufException('invalid char in integer string');
         }
 
+        $mgmp = \gmp_init($m, 10);
         if ($b64) {
           // sscanf behaves unexpectedly when the input exceeds int64 bounds.
           if ($signed) {
             if (
-              \bccomp($m, '9223372036854775807') > 0 ||
-              \bccomp($m, '-9223372036854775808') < 0
+              \gmp_cmp($mgmp, '9223372036854775807') > 0 ||
+              \gmp_cmp($mgmp, '-9223372036854775808') < 0
             ) {
               throw new \Protobuf\ProtobufException('int64 out of bounds');
             }
           } else {
-            if (\bccomp($m, '9223372036854775807') > 0) {
-              if (\bccomp($m, '18446744073709551615') > 0) {
+            if (\gmp_cmp($m, '9223372036854775807') > 0) {
+              if (\gmp_cmp($m, '18446744073709551615') > 0) {
                 throw new \Protobuf\ProtobufException('uint64 out of bounds');
               }
-              // TODO SPECIAL CASE PARSE
+              \gmp_clrbit(&$mgmp, 63);
+              return \gmp_intval($mgmp) | 0x8000000000000000;
             }
           }
         }
 
-        $a = \sscanf($m, '%d');
-        if (\count($a) > 0) {
-          if (is_int($a[0])) {
-            return $a[0];
-          }
-        }
-        throw new \Protobuf\ProtobufException(
-          \sprintf("expected int got weird string"),
-        );
+        return \gmp_intval($mgmp);
       }
       if (\is_float($m)) {
         if (\fmod($m, 1) !== 0.00) {
