@@ -521,6 +521,7 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
 func customWriteJson(w *writer, fqn, v string) bool {
 	switch fqn {
+	// Structs
 	case ".google.protobuf.Value":
 		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_null_value) {")
 		w.p("%s->setCustomEncoding(null);", v)
@@ -539,22 +540,27 @@ func customWriteJson(w *writer, fqn, v string) bool {
 		w.p("return;")
 		w.p("}")
 		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_list_value) {")
-		w.p("$vec = vec[];")
-		w.p("foreach ($this->kind->list_value->values as $lv) {")
-		w.p("$vec []= %s->encodeMessage($lv);", v)
-		w.p("}")
-		w.p("%s->setCustomEncoding($vec);", v)
+		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->list_value));", v, v)
 		w.p("return;")
 		w.p("}")
 		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_struct_value) {")
+		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->struct_value));", v, v)
+		w.p("return;")
+		w.p("}")
+	case ".google.protobuf.ListValue":
+		w.p("$vec = vec[];")
+		w.p("foreach ($this->values as $lv) {")
+		w.p("$vec []= %s->encodeMessage($lv);", v)
+		w.p("}")
+		w.p("%s->setCustomEncoding($vec);", v)
+	case ".google.protobuf.Struct":
 		w.p("$dict = dict[];")
-		w.p("foreach ($this->kind->struct_value->fields as $kk => $vv) {")
+		w.p("foreach ($this->fields as $kk => $vv) {")
 		w.p("$dict[$kk]= %s->encodeMessage($vv);", v)
 		w.p("}")
 		w.p("%s->setCustomEncoding($dict);", v)
-		w.p("return;")
-		w.p("}")
 
+	// Wrappers
 	case
 		".google.protobuf.BoolValue",
 		".google.protobuf.StringValue",
@@ -577,6 +583,7 @@ func customWriteJson(w *writer, fqn, v string) bool {
 
 func customMergeJson(w *writer, fqn, v string) bool {
 	switch fqn {
+	// Structs
 	case ".google.protobuf.Value":
 		w.p("if (%s === null) {", v)
 		w.p("$this->kind = new \\google\\protobuf\\Value_null_value(\\google\\protobuf\\NullValue::NULL_VALUE);")
@@ -587,26 +594,32 @@ func customMergeJson(w *writer, fqn, v string) bool {
 		w.p("} else if (is_numeric(%s)) {", v)
 		w.p("$this->kind = new \\google\\protobuf\\Value_number_value((float)%s);", v)
 		w.p("} else if (\\is_vec(%s)) {", v)
-		w.p("$vec = vec[];")
+		w.p("$lv = new \\google\\protobuf\\ListValue();")
+		w.p("$lv->MergeJsonFrom(%s);", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_list_value($lv);")
+		w.p("} else if (\\is_dict(%s)) {", v)
+		w.p("$struct = new \\google\\protobuf\\Struct();")
+		w.p("$struct->MergeJsonFrom(%s);", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
+		w.p("}")
+	case ".google.protobuf.ListValue":
+		w.p("if (\\is_vec(%s)) {", v)
 		w.p("foreach (%s as $vv) {", v)
 		w.p("$val = new \\google\\protobuf\\Value();")
 		w.p("$val->MergeJsonFrom($vv);")
-		w.p("$vec []= $val;")
+		w.p("$this->values []= $val;")
 		w.p("}")
-		w.p("$lv = new \\google\\protobuf\\ListValue();")
-		w.p("$lv->values = $vec;")
-		w.p("$this->kind = new \\google\\protobuf\\Value_list_value($lv);")
-		w.p("} else if (\\is_dict(%s)) {", v)
-		w.p("$dict = dict[];")
+		w.p("}")
+	case ".google.protobuf.Struct":
+		w.p("if (\\is_dict(%s)) {", v)
 		w.p("foreach (%s as $k => $vv) {", v)
 		w.p("$val = new \\google\\protobuf\\Value();")
 		w.p("$val->MergeJsonFrom($vv);")
-		w.p("$dict[(string)$k] = $val;")
+		w.p("$this->fields[(string)$k] = $val;")
 		w.p("}")
-		w.p("$struct = new \\google\\protobuf\\Struct();")
-		w.p("$struct->fields = $dict;")
-		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
 		w.p("}")
+
+		// Wrappers
 	case ".google.protobuf.BoolValue":
 		w.p("$this->value = %s\\JsonDecoder::readBool(%s);", libNsInternal, v)
 	case ".google.protobuf.StringValue":
