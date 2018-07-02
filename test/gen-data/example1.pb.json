@@ -13,7 +13,7 @@
     "asfixed64": "1234567890",
     "abool": true,
     "astring": "foobar",
-    "abytes": "hello world",
+    "abytes": "aGVsbG8gd29ybGQ=",
     "aenum1": "B",
     "aenum2": "D",
     "manystring": [

@@ -29,13 +29,31 @@ function main(array<string> $argv): void {
     $in = $argv[1];
     echo 'raw input: "'.$in.'"'."\n";
     $in = \stripcslashes($in);
-    if ($argv[2] != 'json') {
-      $result = testMessageRaw($in, WireFormat::PROTOBUF);
-      $result = \addcslashes($result, $result);
-      echo "output: \"$result\"\n";
-    } else {
-      $result = testMessageRaw($in, WireFormat::JSON);
-      echo "output: '$result'\n";
+    $mode = "proto:proto";
+    if ($argv[2] != "")
+      $mode = $argv[2];
+    switch ($mode) {
+      case 'proto:proto':
+        $result =
+          testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
+        $result = \addcslashes($result, $result);
+        echo "output: \"$result\"\n";
+        break;
+      case 'proto:json':
+        $result = testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::JSON);
+        echo "output: '$result'\n";
+        break;
+      case 'json:proto':
+        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::PROTOBUF);
+        $result = \addcslashes($result, $result);
+        echo "output: \"$result\"\n";
+        break;
+      case 'json:json':
+        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::JSON);
+        echo "output: '$result'\n";
+        break;
+      default:
+        die("unsupported mode $mode");
     }
     \exit();
   } else {
@@ -72,28 +90,32 @@ function conformanceRaw(string $raw): string {
 }
 
 function conformance(ConformanceRequest $creq): ConformanceResponse {
-	$cresp = new ConformanceResponse();
-  if ($creq->payload->WhichOneof() !=
-      ConformanceRequest_payload::protobuf_payload) {
-    $cresp->result = new ConformanceResponse_skipped("unsupported payload type");
-    return $cresp;
-	}
-	invariant($creq->payload instanceof ConformanceRequest_protobuf_payload, "bad if not!");
-  $wf = $creq->requested_output_format;
+  $cresp = new ConformanceResponse();
+  $payload = "";
+  $wfi = -1;
+  if ($creq->payload instanceof ConformanceRequest_protobuf_payload) {
+    $payload = $creq->payload->protobuf_payload;
+    $wfi = WireFormat::PROTOBUF;
+  } else if ($creq->payload instanceof ConformanceRequest_json_payload) {
+    $payload = $creq->payload->json_payload;
+    $wfi = WireFormat::JSON;
+  }
+  $wfo = $creq->requested_output_format;
   try {
-    switch ($wf) {
+    switch ($wfo) {
       case WireFormat::PROTOBUF:
-        $cresp->result = new ConformanceResponse_protobuf_payload(				
-					testMessageRaw($creq->payload->protobuf_payload, $wf)
-				);
+        $cresp->result = new ConformanceResponse_protobuf_payload(
+          testMessageRaw($payload, $wfi, $wfo),
+        );
         break;
       case WireFormat::JSON:
-				$cresp->result = new ConformanceResponse_json_payload(
-					testMessageRaw($creq->payload->protobuf_payload, $wf)
-				);
+        $cresp->result = new ConformanceResponse_json_payload(
+          testMessageRaw($payload, $wfi, $wfo),
+        );
         break;
       default:
-        $cresp->result = new ConformanceResponse_skipped("unsupported output type");
+        $cresp->result =
+          new ConformanceResponse_skipped("unsupported output type");
     }
   } catch (\Exception $e) {
     p('parse error: '.$e->getMessage());
@@ -103,15 +125,24 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-function testMessageRaw(string $in, int $wf): string {
+function testMessageRaw(string $in, int $wfi, int $wfo): string {
   $tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
-  \Protobuf\Unmarshal($in, $tm);
+  switch ($wfi) {
+    case WireFormat::PROTOBUF:
+      \Protobuf\Unmarshal($in, $tm);
+      break;
+    case WireFormat::JSON:
+      \Protobuf\UnmarshalJson($in, $tm);
+      break;
+    default:
+      throw new \Exception('wtf');
+  }
   p("remarshaling: ".\print_r($tm, true));
-  switch ($wf) {
+  switch ($wfo) {
     case WireFormat::PROTOBUF:
       return \Protobuf\Marshal($tm);
     case WireFormat::JSON:
       return \Protobuf\MarshalJson($tm);
   }
-  throw new \Exception("invalid wire format: $wf");
+  throw new \Exception("invalid output wire format: $wfo");
 }

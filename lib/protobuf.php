@@ -6,12 +6,17 @@ namespace Protobuf {
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
+    public function MergeJsonFrom(mixed $m): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
   }
 
   function Unmarshal(string $data, Message $message): void {
     $message->MergeFrom(Internal\Decoder::FromString($data));
+  }
+
+  function UnmarshalJson(string $data, Message $message): void {
+    $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
   }
 
   function Marshal(Message $message): string {
@@ -33,10 +38,23 @@ namespace Protobuf {
     const int PRESERVE_NAMES = 1 << 3;
     const int ENUMS_AS_INTS = 1 << 4;
   }
+
+  class BoolMapKey {
+    const Internal\bool_map_key_t TRUE = 'true';
+    const Internal\bool_map_key_t FALSE = 'false';
+    public static function FromBool(bool $b): Internal\bool_map_key_t {
+      return $b ? self::TRUE : self::FALSE;
+    }
+    public static function ToBool(Internal\bool_map_key_t $b): bool {
+      return $b == self::TRUE ? true : false;
+    }
+  }
 }
 // namespace Protobuf
 
 namespace Protobuf\Internal {
+  newtype bool_map_key_t as string = string;
+
   // AVERT YOUR EYES YE! NOTHING TO SEE BELOW!
 
   function AssertEndiannessAndIntSize(): void {
@@ -280,10 +298,8 @@ namespace Protobuf\Internal {
     }
 
     public function writeEncoder(Encoder $e, int $fn): void {
-      if (!$e->isEmpty()) {
-        $this->writeTag($fn, 2);
-        $this->writeString((string)$e);
-      }
+      $this->writeTag($fn, 2);
+      $this->writeString((string)$e);
     }
 
     public function isEmpty(): bool {
@@ -333,21 +349,41 @@ namespace Protobuf\Internal {
   }
 
   class JsonEncoder {
-    private dict<string, mixed> $a;
     private JsonEncodeOpt $o;
+
+    private dict<string, mixed> $a;
+    private bool $custom_encoding;
+    private mixed $custom_value;
 
     // https://developers.google.com/protocol-buffers/docs/proto3#json_options
     public function __construct(JsonEncodeOpt $o) {
       $this->a = dict[];
       $this->o = $o;
+      $this->custom_encoding = false;
+      $this->custom_value = null;
     }
 
-    private function encodeMessage(?\Protobuf\Message $m): dict<string, mixed> {
+    public function encodeMessage(?\Protobuf\Message $m): mixed {
+      return $this->encodeMessageWithDefault($m)[0];
+    }
+
+    // the bool indicates if the value is the 'default' (empty) value.
+    private function encodeMessageWithDefault(
+      ?\Protobuf\Message $m,
+    ): (mixed, bool) {
       $e = new JsonEncoder($this->o);
       if ($m !== null) {
         $m->WriteJsonTo($e);
       }
-      return $e->a;
+      if ($e->custom_encoding) {
+        return tuple($e->custom_value, false);
+      }
+      return tuple($e->a, \count($e->a) == 0);
+    }
+
+    public function setCustomEncoding(mixed $m): void {
+      $this->custom_encoding = true;
+      $this->custom_value = $m;
     }
 
     public function writeMessage(
@@ -356,9 +392,9 @@ namespace Protobuf\Internal {
       ?\Protobuf\Message $value,
       bool $emit_default,
     ): void {
-      $a = $this->encodeMessage($value);
-      if (\count($a) != 0 || $emit_default || $this->o->emit_default_values) {
-        $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
+      $a = $this->encodeMessageWithDefault($value);
+      if (!$a[1] || $emit_default || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $a[0];
       }
     }
 
@@ -554,8 +590,28 @@ namespace Protobuf\Internal {
       }
     }
 
+    public static function encodeBytes(string $d): string {
+      // base64 URL encoding.
+      return \strtr(\base64_encode($d), '+/', '-_');
+    }
+
+    public function writeBytes(
+      string $oname,
+      string $cname,
+      string $value,
+      bool $emit_default,
+    ): void {
+      if ($value != '' || $emit_default || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] =
+          self::encodeBytes($value);
+      }
+    }
+
     private function encodeEnum(dict<int, string> $itos, int $v): mixed {
-      return $this->o->enums_as_ints ? $v : $itos[$v];
+      if (!$this->o->enums_as_ints) {
+        return idx($itos, $v, $v);
+      }
+      return $v;
     }
 
     public function writeEnum(
@@ -611,6 +667,34 @@ namespace Protobuf\Internal {
       }
     }
 
+    public function writeBytesMap<T>(
+      string $oname,
+      string $cname,
+      dict<arraykey, string> $value,
+    ): void {
+      $vs = dict[];
+      foreach ($value as $k => $v) {
+        $vs[$k] = self::encodeBytes($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
+    public function writeBytesList<T>(
+      string $oname,
+      string $cname,
+      vec<string> $value,
+    ): void {
+      $vs = vec[];
+      foreach ($value as $k => $v) {
+        $vs[] = self::encodeBytes($v);
+      }
+      if (\count($vs) != 0 || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
+      }
+    }
+
     public function writePrimitiveMap<T>(
       string $oname,
       string $cname,
@@ -621,12 +705,260 @@ namespace Protobuf\Internal {
       }
     }
 
+    public static function encodeDuration(int $s, int $ns): string {
+      $ret = (string)$s;
+      if ($ns != 0) {
+        $sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
+        $len = \strlen($sns);
+        $pad = $len > 3 ? $len > 6 ? 9 : 6 : 3;
+        $sns = \str_pad($sns, $pad, '0');
+        $ret .= '.'.$sns;
+      }
+      return $ret.'s';
+    }
+
     public function __toString(): string {
       $opt = \JSON_PARTIAL_OUTPUT_ON_ERROR;
       if ($this->o->pretty_print) {
         $opt |= \JSON_PRETTY_PRINT;
       }
       return \json_encode($this->a, $opt);
+    }
+  } // class JsonEncoder
+
+  abstract class JsonDecoder {
+    public static function FromString(string $str): mixed {
+      if ($str === "null") {
+        return null;
+      }
+      $data = \json_decode($str, true, 512, \JSON_FB_HACK_ARRAYS);
+      if ($data !== null) {
+        return $data;
+      }
+      throw new \Protobuf\ProtobufException(
+        "json_decode failed; ".\json_last_error_msg(),
+      );
+    }
+
+    public static function readObject(mixed $m): dict<string, mixed> {
+      if (\is_dict($m)) {
+        $ret = dict[];
+        foreach ($m as $k => $v) {
+          $ret[(string)$k] = $v;
+        }
+        return $ret;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected dict got %s", \gettype($m)),
+      );
+    }
+
+    public static function readList(mixed $m): vec<mixed> {
+      $ret = vec[];
+      if ($m === null)
+        return $ret;
+      if (\is_vec($m)) {
+        foreach ($m as $v) {
+          $ret[] = $v;
+        }
+        return $ret;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected vec got %s", \gettype($m)),
+      );
+    }
+
+    public static function readBytes(mixed $m): string {
+      if ($m === null)
+        return '';
+      if (is_string($m)) {
+        return self::decodeBytes($m);
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
+
+    private static function decodeBytes(string $d): string {
+      // base64 url decode.
+      $b = \base64_decode(
+        \str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT),
+      );
+      if (is_string($b))
+        return $b;
+      throw new \Protobuf\ProtobufException("base64 decode failed");
+    }
+
+    public static function readString(mixed $m): string {
+      if ($m === null)
+        return '';
+      if (is_string($m))
+        return $m;
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
+
+    private static function isDigitString(string $s, bool $signed): bool {
+      if ($signed && $s[0] === '-') {
+        return \ctype_digit(\substr($s, 1));
+      }
+      return \ctype_digit($s);
+    }
+
+    private static function readInt(mixed $m, bool $signed, bool $b64): int {
+      if ($m === null)
+        return 0;
+      if (\is_int($m))
+        return $m;
+      if (\is_string($m)) {
+        if ($m === '') {
+          throw new \Protobuf\ProtobufException('empty integer string');
+        }
+
+        if (!self::isDigitString($m, $signed)) {
+          throw
+            new \Protobuf\ProtobufException('invalid char in integer string');
+        }
+
+        $mgmp = \gmp_init($m, 10);
+        if ($b64) {
+          if ($signed) {
+            if (
+              \gmp_cmp($mgmp, '9223372036854775807') > 0 ||
+              \gmp_cmp($mgmp, '-9223372036854775808') < 0
+            ) {
+              throw new \Protobuf\ProtobufException('int64 out of bounds');
+            }
+          } else {
+            if (\gmp_cmp($m, '9223372036854775807') > 0) {
+              if (\gmp_cmp($m, '18446744073709551615') > 0) {
+                throw new \Protobuf\ProtobufException('uint64 out of bounds');
+              }
+              \gmp_clrbit(&$mgmp, 63);
+              return \gmp_intval($mgmp) | 0x8000000000000000;
+            }
+          }
+        }
+
+        return \gmp_intval($mgmp);
+      }
+      if (\is_float($m)) {
+        if (\fmod($m, 1) !== 0.00) {
+          throw new \Protobuf\ProtobufException(
+            'expected int got non integral float',
+          );
+        }
+        return (int)$m;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected int got %s", \gettype($m)),
+      );
+    }
+
+    public static function readInt32Signed(mixed $m): int {
+      $i = self::readInt($m, true, false);
+      if ($i > 2147483647 || $i < -2147483648) {
+        throw new \Protobuf\ProtobufException('int32 out of bounds');
+      }
+      return $i;
+    }
+
+    public static function readInt32Unsigned(mixed $m): int {
+      $i = self::readInt($m, false, false);
+      if ($i > 4294967295) {
+        throw new \Protobuf\ProtobufException('uint32 out of bounds');
+      }
+      return $i;
+    }
+
+    public static function readInt64Unsigned(mixed $m): int {
+      return self::readInt($m, false, true);
+    }
+
+    public static function readInt64Signed(mixed $m): int {
+      return self::readInt($m, true, true);
+    }
+
+    public static function readFloat(mixed $m): float {
+      if ($m === null)
+        return 0.0;
+      if (is_string($m)) {
+        if ($m == "NaN")
+          return \NAN;
+        if ($m == "Infinity")
+          return \INF;
+        if ($m == "-Infinity")
+          return -\INF;
+      }
+      if (is_numeric($m)) {
+        return (float)$m;
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected float got %s", \gettype($m)),
+      );
+    }
+
+    public static function readBool(mixed $m): bool {
+      if ($m === null)
+        return false;
+      if (is_bool($m))
+        return $m;
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected bool got %s", \gettype($m)),
+      );
+    }
+
+    public static function readBoolMapKey(mixed $m): bool_map_key_t {
+      if (is_string($m)) {
+        if ($m === 'true')
+          return $m;
+        if ($m === 'false')
+          return $m;
+        throw new \Protobuf\ProtobufException('could not map string to bool');
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
+
+    public static function readDuration(mixed $m): (int, int) {
+      if ($m === null)
+        return tuple(0, 0);
+      if (is_string($m)) {
+        if (\substr($m, -1) != 's') {
+          throw
+            new \Protobuf\ProtobufException('duration missing trailing \'s\'');
+        }
+        $m = \substr($m, 0, -1);
+        $parts = \explode('.', $m);
+        $s = (int)$parts[0];
+        $ns = 0;
+        if (\count($parts) == 2) {
+          $sns = \str_pad($parts[1], 9, '0');
+          $ns = (int)$sns;
+        } else if (\count($parts) > 0) {
+          throw new \Protobuf\ProtobufException(\sprintf(
+            'duration has wrong number of parts; got %d expected <= 2',
+            \count($parts),
+          ));
+        }
+        if ($s < 0) {
+          $ns = -$ns;
+        }
+        if (
+          $s < -315576000000 ||
+          $s > 315576000000 ||
+          $ns < -999999999 ||
+          $ns > 999999999
+        ) {
+          throw new \Protobuf\ProtobufException('duration out of bounds');
+        }
+        return tuple($s, $ns);
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
     }
   }
 }

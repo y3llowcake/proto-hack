@@ -178,6 +178,7 @@ type field struct {
 	typeEnumDefault        string
 	isMap                  bool
 	oneof                  *oneof
+	typeFqProtoName        string
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
@@ -186,6 +187,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 	}
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
+		f.typeFqProtoName = typeNs + "." + typeName
 		f.typePhpNs, f.typePhpName = toPhpName(typeNs, typeName)
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
@@ -202,7 +204,6 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 				}
 			}
 		}
-
 	}
 
 	return f
@@ -213,6 +214,11 @@ func (f field) mapFields() (*field, *field) {
 	keyField := newField(dp.Field[0], f.typeNs)
 	valueField := newField(dp.Field[1], f.typeNs)
 	return keyField, valueField
+}
+
+func (f field) isMapWithBoolKey() bool {
+	k, _ := f.mapFields()
+	return k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL
 }
 
 func (f field) phpType() string {
@@ -268,7 +274,11 @@ func (f field) isRepeated() bool {
 func (f field) labeledType() string {
 	if f.isMap {
 		k, v := f.mapFields()
-		return fmt.Sprintf("dict<%s, %s>", k.phpType(), v.labeledType())
+		kt := k.phpType()
+		if f.isMapWithBoolKey() {
+			kt = fmt.Sprintf("%s\\bool_map_key_t", libNsInternal)
+		}
+		return fmt.Sprintf("dict<%s, %s>", kt, v.labeledType())
 	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
@@ -317,10 +327,14 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	if f.isMap {
 		w.p("$obj = new %s();", f.phpType())
 		w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-		w.p("$this->%s[$obj->key] = $obj->value;", f.varName())
+		k := "$obj->key"
+		if f.isMapWithBoolKey() {
+			k = fmt.Sprintf("%s\\BoolMapKey::FromBool($obj->key)", libNs)
+		}
+		w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
 		return
 	}
-	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
@@ -334,9 +348,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 				w.p("$obj->MergeFrom(%s->readDecoder());", dec)
 				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
 			} else {
-				w.p("if ($this->%s == null) {", f.varName())
-				w.p("$this->%s = new %s();", f.varName(), f.phpType())
-				w.p("}")
+				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
 				w.p("$this->%s->MergeFrom(%s->readDecoder());", f.varName(), dec)
 			}
 		}
@@ -374,8 +386,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-
-		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
+		reader = fmt.Sprintf("%s\\%s::XXX_FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
 	}
@@ -457,11 +468,15 @@ func (f field) writeEncoderForOneof(w *writer, enc string) {
 	w.p(writer + ";")
 }
 
-func (f field) writeEncoder(w *writer, enc string) {
+func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) {
 	if f.isMap {
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
-		w.p("$obj->key = $k;")
+		k := "$k"
+		if f.isMapWithBoolKey() {
+			k = fmt.Sprintf("%s\\BoolMapKey::ToBool($k)", libNs)
+		}
+		w.p("$obj->key = %s;", k)
 		w.p("$obj->value = $v;")
 		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$obj->WriteTo($nested);")
@@ -489,10 +504,14 @@ func (f field) writeEncoder(w *writer, enc string) {
 	tagWriter, writer := f.primitiveWriters(enc)
 
 	if !f.isRepeated() {
-		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		if !alwaysEmitDefaultValue {
+			w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		}
 		w.p(tagWriter)
 		w.p("%s;", writer)
-		w.p("}")
+		if !alwaysEmitDefaultValue {
+			w.p("}")
+		}
 		return
 	}
 	// Repeated
@@ -515,11 +534,242 @@ func (f field) writeEncoder(w *writer, enc string) {
 	}
 }
 
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
+// https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
+func customWriteJson(w *writer, fqn, v string) bool {
+	switch fqn {
+	// Structs
+	case ".google.protobuf.Value":
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_null_value) {")
+		w.p("%s->setCustomEncoding(null);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_number_value) {")
+		w.p("%s->setCustomEncoding($this->kind->number_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_string_value) {")
+		w.p("%s->setCustomEncoding($this->kind->string_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_bool_value) {")
+		w.p("%s->setCustomEncoding($this->kind->bool_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_list_value) {")
+		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->list_value));", v, v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_struct_value) {")
+		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->struct_value));", v, v)
+		w.p("return;")
+		w.p("}")
+	case ".google.protobuf.ListValue":
+		w.p("$vec = vec[];")
+		w.p("foreach ($this->values as $lv) {")
+		w.p("$vec []= %s->encodeMessage($lv);", v)
+		w.p("}")
+		w.p("%s->setCustomEncoding($vec);", v)
+	case ".google.protobuf.Struct":
+		w.p("$dict = dict[];")
+		w.p("foreach ($this->fields as $kk => $vv) {")
+		w.p("$dict[$kk]= %s->encodeMessage($vv);", v)
+		w.p("}")
+		w.p("%s->setCustomEncoding($dict);", v)
+
+	// Wrappers
+	case
+		".google.protobuf.BoolValue",
+		".google.protobuf.StringValue",
+		".google.protobuf.DoubleValue",
+		".google.protobuf.FloatValue",
+		".google.protobuf.Int32Value",
+		".google.protobuf.UInt32Value":
+		w.p("%s->setCustomEncoding($this->value);", v)
+	case ".google.protobuf.Int64Value":
+		w.p("%s->setCustomEncoding(\\sprintf('%s', $this->value));", v, "%d")
+	case ".google.protobuf.UInt64Value":
+		w.p("%s->setCustomEncoding(\\sprintf('%s', $this->value));", v, "%u")
+	case ".google.protobuf.BytesValue":
+		w.p("%s->setCustomEncoding(%s\\JsonEncoder::encodeBytes($this->value));", v, libNsInternal)
+	case ".google.protobuf.Duration":
+		w.p("%s->setCustomEncoding(%s\\JsonEncoder::encodeDuration($this->seconds, $this->nanos));", v, libNsInternal)
+	default:
+		return false
+	}
+	return true
+}
+
+func customMergeJson(w *writer, fqn, v string) bool {
+	switch fqn {
+	// Structs
+	case ".google.protobuf.Value":
+		w.p("if (%s === null) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_null_value(\\google\\protobuf\\NullValue::NULL_VALUE);")
+		w.p("} else if (is_string(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_string_value(%s);", v)
+		w.p("} else if (is_bool(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_bool_value(%s);", v)
+		w.p("} else if (is_numeric(%s)) {", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_number_value((float)%s);", v)
+		w.p("} else if (\\is_vec(%s)) {", v)
+		w.p("$lv = new \\google\\protobuf\\ListValue();")
+		w.p("$lv->MergeJsonFrom(%s);", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_list_value($lv);")
+		w.p("} else if (\\is_dict(%s)) {", v)
+		w.p("$struct = new \\google\\protobuf\\Struct();")
+		w.p("$struct->MergeJsonFrom(%s);", v)
+		w.p("$this->kind = new \\google\\protobuf\\Value_struct_value($struct);")
+		w.p("}")
+	case ".google.protobuf.ListValue":
+		w.p("if (\\is_vec(%s)) {", v)
+		w.p("foreach (%s as $vv) {", v)
+		w.p("$val = new \\google\\protobuf\\Value();")
+		w.p("$val->MergeJsonFrom($vv);")
+		w.p("$this->values []= $val;")
+		w.p("}")
+		w.p("}")
+	case ".google.protobuf.Struct":
+		w.p("if (\\is_dict(%s)) {", v)
+		w.p("foreach (%s as $k => $vv) {", v)
+		w.p("$val = new \\google\\protobuf\\Value();")
+		w.p("$val->MergeJsonFrom($vv);")
+		w.p("$this->fields[(string)$k] = $val;")
+		w.p("}")
+		w.p("}")
+
+		// Wrappers
+	case ".google.protobuf.BoolValue":
+		w.p("$this->value = %s\\JsonDecoder::readBool(%s);", libNsInternal, v)
+	case ".google.protobuf.StringValue":
+		w.p("$this->value = %s\\JsonDecoder::readString(%s);", libNsInternal, v)
+	case ".google.protobuf.BytesValue":
+		w.p("$this->value = %s\\JsonDecoder::readBytes(%s);", libNsInternal, v)
+	case ".google.protobuf.DoubleValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.FloatValue":
+		w.p("$this->value = %s\\JsonDecoder::readFloat(%s);", libNsInternal, v)
+	case ".google.protobuf.Int64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt64Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt64Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Int32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Signed(%s);", libNsInternal, v)
+	case ".google.protobuf.UInt32Value":
+		w.p("$this->value = %s\\JsonDecoder::readInt32Unsigned(%s);", libNsInternal, v)
+	case ".google.protobuf.Duration":
+		w.p("$parts = %s\\JsonDecoder::readDuration(%s);", libNsInternal, v)
+		w.p("$this->seconds = $parts[0];")
+		w.p("$this->nanos = $parts[1];")
+	default:
+		return false
+	}
+	return true
+}
+
+func (f *field) jsonReader(v string) string {
+	rt := ""
+	switch f.fd.GetType() {
+	case desc.FieldDescriptorProto_TYPE_STRING:
+		rt = "String"
+	case desc.FieldDescriptorProto_TYPE_BYTES:
+		rt = "Bytes"
+	case
+		desc.FieldDescriptorProto_TYPE_UINT32:
+		rt = "Int32Unsigned"
+	case
+		desc.FieldDescriptorProto_TYPE_INT32,
+		desc.FieldDescriptorProto_TYPE_SINT32,
+		desc.FieldDescriptorProto_TYPE_SFIXED32,
+		desc.FieldDescriptorProto_TYPE_FIXED32:
+		rt = "Int32Signed"
+	case
+		desc.FieldDescriptorProto_TYPE_INT64,
+		desc.FieldDescriptorProto_TYPE_SINT64,
+		desc.FieldDescriptorProto_TYPE_SFIXED64:
+		rt = "Int64Signed"
+	case
+		desc.FieldDescriptorProto_TYPE_UINT64,
+		desc.FieldDescriptorProto_TYPE_FIXED64:
+		rt = "Int64Unsigned"
+	case desc.FieldDescriptorProto_TYPE_FLOAT,
+		desc.FieldDescriptorProto_TYPE_DOUBLE:
+		rt = "Float"
+	case desc.FieldDescriptorProto_TYPE_BOOL:
+		rt = "Bool"
+	case
+		desc.FieldDescriptorProto_TYPE_ENUM:
+		return fmt.Sprintf("%s\\%s::XXX_FromMixed(%s)", f.typePhpNs, f.typePhpName, v)
+	default:
+		panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
+	}
+	return fmt.Sprintf("%s\\JsonDecoder::read%s(%s)", libNsInternal, rt, v)
+}
+
+func (f *field) writeJsonDecoder(w *writer, v string) {
+	if f.isMap {
+		k, vv := f.mapFields()
+		w.p("if (%s !== null) {", v)
+		w.p("foreach (%s\\JsonDecoder::readObject(%s) as $k => $v) {", libNsInternal, v)
+		kjr := k.jsonReader("$k")
+		if f.isMapWithBoolKey() {
+			kjr = fmt.Sprintf("%s\\JsonDecoder::readBoolMapKey(%s)", libNsInternal, "$k")
+		}
+		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+			w.p("$obj = new %s();", vv.phpType())
+			w.p("$obj->MergeJsonFrom(%s);", v)
+			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), kjr)
+		} else {
+			w.p("$this->%s[%s] = %s;", f.fd.GetName(), kjr, vv.jsonReader("$v"))
+		}
+		w.p("}")
+		w.p("}")
+		return
+	}
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+		if f.isRepeated() {
+			w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
+			w.p("$obj = new %s();", f.phpType())
+			w.p("$obj->MergeJsonFrom(%s);", "$vv")
+			w.p("$this->%s []= $obj;", f.varName())
+			w.p("}")
+		} else {
+			if f.isOneofMember() {
+				// TODO: Subtle: technically this doesn't merge, it overwrites!
+				w.p("$obj = new %s();", f.phpType())
+				w.p("$obj->MergeJsonFrom(%s);", v)
+				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
+			} else {
+				if f.typeFqProtoName != ".google.protobuf.Value" { // A special little snow flake!
+					w.p("if ($v === null) break;")
+				}
+				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
+				w.p("$this->%s->MergeJsonFrom(%s);", f.varName(), v)
+			}
+		}
+		return
+	}
+
+	if f.isRepeated() {
+		w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
+		w.p("$this->%s []= %s;", f.varName(), f.jsonReader("$vv"))
+		w.p("}")
+	} else {
+		if f.isOneofMember() {
+			// TODO: Subtle: technically this doesn't merge, it overwrites!
+			w.p("$this->%s = new %s(%s);", f.oneof.name, f.oneof.classNameForField(f), f.jsonReader(v))
+		} else {
+			w.p("$this->%s = %s;", f.varName(), f.jsonReader(v))
+		}
+	}
+}
+
 func (f field) jsonWriter() (string, string) {
 	switch t := f.fd.GetType(); t {
-	case desc.FieldDescriptorProto_TYPE_STRING,
-		desc.FieldDescriptorProto_TYPE_BYTES:
+	case desc.FieldDescriptorProto_TYPE_STRING:
 		return "String", "Primitive"
+	case desc.FieldDescriptorProto_TYPE_BYTES:
+		return "Bytes", "Bytes"
 	case
 		desc.FieldDescriptorProto_TYPE_UINT32,
 		desc.FieldDescriptorProto_TYPE_INT32,
@@ -552,15 +802,12 @@ func (f field) jsonWriter() (string, string) {
 
 func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	if f.isMap {
-		k, v := f.mapFields()
+		_, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
-			itos := v.typePhpNs + "\\" + v.typePhpName + "::NumbersToNames()"
+			itos := v.typePhpNs + "\\" + v.typePhpName + "::XXX_ItoS()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
-			if k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL {
-				w.p("/* HH_FIXME[4110] bool is not arraykey */") // TODO fix this.
-			}
 			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
 		}
 		return
@@ -580,7 +827,7 @@ func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	}
 
 	if writer == "Enum" {
-		itos := f.typePhpNs + "\\" + f.typePhpName + "::NumbersToNames()"
+		itos := f.typePhpNs + "\\" + f.typePhpName + "::XXX_ItoS()"
 		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName(), emitDefault)
 	} else {
 		w.p("%s->write%s%s('%s', '%s', $this->%s%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName(), emitDefault)
@@ -596,11 +843,12 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
 	typename := specialPrefix + name + "_t"
 	w.p("newtype %s as int = int;", typename)
-	w.p("class %s {", name)
+	w.p("abstract class %s {", name)
 	for _, v := range ed.Value {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
-	w.p("private static dict<int, string> $itos = dict[")
+
+	w.p("private static dict<int, string> $XXX_itos = dict[")
 	w.i++
 	for _, v := range ed.Value {
 		w.p("%d => '%s',", v.GetNumber(), v.GetName())
@@ -608,11 +856,25 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.i--
 	w.p("];")
 
-	w.p("public static function NumbersToNames(): dict<int, string> {")
-	w.p("return self::$itos;")
+	w.p("public static function XXX_ItoS(): dict<int, string> {")
+	w.p("return self::$XXX_itos;")
 	w.p("}")
 
-	w.p("public static function FromInt(int $i): %s {", typename)
+	w.p("private static dict<string, int> $XXX_stoi = dict[")
+	w.i++
+	for _, v := range ed.Value {
+		w.p("'%s' => %d,", v.GetName(), v.GetNumber())
+	}
+	w.i--
+	w.p("];")
+
+	w.p("public static function XXX_FromMixed(mixed $m): %s {", typename)
+	w.p("if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);")
+	w.p("if (is_int($m)) return $m;")
+	w.p("return 0;")
+	w.p("}")
+
+	w.p("public static function XXX_FromInt(int $i): %s {", typename)
 	w.p("return $i;")
 	w.p("}")
 	w.p("}")
@@ -659,6 +921,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.ln()
 
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {}", libNsInternal)
+	// todo!
 	w.p("}")
 
 	// An implementation per field.
@@ -684,6 +947,22 @@ func writeOneofTypes(w *writer, oo *oneof) {
 		w.p("}")
 		w.ln()
 	}
+}
+
+func isWrapperType(fqn string) bool {
+	switch fqn {
+	case ".google.protobuf.BoolValue",
+		".google.protobuf.StringValue",
+		".google.protobuf.BytesValue",
+		".google.protobuf.FloatValue",
+		".google.protobuf.DoubleValue",
+		".google.protobuf.Int32Value",
+		".google.protobuf.UInt32Value",
+		".google.protobuf.Int64Value",
+		".google.protobuf.UInt64Value":
+		return true
+	}
+	return false
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
@@ -802,6 +1081,8 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("}") // function MergeFrom
 	w.ln()
 
+	fqProtoType := ns.Fqn + dp.GetName()
+
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
@@ -809,26 +1090,54 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			continue
 		}
 		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
-		f.writeEncoder(w, "$e")
+		f.writeEncoder(w, "$e", isWrapperType(fqProtoType))
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 	}
 	for _, oo := range oneofs {
 		w.p("$this->%s->WriteTo($e);", oo.name)
 	}
 	w.p("}") // WriteToFunction
+	w.ln()
 
 	// WriteJsonTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-	for _, f := range fields {
-		if f.isOneofMember() {
-			continue
+	if !customWriteJson(w, fqProtoType, "$e") {
+		for _, f := range fields {
+			if f.isOneofMember() {
+				continue
+			}
+			f.writeJsonEncoder(w, "$e", false)
 		}
-		f.writeJsonEncoder(w, "$e", false)
-	}
-	for _, oo := range oneofs {
-		w.p("$this->%s->WriteJsonTo($e);", oo.name)
+		for _, oo := range oneofs {
+			w.p("$this->%s->WriteJsonTo($e);", oo.name)
+		}
 	}
 	w.p("}") // WriteJsonToFunction
+	w.ln()
+
+	// MergeJsonFrom function
+	w.p("public function MergeJsonFrom(mixed $m): void {")
+	if !customMergeJson(w, fqProtoType, "$m") {
+		w.p("if ($m === null) return;")
+		w.p("$d = %s\\JsonDecoder::readObject($m);", libNsInternal)
+		w.p("foreach ($d as $k => $v) {")
+		w.p("switch ($k) {")
+		for _, f := range fields {
+			ca := fmt.Sprintf("case '%s':", f.fd.GetName())
+			if f.fd.GetName() != f.fd.GetJsonName() {
+				ca += fmt.Sprintf(" case '%s':", f.fd.GetJsonName())
+			}
+			w.p(ca)
+			w.i++
+
+			f.writeJsonDecoder(w, "$v")
+			w.p("break;")
+			w.i--
+		}
+		w.p("}")
+		w.p("}")
+	}
+	w.p("}")
 
 	w.p("}") // class
 	w.ln()
