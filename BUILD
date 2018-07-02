@@ -15,3 +15,10 @@ go_binary(
     ],
     out = 'protoc-gen-hack',
 )
+
+filegroup(
+    name = "hack_library",
+    srcs = glob([
+        "lib/*.php",
+    ]),
+)

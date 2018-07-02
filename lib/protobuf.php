@@ -825,14 +825,14 @@ namespace Protobuf\Internal {
         if ($b64) {
           if ($signed) {
             if (
-              \gmp_cmp($mgmp, '9223372036854775807') > 0 ||
-              \gmp_cmp($mgmp, '-9223372036854775808') < 0
+              ((int)\gmp_cmp($mgmp, '9223372036854775807')) > 0 ||
+              ((int)\gmp_cmp($mgmp, '-9223372036854775808')) < 0
             ) {
               throw new \Protobuf\ProtobufException('int64 out of bounds');
             }
           } else {
-            if (\gmp_cmp($m, '9223372036854775807') > 0) {
-              if (\gmp_cmp($m, '18446744073709551615') > 0) {
+            if (((int)\gmp_cmp($m, '9223372036854775807')) > 0) {
+              if (((int)\gmp_cmp($m, '18446744073709551615')) > 0) {
                 throw new \Protobuf\ProtobufException('uint64 out of bounds');
               }
               \gmp_clrbit(&$mgmp, 63);
