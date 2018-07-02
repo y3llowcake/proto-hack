@@ -694,9 +694,16 @@ namespace Protobuf\Internal {
       }
     }
 
-    public static function encodeDuration(int $s, int $ns): string {
-      $sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
-      return \sprintf("%d.%ss", $s, $sns);
+		public static function encodeDuration(int $s, int $ns): string {
+			$ret = (string)$s;
+			if ($ns != 0) {
+				$sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
+				$len = \strlen($sns);
+				$pad = $len > 3 ? $len > 6 ? 9 : 6 : 3;
+				$sns = \str_pad($sns, $pad, '0');
+				$ret .= '.' . $sns;
+			}
+      return $ret . 's';
     }
 
     public function __toString(): string {
@@ -898,21 +905,24 @@ namespace Protobuf\Internal {
     public static function readDuration(mixed $m): (int, int) {
       if ($m === null)
         return tuple(0, 0);
-      if (is_string($m)) {
-        $parts = \explode('.', $m);
-        if (\count($parts) != 2) {
+			if (is_string($m)) {
+        if (\substr($m, -1) != 's') {
+          throw
+            new \Protobuf\ProtobufException('duration missing trailing \'s\'');
+				}
+				$m = \substr($m, 0, -1);
+				$parts = \explode('.', $m);
+				$s = (int)$parts[0];
+				$ns = 0;
+				if (\count($parts) == 2) {
+	        $sns = \str_pad($parts[1], 9, '0');
+	        $ns = (int)$sns;
+				} else if (\count($parts) > 0) {
           throw new \Protobuf\ProtobufException(\sprintf(
-            'duration has wrong number of parts; got %d expected 2',
+            'duration has wrong number of parts; got %d expected <= 2',
             \count($parts),
           ));
         }
-        if (\substr($parts[1], -1) != 's') {
-          throw
-            new \Protobuf\ProtobufException('duration missing trailing \'s\'');
-        }
-        $s = (int)$parts[0];
-        $sns = \str_pad(\substr($parts[1], 0, -1), 9, '0');
-        $ns = (int)$sns;
         if ($s < 0) {
           $ns = -$ns;
         }
