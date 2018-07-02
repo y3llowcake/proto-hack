@@ -521,6 +521,40 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
 func customWriteJson(w *writer, fqn, v string) bool {
 	switch fqn {
+	case ".google.protobuf.Value":
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_null_value) {")
+		w.p("%s->setCustomEncoding(null);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_number_value) {")
+		w.p("%s->setCustomEncoding($this->kind->number_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_string_value) {")
+		w.p("%s->setCustomEncoding($this->kind->string_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_bool_value) {")
+		w.p("%s->setCustomEncoding($this->kind->bool_value);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_list_value) {")
+		w.p("$vec = vec[];")
+		w.p("foreach ($this->kind->list_value->values as $lv) {")
+		w.p("$vec []= %s->encodeMessage($lv);", v)
+		w.p("}")
+		w.p("%s->setCustomEncoding($vec);", v)
+		w.p("return;")
+		w.p("}")
+		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_struct_value) {")
+		w.p("$dict = dict[];")
+		w.p("foreach ($this->kind->struct_value->fields as $kk => $vv) {")
+		w.p("$dict[$kk]= %s->encodeMessage($vv);", v)
+		w.p("}")
+		w.p("%s->setCustomEncoding($dict);", v)
+		w.p("return;")
+		w.p("}")
+
 	case
 		".google.protobuf.BoolValue",
 		".google.protobuf.StringValue",
@@ -538,7 +572,6 @@ func customWriteJson(w *writer, fqn, v string) bool {
 	default:
 		return false
 	}
-
 	return false
 }
 

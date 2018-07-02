@@ -75,14 +75,6 @@ Required.Proto3.JsonInput.TimestampWithPositiveOffset.JsonOutput
 Required.Proto3.JsonInput.TimestampWithPositiveOffset.ProtobufOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.JsonOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.ProtobufOutput
-Required.Proto3.JsonInput.ValueAcceptBool.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptFloat.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptInteger.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptList.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptListWithNull.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptNull.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptObject.JsonOutput
-Required.Proto3.JsonInput.ValueAcceptString.JsonOutput
 Required.Proto3.ProtobufInput.UnknownVarint.ProtobufOutput
 Required.TimestampProtoInputTooLarge.JsonOutput
 Required.TimestampProtoInputTooSmall.JsonOutput

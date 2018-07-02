@@ -352,8 +352,14 @@ namespace Protobuf\Internal {
       $this->custom_value = null;
     }
 
+    public function encodeMessage(?\Protobuf\Message $m): mixed {
+      return $this->encodeMessageWithDefault($m)[0];
+    }
+
     // the bool indicates if the value is the 'default' (empty) value.
-    private function encodeMessage(?\Protobuf\Message $m): (mixed, bool) {
+    private function encodeMessageWithDefault(
+      ?\Protobuf\Message $m,
+    ): (mixed, bool) {
       $e = new JsonEncoder($this->o);
       if ($m !== null) {
         $m->WriteJsonTo($e);
@@ -375,7 +381,7 @@ namespace Protobuf\Internal {
       ?\Protobuf\Message $value,
       bool $emit_default,
     ): void {
-      $a = $this->encodeMessage($value);
+      $a = $this->encodeMessageWithDefault($value);
       if (!$a[1] || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $a[0];
       }
@@ -388,7 +394,7 @@ namespace Protobuf\Internal {
     ): void {
       $as = vec[];
       foreach ($value as $v) {
-        $as[] = $this->encodeMessage($v)[0];
+        $as[] = $this->encodeMessage($v);
       }
       if (\count($as) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
@@ -402,7 +408,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = dict[];
       foreach ($value as $k => $v) {
-        $vs[$k] = $this->encodeMessage($v)[0];
+        $vs[$k] = $this->encodeMessage($v);
       }
       if (\count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
