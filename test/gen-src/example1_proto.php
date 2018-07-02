@@ -305,6 +305,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
           $this->key = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
         case 'value':
+          if ($v === null) break;
           if ($this->value == null) $this->value = new \fiz\baz\example2();
           $this->value->MergeJsonFrom($v);
           break;
@@ -716,14 +717,17 @@ class example1 implements \Protobuf\Message {
           }
           break;
         case 'aexample2':
+          if ($v === null) break;
           if ($this->aexample2 == null) $this->aexample2 = new \foo\bar\example1_example2();
           $this->aexample2->MergeJsonFrom($v);
           break;
         case 'aexample22':
+          if ($v === null) break;
           if ($this->aexample22 == null) $this->aexample22 = new \foo\bar\example2();
           $this->aexample22->MergeJsonFrom($v);
           break;
         case 'aexample23':
+          if ($v === null) break;
           if ($this->aexample23 == null) $this->aexample23 = new \fiz\baz\example2();
           $this->aexample23->MergeJsonFrom($v);
           break;
@@ -753,6 +757,7 @@ class example1 implements \Protobuf\Message {
           $this->aoneof = new example1_ooint(\Protobuf\Internal\JsonDecoder::readInt32Signed($v));
           break;
         case 'anany':
+          if ($v === null) break;
           if ($this->anany == null) $this->anany = new \google\protobuf\Any();
           $this->anany->MergeJsonFrom($v);
           break;

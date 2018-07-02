@@ -1,5 +1,5 @@
 <?hh // strict
- 
+
 namespace Protobuf {
 
   class ProtobufException extends \Exception {}
@@ -338,21 +338,35 @@ namespace Protobuf\Internal {
   }
 
   class JsonEncoder {
-    private dict<string, mixed> $a;
     private JsonEncodeOpt $o;
+
+    private dict<string, mixed> $a;
+    private bool $custom_encoding;
+    private mixed $custom_value;
 
     // https://developers.google.com/protocol-buffers/docs/proto3#json_options
     public function __construct(JsonEncodeOpt $o) {
       $this->a = dict[];
       $this->o = $o;
+      $this->custom_encoding = false;
+      $this->custom_value = null;
     }
 
-    private function encodeMessage(?\Protobuf\Message $m): dict<string, mixed> {
+    // the bool indicates if the value is the 'default' (empty) value.
+    private function encodeMessage(?\Protobuf\Message $m): (mixed, bool) {
       $e = new JsonEncoder($this->o);
       if ($m !== null) {
         $m->WriteJsonTo($e);
       }
-      return $e->a;
+      if ($e->custom_encoding) {
+        return tuple($e->custom_value, false);
+      }
+      return tuple($e->a, \count($e->a) == 0);
+    }
+
+    public function setCustomEncoding(mixed $m): void {
+      $this->custom_encoding = true;
+      $this->custom_value = $m;
     }
 
     public function writeMessage(
@@ -362,8 +376,8 @@ namespace Protobuf\Internal {
       bool $emit_default,
     ): void {
       $a = $this->encodeMessage($value);
-      if (\count($a) != 0 || $emit_default || $this->o->emit_default_values) {
-        $this->a[$this->o->preserve_names ? $oname : $cname] = $a;
+      if (!$a[1] || $emit_default || $this->o->emit_default_values) {
+        $this->a[$this->o->preserve_names ? $oname : $cname] = $a[0];
       }
     }
 
@@ -374,7 +388,7 @@ namespace Protobuf\Internal {
     ): void {
       $as = vec[];
       foreach ($value as $v) {
-        $as[] = $this->encodeMessage($v);
+        $as[] = $this->encodeMessage($v)[0];
       }
       if (\count($as) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $as;
@@ -388,7 +402,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = dict[];
       foreach ($value as $k => $v) {
-        $vs[$k] = $this->encodeMessage($v);
+        $vs[$k] = $this->encodeMessage($v)[0];
       }
       if (\count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
@@ -559,7 +573,8 @@ namespace Protobuf\Internal {
       }
     }
 
-    private static function base64_url_encode(string $d): string {
+    public static function encodeBytes(string $d): string {
+      // base64 URL encoding.
       return \strtr(\base64_encode($d), '+/', '-_');
     }
 
@@ -571,7 +586,7 @@ namespace Protobuf\Internal {
     ): void {
       if ($value != '' || $emit_default || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] =
-          self::base64_url_encode($value);
+          self::encodeBytes($value);
       }
     }
 
@@ -642,7 +657,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = dict[];
       foreach ($value as $k => $v) {
-        $vs[$k] = self::base64_url_encode($v);
+        $vs[$k] = self::encodeBytes($v);
       }
       if (\count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
@@ -656,7 +671,7 @@ namespace Protobuf\Internal {
     ): void {
       $vs = vec[];
       foreach ($value as $k => $v) {
-        $vs[] = self::base64_url_encode($v);
+        $vs[] = self::encodeBytes($v);
       }
       if (\count($vs) != 0 || $this->o->emit_default_values) {
         $this->a[$this->o->preserve_names ? $oname : $cname] = $vs;
@@ -730,14 +745,15 @@ namespace Protobuf\Internal {
       if ($m === null)
         return '';
       if (is_string($m)) {
-        return self::base64_url_decode($m);
+        return self::decodeBytes($m);
       }
       throw new \Protobuf\ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
       );
     }
 
-    private static function base64_url_decode(string $d): string {
+    private static function decodeBytes(string $d): string {
+      // base64 url decode.
       $b = \base64_decode(
         \str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT),
       );

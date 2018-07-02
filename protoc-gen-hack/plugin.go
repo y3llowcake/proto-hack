@@ -178,6 +178,7 @@ type field struct {
 	typeEnumDefault        string
 	isMap                  bool
 	oneof                  *oneof
+	typeFqProtoName        string
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
@@ -186,6 +187,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 	}
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
+		f.typeFqProtoName = typeNs + "." + typeName
 		f.typePhpNs, f.typePhpName = toPhpName(typeNs, typeName)
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
@@ -202,7 +204,6 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 				}
 			}
 		}
-
 	}
 
 	return f
@@ -454,7 +455,7 @@ func (f field) writeEncoderForOneof(w *writer, enc string) {
 	w.p(writer + ";")
 }
 
-func (f field) writeEncoder(w *writer, enc string) {
+func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) {
 	if f.isMap {
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
@@ -486,10 +487,14 @@ func (f field) writeEncoder(w *writer, enc string) {
 	tagWriter, writer := f.primitiveWriters(enc)
 
 	if !f.isRepeated() {
-		w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		if !alwaysEmitDefaultValue {
+			w.p("if ($this->%s !== %s) {", f.varName(), f.defaultValue())
+		}
 		w.p(tagWriter)
 		w.p("%s;", writer)
-		w.p("}")
+		if !alwaysEmitDefaultValue {
+			w.p("}")
+		}
 		return
 	}
 	// Repeated
@@ -514,10 +519,22 @@ func (f field) writeEncoder(w *writer, enc string) {
 
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/struct.proto
 // https://github.com/google/protobuf/blob/master/src/google/protobuf/wrappers.proto
-func customWriteJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
-	fqn := ns.Fqn + dp.GetName()
+func customWriteJson(w *writer, fqn, v string) bool {
 	switch fqn {
-	case ".google.protobuf.BoolValue":
+	case
+		".google.protobuf.BoolValue",
+		".google.protobuf.StringValue",
+		".google.protobuf.DoubleValue",
+		".google.protobuf.FloatValue",
+		".google.protobuf.Int32Value",
+		".google.protobuf.UInt32Value":
+		w.p("%s->setCustomEncoding($this->value);", v)
+	case ".google.protobuf.Int64Value":
+		w.p("%s->setCustomEncoding(\\sprintf('%s', $this->value));", v, "%d")
+	case ".google.protobuf.UInt64Value":
+		w.p("%s->setCustomEncoding(\\sprintf('%s', $this->value));", v, "%u")
+	case ".google.protobuf.BytesValue":
+		w.p("%s->setCustomEncoding(%s\\JsonEncoder::encodeBytes($this->value));", v, libNsInternal)
 	default:
 		return false
 	}
@@ -525,8 +542,7 @@ func customWriteJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v strin
 	return false
 }
 
-func customMergeJson(w *writer, dp *desc.DescriptorProto, ns *Namespace, v string) bool {
-	fqn := ns.Fqn + dp.GetName()
+func customMergeJson(w *writer, fqn, v string) bool {
 	switch fqn {
 	case ".google.protobuf.Value":
 		w.p("if (%s === null) {", v)
@@ -655,6 +671,9 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 				w.p("$obj->MergeJsonFrom(%s);", v)
 				w.p("$this->%s = new %s($obj);", f.oneof.name, f.oneof.classNameForField(f))
 			} else {
+				if f.typeFqProtoName != ".google.protobuf.Value" { // A special little snow flake!
+					w.p("if ($v === null) break;")
+				}
 				w.p("if ($this->%s == null) $this->%s = new %s();", f.varName(), f.varName(), f.phpType())
 				w.p("$this->%s->MergeJsonFrom(%s);", f.varName(), v)
 			}
@@ -864,6 +883,22 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	}
 }
 
+func isWrapperType(fqn string) bool {
+	switch fqn {
+	case ".google.protobuf.BoolValue",
+		".google.protobuf.StringValue",
+		".google.protobuf.BytesValue",
+		".google.protobuf.FloatValue",
+		".google.protobuf.DoubleValue",
+		".google.protobuf.Int32Value",
+		".google.protobuf.UInt32Value",
+		".google.protobuf.Int64Value",
+		".google.protobuf.UInt64Value":
+		return true
+	}
+	return false
+}
+
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
@@ -980,6 +1015,8 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("}") // function MergeFrom
 	w.ln()
 
+	fqProtoType := ns.Fqn + dp.GetName()
+
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)
 	for _, f := range fields {
@@ -987,7 +1024,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			continue
 		}
 		w.pdebug("maybe writing field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
-		f.writeEncoder(w, "$e")
+		f.writeEncoder(w, "$e", isWrapperType(fqProtoType))
 		w.pdebug("maybe wrote field:%d (%s) of %s", f.fd.GetNumber(), f.varName(), dp.GetName())
 	}
 	for _, oo := range oneofs {
@@ -998,7 +1035,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// WriteJsonTo function
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
-	if !customWriteJson(w, dp, ns, "$e") {
+	if !customWriteJson(w, fqProtoType, "$e") {
 		for _, f := range fields {
 			if f.isOneofMember() {
 				continue
@@ -1014,7 +1051,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// MergeJsonFrom function
 	w.p("public function MergeJsonFrom(mixed $m): void {")
-	if !customMergeJson(w, dp, ns, "$m") {
+	if !customMergeJson(w, fqProtoType, "$m") {
 		w.p("if ($m === null) return;")
 		w.p("$d = %s\\JsonDecoder::readObject($m);", libNsInternal)
 		w.p("foreach ($d as $k => $v) {")
