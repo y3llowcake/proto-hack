@@ -3,7 +3,6 @@ Recommended.FieldMaskPathsDontRoundTrip.JsonOutput
 Recommended.FieldMaskTooManyUnderscore.JsonOutput
 Recommended.Proto2.ProtobufInput.OneofZeroMessage.ProtobufOutput
 Recommended.Proto3.JsonInput.MapFieldValueIsNull
-Recommended.Proto3.JsonInput.OneofZeroMessage.ProtobufOutput
 Recommended.Proto3.JsonInput.RepeatedFieldMessageElementIsNull
 Recommended.Proto3.JsonInput.RepeatedFieldPrimitiveElementIsNull
 Recommended.Proto3.JsonInput.StringFieldSurrogateInWrongOrder
@@ -14,7 +13,6 @@ Recommended.Proto3.JsonInput.TimestampHas6FractionalDigits.Validator
 Recommended.Proto3.JsonInput.TimestampHas9FractionalDigits.Validator
 Recommended.Proto3.JsonInput.TimestampHasZeroFractionalDigit.Validator
 Recommended.Proto3.JsonInput.TimestampZeroNormalized.Validator
-Recommended.Proto3.ProtobufInput.OneofZeroMessage.ProtobufOutput
 Required.DurationProtoInputTooLarge.JsonOutput
 Required.DurationProtoInputTooSmall.JsonOutput
 Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED32.ProtobufOutput
@@ -41,10 +39,6 @@ Required.Proto3.JsonInput.AnyWithValueForInteger.JsonOutput
 Required.Proto3.JsonInput.AnyWithValueForInteger.ProtobufOutput
 Required.Proto3.JsonInput.AnyWithValueForJsonObject.JsonOutput
 Required.Proto3.JsonInput.AnyWithValueForJsonObject.ProtobufOutput
-Required.Proto3.JsonInput.BoolMapEscapedKey.JsonOutput
-Required.Proto3.JsonInput.BoolMapEscapedKey.ProtobufOutput
-Required.Proto3.JsonInput.BoolMapField.JsonOutput
-Required.Proto3.JsonInput.BoolMapField.ProtobufOutput
 Required.Proto3.JsonInput.DoubleFieldTooSmall
 Required.Proto3.JsonInput.FieldMask.JsonOutput
 Required.Proto3.JsonInput.FieldMask.ProtobufOutput

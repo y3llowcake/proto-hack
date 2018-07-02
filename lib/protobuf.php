@@ -285,10 +285,8 @@ namespace Protobuf\Internal {
     }
 
     public function writeEncoder(Encoder $e, int $fn): void {
-      if (!$e->isEmpty()) {
-        $this->writeTag($fn, 2);
-        $this->writeString((string)$e);
-      }
+      $this->writeTag($fn, 2);
+      $this->writeString((string)$e);
     }
 
     public function isEmpty(): bool {
@@ -694,16 +692,16 @@ namespace Protobuf\Internal {
       }
     }
 
-		public static function encodeDuration(int $s, int $ns): string {
-			$ret = (string)$s;
-			if ($ns != 0) {
-				$sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
-				$len = \strlen($sns);
-				$pad = $len > 3 ? $len > 6 ? 9 : 6 : 3;
-				$sns = \str_pad($sns, $pad, '0');
-				$ret .= '.' . $sns;
-			}
-      return $ret . 's';
+    public static function encodeDuration(int $s, int $ns): string {
+      $ret = (string)$s;
+      if ($ns != 0) {
+        $sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
+        $len = \strlen($sns);
+        $pad = $len > 3 ? $len > 6 ? 9 : 6 : 3;
+        $sns = \str_pad($sns, $pad, '0');
+        $ret .= '.'.$sns;
+      }
+      return $ret.'s';
     }
 
     public function __toString(): string {
@@ -888,10 +886,6 @@ namespace Protobuf\Internal {
       );
     }
 
-    public static function readMapKeyBool(mixed $m): bool {
-      return $m === "true";
-    }
-
     public static function readBool(mixed $m): bool {
       if ($m === null)
         return false;
@@ -902,22 +896,35 @@ namespace Protobuf\Internal {
       );
     }
 
+    public static function readBoolMapKey(mixed $m): int {
+      if (is_string($m)) {
+        if ($m === 'true')
+          return 1;
+        if ($m === 'false')
+          return 0;
+        throw new \Protobuf\ProtobufException('could not map string to bool');
+      }
+      throw new \Protobuf\ProtobufException(
+        \sprintf("expected string got %s", \gettype($m)),
+      );
+    }
+
     public static function readDuration(mixed $m): (int, int) {
       if ($m === null)
         return tuple(0, 0);
-			if (is_string($m)) {
+      if (is_string($m)) {
         if (\substr($m, -1) != 's') {
           throw
             new \Protobuf\ProtobufException('duration missing trailing \'s\'');
-				}
-				$m = \substr($m, 0, -1);
-				$parts = \explode('.', $m);
-				$s = (int)$parts[0];
-				$ns = 0;
-				if (\count($parts) == 2) {
-	        $sns = \str_pad($parts[1], 9, '0');
-	        $ns = (int)$sns;
-				} else if (\count($parts) > 0) {
+        }
+        $m = \substr($m, 0, -1);
+        $parts = \explode('.', $m);
+        $s = (int)$parts[0];
+        $ns = 0;
+        if (\count($parts) == 2) {
+          $sns = \str_pad($parts[1], 9, '0');
+          $ns = (int)$sns;
+        } else if (\count($parts) > 0) {
           throw new \Protobuf\ProtobufException(\sprintf(
             'duration has wrong number of parts; got %d expected <= 2',
             \count($parts),

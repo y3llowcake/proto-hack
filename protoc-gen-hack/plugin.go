@@ -216,6 +216,11 @@ func (f field) mapFields() (*field, *field) {
 	return keyField, valueField
 }
 
+func (f field) isMapWithBoolKey() bool {
+	k, _ := f.mapFields()
+	return k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL
+}
+
 func (f field) phpType() string {
 	switch t := *f.fd.Type; t {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
@@ -269,7 +274,11 @@ func (f field) isRepeated() bool {
 func (f field) labeledType() string {
 	if f.isMap {
 		k, v := f.mapFields()
-		return fmt.Sprintf("dict<%s, %s>", k.phpType(), v.labeledType())
+		kt := k.phpType()
+		if f.isMapWithBoolKey() {
+			kt = "int"
+		}
+		return fmt.Sprintf("dict<%s, %s>", kt, v.labeledType())
 	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
@@ -318,7 +327,11 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	if f.isMap {
 		w.p("$obj = new %s();", f.phpType())
 		w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-		w.p("$this->%s[$obj->key] = $obj->value;", f.varName())
+		maybeCastBool := ""
+		if f.isMapWithBoolKey() {
+			maybeCastBool = "(int)"
+		}
+		w.p("$this->%s[%s$obj->key] = $obj->value;", f.varName(), maybeCastBool)
 		return
 	}
 	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
@@ -457,9 +470,14 @@ func (f field) writeEncoderForOneof(w *writer, enc string) {
 
 func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) {
 	if f.isMap {
+		maybeCastBool := ""
+		if f.isMapWithBoolKey() {
+			maybeCastBool = "(bool)"
+		}
+
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
-		w.p("$obj->key = $k;")
+		w.p("$obj->key = %s$k;", maybeCastBool)
 		w.p("$obj->value = $v;")
 		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$obj->WriteTo($nested);")
@@ -694,12 +712,16 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		k, vv := f.mapFields()
 		w.p("if (%s !== null) {", v)
 		w.p("foreach (%s\\JsonDecoder::readObject(%s) as $k => $v) {", libNsInternal, v)
+		kjr := k.jsonReader("$k")
+		if f.isMapWithBoolKey() {
+			kjr = fmt.Sprintf("%s\\JsonDecoder::readBoolMapKey(%s)", libNsInternal, "$k")
+		}
 		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 			w.p("$obj = new %s();", vv.phpType())
 			w.p("$obj->MergeJsonFrom(%s);", v)
-			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), k.jsonReader("$k"))
+			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), kjr)
 		} else {
-			w.p("$this->%s[%s] = %s;", f.fd.GetName(), k.jsonReader("$k"), vv.jsonReader("$v"))
+			w.p("$this->%s[%s] = %s;", f.fd.GetName(), kjr, vv.jsonReader("$v"))
 		}
 		w.p("}")
 		w.p("}")
@@ -781,15 +803,12 @@ func (f field) jsonWriter() (string, string) {
 
 func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	if f.isMap {
-		k, v := f.mapFields()
+		_, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
 			itos := v.typePhpNs + "\\" + v.typePhpName + "::XXX_ItoS()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
-			if k.fd.GetType() == desc.FieldDescriptorProto_TYPE_BOOL {
-				w.p("/* HH_FIXME[4110] bool is not arraykey */") // TODO fix this.
-			}
 			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
 		}
 		return
