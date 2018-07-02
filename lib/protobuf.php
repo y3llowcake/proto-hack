@@ -694,6 +694,11 @@ namespace Protobuf\Internal {
       }
     }
 
+    public static function encodeDuration(int $s, int $ns): string {
+      $sns = \rtrim(\sprintf("%09d", \abs($ns)), '0');
+      return \sprintf("%d.%ss", $s, $sns);
+    }
+
     public function __toString(): string {
       $opt = \JSON_PARTIAL_OUTPUT_ON_ERROR;
       if ($this->o->pretty_print) {
@@ -721,7 +726,6 @@ namespace Protobuf\Internal {
       if (\is_dict($m)) {
         $ret = dict[];
         foreach ($m as $k => $v) {
-          // TODO, I could check for objects by seeing if the key is int.
           $ret[(string)$k] = $v;
         }
         return $ret;
@@ -737,7 +741,6 @@ namespace Protobuf\Internal {
         return $ret;
       if (\is_vec($m)) {
         foreach ($m as $v) {
-          // TODO, I could check for objects by seeing if the key is string.
           $ret[] = $v;
         }
         return $ret;
@@ -802,7 +805,6 @@ namespace Protobuf\Internal {
 
         $mgmp = \gmp_init($m, 10);
         if ($b64) {
-          // sscanf behaves unexpectedly when the input exceeds int64 bounds.
           if ($signed) {
             if (
               \gmp_cmp($mgmp, '9223372036854775807') > 0 ||
@@ -898,21 +900,31 @@ namespace Protobuf\Internal {
         return tuple(0, 0);
       if (is_string($m)) {
         $parts = \explode('.', $m);
-        if (\count($parts) == 2) {
-          if (\substr($parts[1], -1) == 's') {
-            $s = (int)$parts[0];
-            $ns = (int)\substr($parts[1], 0, -1);
-            if (
-              $s >= -315576000000 &&
-              $s <= 315576000000 &&
-              $ns > -999999999 &&
-              $ns < 999999999
-            ) {
-              return tuple(0, 0);
-              // return tuple($s, $ns);
-            }
-          }
+        if (\count($parts) != 2) {
+          throw new \Protobuf\ProtobufException(\sprintf(
+            'duration has wrong number of parts; got %d expected 2',
+            \count($parts),
+          ));
         }
+        if (\substr($parts[1], -1) != 's') {
+          throw
+            new \Protobuf\ProtobufException('duration missing trailing \'s\'');
+        }
+        $s = (int)$parts[0];
+        $sns = \str_pad(\substr($parts[1], 0, -1), 9, '0');
+        $ns = (int)$sns;
+        if ($s < 0) {
+          $ns = -$ns;
+        }
+        if (
+          $s < -315576000000 ||
+          $s > 315576000000 ||
+          $ns < -999999999 ||
+          $ns > 999999999
+        ) {
+          throw new \Protobuf\ProtobufException('duration out of bounds');
+        }
+        return tuple($s, $ns);
       }
       throw new \Protobuf\ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),

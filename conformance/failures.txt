@@ -50,12 +50,6 @@ Required.Proto3.JsonInput.BoolMapEscapedKey.ProtobufOutput
 Required.Proto3.JsonInput.BoolMapField.JsonOutput
 Required.Proto3.JsonInput.BoolMapField.ProtobufOutput
 Required.Proto3.JsonInput.DoubleFieldTooSmall
-Required.Proto3.JsonInput.DurationMaxValue.JsonOutput
-Required.Proto3.JsonInput.DurationMaxValue.ProtobufOutput
-Required.Proto3.JsonInput.DurationMinValue.JsonOutput
-Required.Proto3.JsonInput.DurationMinValue.ProtobufOutput
-Required.Proto3.JsonInput.DurationRepeatedValue.JsonOutput
-Required.Proto3.JsonInput.DurationRepeatedValue.ProtobufOutput
 Required.Proto3.JsonInput.FieldMask.JsonOutput
 Required.Proto3.JsonInput.FieldMask.ProtobufOutput
 Required.Proto3.JsonInput.FloatFieldTooLarge

@@ -575,10 +575,12 @@ func customWriteJson(w *writer, fqn, v string) bool {
 		w.p("%s->setCustomEncoding(\\sprintf('%s', $this->value));", v, "%u")
 	case ".google.protobuf.BytesValue":
 		w.p("%s->setCustomEncoding(%s\\JsonEncoder::encodeBytes($this->value));", v, libNsInternal)
+	case ".google.protobuf.Duration":
+		w.p("%s->setCustomEncoding(%s\\JsonEncoder::encodeDuration($this->seconds, $this->nanos));", v, libNsInternal)
 	default:
 		return false
 	}
-	return false
+	return true
 }
 
 func customMergeJson(w *writer, fqn, v string) bool {
