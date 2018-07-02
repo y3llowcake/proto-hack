@@ -276,7 +276,7 @@ func (f field) labeledType() string {
 		k, v := f.mapFields()
 		kt := k.phpType()
 		if f.isMapWithBoolKey() {
-			kt = "int"
+			kt = fmt.Sprintf("%s\\bool_map_key_t", libNsInternal)
 		}
 		return fmt.Sprintf("dict<%s, %s>", kt, v.labeledType())
 	}
@@ -327,11 +327,11 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	if f.isMap {
 		w.p("$obj = new %s();", f.phpType())
 		w.p("$obj->MergeFrom(%s->readDecoder());", dec)
-		maybeCastBool := ""
+		k := "$obj->key"
 		if f.isMapWithBoolKey() {
-			maybeCastBool = "(int)"
+			k = fmt.Sprintf("%s\\BoolMapKey::FromBool($obj->key)", libNs)
 		}
-		w.p("$this->%s[%s$obj->key] = $obj->value;", f.varName(), maybeCastBool)
+		w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
 		return
 	}
 	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
@@ -470,14 +470,13 @@ func (f field) writeEncoderForOneof(w *writer, enc string) {
 
 func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) {
 	if f.isMap {
-		maybeCastBool := ""
-		if f.isMapWithBoolKey() {
-			maybeCastBool = "(bool)"
-		}
-
 		w.p("foreach ($this->%s as $k => $v) {", f.varName())
 		w.p("$obj = new %s();", f.phpType())
-		w.p("$obj->key = %s$k;", maybeCastBool)
+		k := "$k"
+		if f.isMapWithBoolKey() {
+			k = fmt.Sprintf("%s\\BoolMapKey::ToBool($k)", libNs)
+		}
+		w.p("$obj->key = %s;", k)
 		w.p("$obj->value = $v;")
 		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$obj->WriteTo($nested);")

@@ -38,10 +38,23 @@ namespace Protobuf {
     const int PRESERVE_NAMES = 1 << 3;
     const int ENUMS_AS_INTS = 1 << 4;
   }
+
+  class BoolMapKey {
+    const Internal\bool_map_key_t TRUE = 'true';
+    const Internal\bool_map_key_t FALSE = 'false';
+    public static function FromBool(bool $b): Internal\bool_map_key_t {
+      return $b ? self::TRUE : self::FALSE;
+    }
+    public static function ToBool(Internal\bool_map_key_t $b): bool {
+      return $b == self::TRUE ? true : false;
+    }
+  }
 }
 // namespace Protobuf
 
 namespace Protobuf\Internal {
+  newtype bool_map_key_t as string = string;
+
   // AVERT YOUR EYES YE! NOTHING TO SEE BELOW!
 
   function AssertEndiannessAndIntSize(): void {
@@ -896,12 +909,12 @@ namespace Protobuf\Internal {
       );
     }
 
-    public static function readBoolMapKey(mixed $m): int {
+    public static function readBoolMapKey(mixed $m): bool_map_key_t {
       if (is_string($m)) {
         if ($m === 'true')
-          return 1;
+          return $m;
         if ($m === 'false')
-          return 0;
+          return $m;
         throw new \Protobuf\ProtobufException('could not map string to bool');
       }
       throw new \Protobuf\ProtobufException(
