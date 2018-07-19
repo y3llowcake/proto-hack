@@ -94,7 +94,7 @@ func (n *Namespace) FindFullyQualifiedNamespace(fqns string) *Namespace {
 }
 
 func (n *Namespace) Parse(fdp *desc.FileDescriptorProto) {
-	childns := n.get(true, strings.Split(*fdp.Package, "."))
+	childns := n.get(true, strings.Split(fdp.GetPackage(), "."))
 
 	// Top level enums.
 	for _, edp := range fdp.EnumType {
