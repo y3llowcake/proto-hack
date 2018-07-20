@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "example3.proto";
+
 package fiz.baz;
 
 message example2 {
@@ -8,4 +10,8 @@ message example2 {
 
 enum AEnum2 {
   Z = 0;
+}
+
+message refexample3 {
+  Funky funky = 1;
 }
