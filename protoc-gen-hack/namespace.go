@@ -81,9 +81,16 @@ func (n *Namespace) get(create bool, parts []string) *Namespace {
 // From any point in the namespace tree, decend to the root and then back up to
 // the target namespace.
 func (n *Namespace) FindFullyQualifiedNamespace(fqns string) *Namespace {
+	if fqns == "" {
+		fqns = "." //ugh, hax.
+	}
 	mustFullyQualified(fqns)
 	for n.parent != nil {
 		n = n.parent
+	}
+
+	if fqns == "." {
+		return n
 	}
 
 	found := n.get(false, strings.Split(strings.TrimPrefix(fqns, "."), "."))
@@ -94,7 +101,12 @@ func (n *Namespace) FindFullyQualifiedNamespace(fqns string) *Namespace {
 }
 
 func (n *Namespace) Parse(fdp *desc.FileDescriptorProto) {
-	childns := n.get(true, strings.Split(fdp.GetPackage(), "."))
+	pparts := []string{}
+	if fdp.GetPackage() != "" {
+		pparts = strings.Split(fdp.GetPackage(), ".")
+	}
+
+	childns := n.get(true, pparts)
 
 	// Top level enums.
 	for _, edp := range fdp.EnumType {
@@ -142,7 +154,7 @@ func mustFullyQualified(fqn string) {
 func (n *Namespace) FindFullyQualifiedName(fqn string) (string, string, interface{}) {
 	mustFullyQualified(fqn)
 	ns, name, i := n.find(fqn, true)
-	if ns == "" {
+	if i == nil {
 		panic("couldn't resolve name: " + fqn)
 	}
 	ns = strings.TrimSuffix(ns, ".")

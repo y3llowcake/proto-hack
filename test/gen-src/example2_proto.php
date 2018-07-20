@@ -70,10 +70,59 @@ class example2 implements \Protobuf\Message {
   }
 }
 
+class refexample3 implements \Protobuf\Message {
+  public ?\Funky $funky;
+
+  public function __construct() {
+    $this->funky = null;
+  }
+
+  public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
+    while (!$d->isEOF()){
+      list($fn, $wt) = $d->readTag();
+      switch ($fn) {
+        case 1:
+          if ($this->funky == null) $this->funky = new \Funky();
+          $this->funky->MergeFrom($d->readDecoder());
+          break;
+        default:
+          $d->skipWireType($wt);
+      }
+    }
+  }
+
+  public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    $msg = $this->funky;
+    if ($msg != null) {
+      $nested = new \Protobuf\Internal\Encoder();
+      $msg->WriteTo($nested);
+      $e->writeEncoder($nested, 1);
+    }
+  }
+
+  public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
+    $e->writeMessage('funky', 'funky', $this->funky, false);
+  }
+
+  public function MergeJsonFrom(mixed $m): void {
+    if ($m === null) return;
+    $d = \Protobuf\Internal\JsonDecoder::readObject($m);
+    foreach ($d as $k => $v) {
+      switch ($k) {
+        case 'funky':
+          if ($v === null) break;
+          if ($this->funky == null) $this->funky = new \Funky();
+          $this->funky->MergeJsonFrom($v);
+          break;
+      }
+    }
+  }
+}
+
 
 class XXX_FileDescriptor_example2__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example2.proto';
-  const string RAW = 'eNo0j71KxFAQhef35uZsNHEqKxErsdhifQILG0tLu11YRTBmEQXJq/lychNudz7OzDcMzo+/+/H0cdxtT1/T9xTN6/u8PeznmyvkWkXA5ml8u+RrvvXnJd/1SA+Pnz/jLhz8MtDTHyOFEYGRwV0oUZQkoZJ7AGIUZpQYgBpxqOUBG5iRUKjLBc7gBSzMxQLdil7KphKHeu4qaaj3Q7E7heVyHVAvU9k3xe6LvZVcVnwVtKKVJLRNzSEt79//BwAA//+5qBvF';
+  const string RAW = 'eNo0kctKA0EQRevRL6sn05MSUUREshKFLJIvcKELl1m6SyAR0TwIBnS+xw+V7qF3c+pWXc7Q0q5/ltvD13o2PRz333v1m49+ulr21zWYD8HkVkJdVRXT77fvV3iH93ZRviePEo/rTT3SG7Gb0+7zt+zEmZu+ZFoMw4ck7ul5d9rO1Aq+dfD6R+LUAHQoQbBRBlA5E2JQJn+Zh6RsQhIRMqDGQUARYQOo7EInUYwBAmVPYxmJzWDUeHIqzYA2h74SKvvQVGJln7rcbkGNQFPabd4SG3O7Le2RQj6xQ0EkrkTK0fmih2ra/CdZD1G5DedFD3NBIi16WPQStRdFAQlcDn0lVE5hVImVUzdeufIW8/8AAAD//9+MMTY';
   public function Name(): string {
     return self::NAME;
   }
