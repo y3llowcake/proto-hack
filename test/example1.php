@@ -3,6 +3,7 @@ include "../lib/protobuf.php";
 include "../lib/grpc.php";
 include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
+include "./gen-src/example4_proto.php";
 
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got != $exp) {
@@ -156,6 +157,14 @@ function testDescriptorReflection(): void {
   }
 }
 
+function testReservedClassNames(): void {
+  // This should run without errors.
+  $c = new pb_Class();
+  $i = new pb_Interface();
+  $i->class = $c;
+  $n = new NotClass();
+}
+
 function test(): void {
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
@@ -184,6 +193,9 @@ function test(): void {
    $start = microtime_as_int() - $start;
    echo "elapsed: " . $start . "\n";
    }*/
+
+  // Reserved class names
+  testReservedClassNames();
 }
 
 set_time_limit(5);

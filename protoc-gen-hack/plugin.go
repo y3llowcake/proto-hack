@@ -18,15 +18,18 @@ import (
 )
 
 const (
-	specialPrefix = "XXX_"
-	genDebug      = false
-	libNs         = "\\Protobuf"
-	libNsInternal = libNs + "\\Internal"
+	specialPrefix  = "XXX_"
+	reservedPrefix = "pb_"
+	genDebug       = false
+	libNs          = "\\Protobuf"
+	libNsInternal  = libNs + "\\Internal"
 )
 
 var (
-	version  = "undefined" // go build -ldflags "-X main.version=1"
-	fversion = flag.Bool("version", false, "print version and exit")
+	version          = "undefined" // go build -ldflags "-X main.version=1"
+	fversion         = flag.Bool("version", false, "print version and exit")
+	reservedKeywords = [...]string{"eval", "isset", "unset", "empty", "const", "new", "and", "or",
+		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static"}
 )
 
 func main() {
@@ -172,6 +175,23 @@ func toPhpName(ns, name string) (string, string) {
 	return strings.Replace(ns, ".", "\\", -1), strings.Replace(name, ".", "_", -1)
 }
 
+func isReservedName(name string) bool {
+	lowerName := strings.ToLower(name)
+	for _, keyword := range reservedKeywords {
+		if lowerName == keyword {
+			return true
+		}
+	}
+	return false
+}
+
+func escapeReservedName(name string) string {
+	if isReservedName(name) {
+		return reservedPrefix + name
+	}
+	return name
+}
+
 type field struct {
 	fd                     *desc.FieldDescriptorProto
 	typePhpNs, typePhpName string
@@ -190,7 +210,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
 		f.typeFqProtoName = typeNs + "." + typeName
-		f.typePhpNs, f.typePhpName = toPhpName(typeNs, typeName)
+		f.typePhpNs, f.typePhpName = toPhpName(typeNs, escapeReservedName(typeName))
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
 		if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); ok {
@@ -970,7 +990,7 @@ func isWrapperType(fqn string) bool {
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
-	name := strings.Join(nextNames, "_")
+	name := escapeReservedName(strings.Join(nextNames, "_"))
 
 	// Nested Enums.
 	for _, edp := range dp.EnumType {
