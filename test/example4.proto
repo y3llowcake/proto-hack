@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+// Reserved words.
+
+message Class {
+  string name = 1;
+}
+
+message Interface {
+  Class class = 1;
+}
+
+message NotClass {
+  string name = 1;
+}

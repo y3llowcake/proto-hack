@@ -159,8 +159,8 @@ function testDescriptorReflection(): void {
 
 function testReservedClassNames(): void {
   // This should run without errors.
-  $c = new XXX_Class();
-  $i = new XXX_Interface();
+  $c = new pb_Class();
+  $i = new pb_Interface();
   $i->class = $c;
   $n = new NotClass();
 }

@@ -18,10 +18,11 @@ import (
 )
 
 const (
-	specialPrefix = "XXX_"
-	genDebug      = false
-	libNs         = "\\Protobuf"
-	libNsInternal = libNs + "\\Internal"
+	specialPrefix  = "XXX_"
+	reservedPrefix = "pb_"
+	genDebug       = false
+	libNs          = "\\Protobuf"
+	libNsInternal  = libNs + "\\Internal"
 )
 
 var (
@@ -174,7 +175,7 @@ func toPhpName(ns, name string) (string, string) {
 	return strings.Replace(ns, ".", "\\", -1), strings.Replace(name, ".", "_", -1)
 }
 
-func isReservedClassName(name string) bool {
+func isReservedName(name string) bool {
 	lowerName := strings.ToLower(name)
 	for _, keyword := range reservedKeywords {
 		if lowerName == keyword {
@@ -184,9 +185,9 @@ func isReservedClassName(name string) bool {
 	return false
 }
 
-func escapeReservedClassName(name string) string {
-	if isReservedClassName(name) {
-		return specialPrefix + name
+func escapeReservedName(name string) string {
+	if isReservedName(name) {
+		return reservedPrefix + name
 	}
 	return name
 }
@@ -209,7 +210,7 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
 		f.typeFqProtoName = typeNs + "." + typeName
-		f.typePhpNs, f.typePhpName = toPhpName(typeNs, escapeReservedClassName(typeName))
+		f.typePhpNs, f.typePhpName = toPhpName(typeNs, escapeReservedName(typeName))
 		f.typeDescriptor = i
 		f.typeNs = ns.FindFullyQualifiedNamespace(typeNs)
 		if dp, ok := f.typeDescriptor.(*desc.DescriptorProto); ok {
@@ -989,7 +990,7 @@ func isWrapperType(fqn string) bool {
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
 func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
 	nextNames := append(prefixNames, dp.GetName())
-	name := escapeReservedClassName(strings.Join(nextNames, "_"))
+	name := escapeReservedName(strings.Join(nextNames, "_"))
 
 	// Nested Enums.
 	for _, edp := range dp.EnumType {
