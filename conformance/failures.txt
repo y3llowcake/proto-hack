@@ -1,7 +1,7 @@
 Recommended.FieldMaskNumbersDontRoundTrip.JsonOutput
 Recommended.FieldMaskPathsDontRoundTrip.JsonOutput
 Recommended.FieldMaskTooManyUnderscore.JsonOutput
-#Recommended.Proto2.ProtobufInput.OneofZeroMessage.ProtobufOutput
+Recommended.Proto2.ProtobufInput.OneofZeroMessage.ProtobufOutput
 Recommended.Proto3.JsonInput.MapFieldValueIsNull
 Recommended.Proto3.JsonInput.RepeatedFieldMessageElementIsNull
 Recommended.Proto3.JsonInput.RepeatedFieldPrimitiveElementIsNull
@@ -15,10 +15,10 @@ Recommended.Proto3.JsonInput.TimestampHasZeroFractionalDigit.Validator
 Recommended.Proto3.JsonInput.TimestampZeroNormalized.Validator
 Required.DurationProtoInputTooLarge.JsonOutput
 Required.DurationProtoInputTooSmall.JsonOutput
-#Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED32.ProtobufOutput
-#Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED64.ProtobufOutput
-#Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.UINT64.ProtobufOutput
-#Required.Proto2.ProtobufInput.UnknownVarint.ProtobufOutput
+Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED32.ProtobufOutput
+Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED64.ProtobufOutput
+Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.UINT64.ProtobufOutput
+Required.Proto2.ProtobufInput.UnknownVarint.ProtobufOutput
 Required.Proto3.JsonInput.Any.JsonOutput
 Required.Proto3.JsonInput.Any.ProtobufOutput
 Required.Proto3.JsonInput.AnyNested.JsonOutput
