@@ -70,13 +70,20 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	for _, f := range req.FileToGenerate {
 		fileToGenerate[f] = true
 	}
-	genService := strings.Contains(req.GetParameter(), "plugins=grpc")
-	genService = genService || strings.Contains(req.GetParameter(), "plugin=grpc")
+
+	genService := false
+	opts := strings.Split(req.GetParameter(), ",")
+	for _, opt := range opts {
+		switch opt {
+		case "plugin=grpc":
+			genService = true
+		}
+	}
 
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
-		if *fdp.Syntax != "proto3" {
-			panic(fmt.Errorf("unsupported syntax: %s in file %s", *fdp.Syntax, *fdp.Name))
+		if fdp.GetSyntax() != "proto3" {
+			panic(fmt.Errorf("unsupported syntax: '%s' in file '%s'", fdp.GetSyntax(), fdp.GetName()))
 		}
 		rootns.Parse(fdp)
 		// panic(rootns.PrettyPrint())
