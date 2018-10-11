@@ -64,6 +64,14 @@ func codeGenerator(b []byte) ([]byte, error) {
 	return out, nil
 }
 
+type syntax int
+
+const (
+	SyntaxUnknown syntax = 0
+	SyntaxProto2  syntax = 2
+	SyntaxProto3  syntax = 3
+)
+
 func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 	resp := &ppb.CodeGeneratorResponse{}
 	fileToGenerate := map[string]bool{}
@@ -87,9 +95,6 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
-		if fdp.GetSyntax() != "proto3" && !allowProto2 {
-			panic(fmt.Errorf("unsupported syntax: '%s' in file '%s'", fdp.GetSyntax(), fdp.GetName()))
-		}
 		rootns.Parse(fdp)
 		// panic(rootns.PrettyPrint())
 
@@ -104,14 +109,27 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 
 		b := &bytes.Buffer{}
 		w := &writer{b, 0}
-		writeFile(w, fdp, rootns, genService)
+		writeFile(w, fdp, rootns, genService, allowProto2)
 		f.Content = proto.String(b.String())
 		resp.File = append(resp.File, f)
 	}
 	return resp
 }
 
-func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genService bool) {
+func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genService, allowProto2 bool) {
+	syn := SyntaxUnknown
+	switch fdp.GetSyntax() {
+	case "proto3":
+		syn = SyntaxProto3
+	case "proto2", "":
+		syn = SyntaxProto2
+	default:
+		panic(fmt.Errorf("unsupported syntax: '%s' in file '%s'", fdp.GetSyntax(), fdp.GetName()))
+	}
+	if syn == SyntaxProto2 && !allowProto2 {
+		panic("proto2 syntax is disabled")
+	}
+
 	packageParts := strings.Split(fdp.GetPackage(), ".")
 	ns := rootNs.FindFullyQualifiedNamespace("." + fdp.GetPackage())
 	if ns == nil {
@@ -135,7 +153,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 
 	// Messages, recurse.
 	for _, dp := range fdp.MessageType {
-		writeDescriptor(w, dp, ns, nil)
+		writeDescriptor(w, dp, ns, nil, syn)
 	}
 
 	// Write services.
@@ -213,11 +231,13 @@ type field struct {
 	isMap                  bool
 	oneof                  *oneof
 	typeFqProtoName        string
+	syn                    syntax
 }
 
-func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
+func newField(fd *desc.FieldDescriptorProto, ns *Namespace, syn syntax) *field {
 	f := &field{
-		fd: fd,
+		fd:  fd,
+		syn: syn,
 	}
 	if fd.GetTypeName() != "" {
 		typeNs, typeName, i := ns.FindFullyQualifiedName(fd.GetTypeName())
@@ -245,8 +265,8 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace) *field {
 
 func (f field) mapFields() (*field, *field) {
 	dp := f.typeDescriptor.(*desc.DescriptorProto)
-	keyField := newField(dp.Field[0], f.typeNs)
-	valueField := newField(dp.Field[1], f.typeNs)
+	keyField := newField(dp.Field[0], f.typeNs, f.syn)
+	valueField := newField(dp.Field[1], f.typeNs, f.syn)
 	return keyField, valueField
 }
 
@@ -358,6 +378,14 @@ var isPackable = map[desc.FieldDescriptorProto_Type]bool{
 	desc.FieldDescriptorProto_TYPE_SFIXED64: true,
 	desc.FieldDescriptorProto_TYPE_BOOL:     true,
 	desc.FieldDescriptorProto_TYPE_ENUM:     true,
+}
+
+func (f *field) isPacked() bool {
+	if f.syn == SyntaxProto3 {
+		// TODO: technically you can disable packing?
+		return isPackable[f.fd.GetType()]
+	}
+	return f.fd.GetOptions().GetPacked()
 }
 
 func (f *field) writeDecoder(w *writer, dec, wt string) {
@@ -554,7 +582,7 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 	// Repeated
 	// Heh, kinda hacky.
 	repeatWriter := strings.Replace(writer, "$this->"+f.varName(), "$elem", 1)
-	if isPackable[*f.fd.Type] {
+	if f.isPacked() {
 		// Heh, kinda hacky.
 		packedWriter := strings.Replace(repeatWriter, enc, "$packed", 1)
 		w.p("$packed = new %s\\Encoder();", libNsInternal)
@@ -1006,7 +1034,7 @@ func isWrapperType(fqn string) bool {
 }
 
 // https://github.com/golang/protobuf/blob/master/protoc-gen-go/descriptor/descriptor.pb.go
-func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string) {
+func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixNames []string, syn syntax) {
 	nextNames := append(prefixNames, dp.GetName())
 	name := escapeReservedName(strings.Join(nextNames, "_"))
 
@@ -1018,7 +1046,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// Wrap fields in our own struct.
 	fields := []*field{}
 	for _, fd := range dp.Field {
-		fields = append(fields, newField(fd, ns))
+		fields = append(fields, newField(fd, ns, syn))
 	}
 
 	// Oneofs: first group each field by it's corresponding oneof.
@@ -1059,7 +1087,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// Nested Types.
 	for _, ndp := range dp.NestedType {
-		writeDescriptor(w, ndp, ns, nextNames)
+		writeDescriptor(w, ndp, ns, nextNames, syn)
 	}
 
 	// w.p("// message %s", dp.GetName())
