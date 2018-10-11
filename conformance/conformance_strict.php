@@ -26,21 +26,21 @@ function main(array<string> $argv): void {
     switch ($mode) {
       case 'proto:proto':
         $result =
-          testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
+          remarshalProto3($in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
         $result = \addcslashes($result, $result);
         echo "output: \"$result\"\n";
         break;
       case 'proto:json':
-        $result = testMessageRaw($in, WireFormat::PROTOBUF, WireFormat::JSON);
+        $result = remarshalProto3($in, WireFormat::PROTOBUF, WireFormat::JSON);
         echo "output: '$result'\n";
         break;
       case 'json:proto':
-        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::PROTOBUF);
+        $result = remarshalProto3($in, WireFormat::JSON, WireFormat::PROTOBUF);
         $result = \addcslashes($result, $result);
         echo "output: \"$result\"\n";
         break;
       case 'json:json':
-        $result = testMessageRaw($in, WireFormat::JSON, WireFormat::JSON);
+        $result = remarshalProto3($in, WireFormat::JSON, WireFormat::JSON);
         echo "output: '$result'\n";
         break;
       default:
@@ -107,12 +107,12 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     switch ($wfo) {
       case WireFormat::PROTOBUF:
         $cresp->result = new ConformanceResponse_protobuf_payload(
-          testMessageRaw($payload, $wfi, $wfo),
+          remarshalProto3($payload, $wfi, $wfo),
         );
         break;
       case WireFormat::JSON:
         $cresp->result = new ConformanceResponse_json_payload(
-          testMessageRaw($payload, $wfi, $wfo),
+          remarshalProto3($payload, $wfi, $wfo),
         );
         break;
       default:
@@ -127,8 +127,12 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-function testMessageRaw(string $in, int $wfi, int $wfo): string {
+function remarshalProto3(string $in, int $wfi, int $wfo): string {
   $tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
+	return remarshal($tm, $in, $wfi, $wfo);
+}
+
+function remarshal(\Protobuf\Message $tm, string $in, int $wfi, int $wfo): string {
   switch ($wfi) {
     case WireFormat::PROTOBUF:
       \Protobuf\Unmarshal($in, $tm);
