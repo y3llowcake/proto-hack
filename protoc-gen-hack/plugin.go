@@ -71,18 +71,23 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		fileToGenerate[f] = true
 	}
 
+	allowProto2 := false
 	genService := false
 	opts := strings.Split(req.GetParameter(), ",")
 	for _, opt := range opts {
 		switch opt {
 		case "plugin=grpc":
 			genService = true
+		case "allow_proto2": // TODO remove me.
+			allowProto2 = true
+		default:
+			panic(fmt.Errorf("unsupported compiler option: '%s'", opt))
 		}
 	}
 
 	rootns := NewEmptyNamespace()
 	for _, fdp := range req.ProtoFile {
-		if fdp.GetSyntax() != "proto3" {
+		if fdp.GetSyntax() != "proto3" && !allowProto2 {
 			panic(fmt.Errorf("unsupported syntax: '%s' in file '%s'", fdp.GetSyntax(), fdp.GetName()))
 		}
 		rootns.Parse(fdp)
@@ -261,7 +266,8 @@ func (f field) phpType() string {
 		return "float"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "bool"
-	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+	case desc.FieldDescriptorProto_TYPE_MESSAGE,
+		desc.FieldDescriptorProto_TYPE_GROUP:
 		return f.typePhpNs + "\\" + f.typePhpName
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		return f.typePhpNs + "\\" + specialPrefix + f.typePhpName + "_t"
@@ -289,7 +295,8 @@ func (f field) defaultValue() string {
 		return "false"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		return f.typePhpNs + "\\" + f.typePhpName + "::" + f.typeEnumDefault
-	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+	case desc.FieldDescriptorProto_TYPE_MESSAGE,
+		desc.FieldDescriptorProto_TYPE_GROUP:
 		return "null"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to default value: %v", t))
@@ -312,7 +319,7 @@ func (f field) labeledType() string {
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
 	}
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 		return "?" + f.phpType()
 	}
 	return f.phpType()
@@ -333,6 +340,7 @@ var writeWireType = map[desc.FieldDescriptorProto_Type]int{
 	desc.FieldDescriptorProto_TYPE_STRING:   2,
 	desc.FieldDescriptorProto_TYPE_BYTES:    2,
 	desc.FieldDescriptorProto_TYPE_MESSAGE:  2,
+	desc.FieldDescriptorProto_TYPE_GROUP:    2,
 }
 
 var isPackable = map[desc.FieldDescriptorProto_Type]bool{
@@ -363,7 +371,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 		w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
 		return
 	}
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
@@ -485,7 +493,7 @@ func (f field) primitiveWriters(enc string) (string, string) {
 // Oneofs are a subset of all field types, and they serialize their default
 // value to the wire.
 func (f field) writeEncoderForOneof(w *writer, enc string) {
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$this->%s->WriteTo($nested);", f.fd.GetName())
 		w.p("%s->writeEncoder($nested, %d);", enc, f.fd.GetNumber())
@@ -514,7 +522,7 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 		return
 	}
 
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 		// This is different enough we handle it on it's own.
 		// TODO we could optimize to not to string copies.
 		if f.isRepeated() {
@@ -744,7 +752,8 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		if f.isMapWithBoolKey() {
 			kjr = fmt.Sprintf("%s\\JsonDecoder::readBoolMapKey(%s)", libNsInternal, "$k")
 		}
-		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+
+		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 			w.p("$obj = new %s();", vv.phpType())
 			w.p("$obj->MergeJsonFrom(%s);", v)
 			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), kjr)
@@ -755,7 +764,8 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		w.p("}")
 		return
 	}
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
+
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
 		if f.isRepeated() {
 			w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
 			w.p("$obj = new %s();", f.phpType())
@@ -820,7 +830,8 @@ func (f field) jsonWriter() (string, string) {
 		return "Float", "Float"
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "Bool", "Primitive"
-	case desc.FieldDescriptorProto_TYPE_MESSAGE:
+	case desc.FieldDescriptorProto_TYPE_MESSAGE,
+		desc.FieldDescriptorProto_TYPE_GROUP:
 		return "Message", "Message"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		return "Enum", "Enum"
