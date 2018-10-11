@@ -88,13 +88,13 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		rootns.Parse(fdp)
 		// panic(rootns.PrettyPrint())
 
-		if !fileToGenerate[*fdp.Name] {
+		if !fileToGenerate[fdp.GetName()] {
 			continue
 		}
 		f := &ppb.CodeGeneratorResponse_File{}
 
-		fext := filepath.Ext(*fdp.Name)
-		fname := strings.TrimSuffix(*fdp.Name, fext) + "_proto.php"
+		fext := filepath.Ext(fdp.GetName())
+		fname := strings.TrimSuffix(fdp.GetName(), fext) + "_proto.php"
 		f.Name = proto.String(fname)
 
 		b := &bytes.Buffer{}
@@ -251,7 +251,7 @@ func (f field) isMapWithBoolKey() bool {
 }
 
 func (f field) phpType() string {
-	switch t := *f.fd.Type; t {
+	switch t := f.fd.GetType(); t {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
 		return "string"
 	case desc.FieldDescriptorProto_TYPE_INT64,
@@ -277,7 +277,7 @@ func (f field) defaultValue() string {
 	if f.isRepeated() {
 		return "vec[]"
 	}
-	switch t := *f.fd.Type; t {
+	switch t := f.fd.GetType(); t {
 	case desc.FieldDescriptorProto_TYPE_STRING, desc.FieldDescriptorProto_TYPE_BYTES:
 		return "''"
 	case desc.FieldDescriptorProto_TYPE_INT64,
@@ -297,7 +297,7 @@ func (f field) defaultValue() string {
 }
 
 func (f field) isRepeated() bool {
-	return *f.fd.Label == desc.FieldDescriptorProto_LABEL_REPEATED
+	return f.fd.GetLabel() == desc.FieldDescriptorProto_LABEL_REPEATED
 }
 
 func (f field) labeledType() string {
@@ -312,7 +312,7 @@ func (f field) labeledType() string {
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
 	}
-	if *f.fd.Type == desc.FieldDescriptorProto_TYPE_MESSAGE {
+	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE {
 		return "?" + f.phpType()
 	}
 	return f.phpType()
@@ -386,7 +386,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 
 	// TODO should we do wiretype checking here?
 	reader := ""
-	switch *f.fd.Type {
+	switch f.fd.GetType() {
 	case desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
 		reader = fmt.Sprintf("%s->readString()", dec)
@@ -417,7 +417,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		reader = fmt.Sprintf("%s\\%s::XXX_FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
-		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
+		panic(fmt.Errorf("unknown reader for fd type: %s", f.fd.GetType()))
 	}
 	if f.isOneofMember() {
 		w.p("$this->%s = new %s(%s);", f.oneof.name, f.oneof.classNameForField(f), reader)
@@ -428,7 +428,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 		return
 	}
 	// Repeated
-	packable := isPackable[*f.fd.Type]
+	packable := isPackable[f.fd.GetType()]
 	if packable {
 		w.p("if (%s == 2) {", wt)
 		w.p("$packed = %s->readDecoder();", dec)
@@ -447,7 +447,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 
 func (f field) primitiveWriters(enc string) (string, string) {
 	writer := ""
-	switch *f.fd.Type {
+	switch f.fd.GetType() {
 	case desc.FieldDescriptorProto_TYPE_STRING,
 		desc.FieldDescriptorProto_TYPE_BYTES:
 		writer = fmt.Sprintf("%s->writeString($this->%s)", enc, f.varName())
@@ -476,9 +476,9 @@ func (f field) primitiveWriters(enc string) (string, string) {
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		writer = fmt.Sprintf("%s->writeVarint($this->%s)", enc, f.varName())
 	default:
-		panic(fmt.Errorf("unknown reader for fd type: %s", *f.fd.Type))
+		panic(fmt.Errorf("unknown reader for fd type: %s", f.fd.GetType()))
 	}
-	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, *f.fd.Number, writeWireType[f.fd.GetType()])
+	tagWriter := fmt.Sprintf("%s->writeTag(%d, %d);", enc, f.fd.GetNumber(), writeWireType[f.fd.GetType()])
 	return tagWriter, writer
 }
 
@@ -554,7 +554,7 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 		w.pdebug("writing packed")
 		w.p("%s;", packedWriter)
 		w.p("}")
-		w.p("%s->writeEncoder($packed, %d);", enc, *f.fd.Number)
+		w.p("%s->writeEncoder($packed, %d);", enc, f.fd.GetNumber())
 	} else {
 		w.p("foreach ($this->%s as $elem) {", f.varName())
 		w.p(tagWriter)
