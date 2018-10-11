@@ -86,7 +86,9 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		switch opt {
 		case "plugin=grpc":
 			genService = true
-		case "allow_proto2": // TODO remove me.
+		case "allow_proto2_dangerous":
+			// proto2 is not fully supported. In particular the marshaling of default
+			// values is incorrectly handled.
 			allowProto2 = true
 		default:
 			panic(fmt.Errorf("unsupported compiler option: '%s'", opt))
