@@ -10,7 +10,9 @@ include 'gen-src/google/protobuf/test_messages_proto2_proto.php';
 include 'gen-src/google/protobuf/test_messages_proto3_proto.php';
 include 'gen-src/google/protobuf/timestamp_proto.php';
 include 'gen-src/google/protobuf/wrappers_proto.php';
-include 'gen-src/third_party/google/protobuf/conformance/conformance_proto.php';
+include
+  'gen-src/third_party/google/protobuf/conformance/conformance_proto.php'
+;
 
 # https://github.com/google/protobuf/blob/master/conformance/conformance_test_runner.cc
 # https://github.com/google/protobuf/blob/master/conformance/conformance.proto
@@ -19,32 +21,33 @@ function main(array<string> $argv): void {
   if (\count($argv) > 1) {
     echo "oneoff test mode\n";
     $in = $argv[1];
+    echo 'escaped input: "'.$in.'"'."\n";
     $in = \stripcslashes($in);
-
-		$mode = "proto:proto";
-    if ($argv[2] != "") {
-			$mode = $argv[2];
-		}
-
-		$mt = "proto3";
-    if ($argv[3] != "") {
-			$mt = $argv[3];
-		}
-
     echo 'raw input: "'.$in.'"'."\n";
-		echo "message type: $mt\n";
-		echo "mode: $mode\n";
 
-  	$tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
-		switch ($mt) {
-			case 'proto3':
-				break;
-			case 'proto2':
-		  	$tm = new \protobuf_test_messages\proto2\TestAllTypesProto2();
-				break;
-			default:
-				die("unsupported message type $mt");
-		}
+    $mode = "proto:proto";
+    if ($argv[2] != "") {
+      $mode = $argv[2];
+    }
+
+    $mt = "proto3";
+    if ($argv[3] != "") {
+      $mt = $argv[3];
+    }
+
+    echo "message type: $mt\n";
+    echo "mode: $mode\n";
+
+    $tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
+    switch ($mt) {
+      case 'proto3':
+        break;
+      case 'proto2':
+        $tm = new \protobuf_test_messages\proto2\TestAllTypesProto2();
+        break;
+      default:
+        die("unsupported message type $mt");
+    }
 
     switch ($mode) {
       case 'proto:proto':
@@ -106,19 +109,20 @@ function conformanceRaw(string $raw): string {
 function conformance(ConformanceRequest $creq): ConformanceResponse {
   $cresp = new ConformanceResponse();
 
-	p('message_type: ' . $creq->message_type);
+  p('message_type: '.$creq->message_type);
   $tm = new \protobuf_test_messages\proto3\TestAllTypesProto3();
-	switch ($creq->message_type) {
-		case 'protobuf_test_messages.proto3.TestAllTypesProto3':
-			break;
-		case 'protobuf_test_messages.proto2.TestAllTypesProto2':
-		  $tm = new \protobuf_test_messages\proto2\TestAllTypesProto2();
-			break;
-		default:
-	  	$cresp->result =
-      	new ConformanceResponse_skipped("unsupported message type: " . $creq->message_type);
-			return $cresp;
-	}
+  switch ($creq->message_type) {
+    case 'protobuf_test_messages.proto3.TestAllTypesProto3':
+      break;
+    case 'protobuf_test_messages.proto2.TestAllTypesProto2':
+      $tm = new \protobuf_test_messages\proto2\TestAllTypesProto2();
+      break;
+    default:
+      $cresp->result = new ConformanceResponse_skipped(
+        "unsupported message type: ".$creq->message_type,
+      );
+      return $cresp;
+  }
 
   $payload = "";
   $wfi = -1;
@@ -154,7 +158,12 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-function remarshal(\Protobuf\Message $tm, string $in, int $wfi, int $wfo): string {
+function remarshal(
+  \Protobuf\Message $tm,
+  string $in,
+  int $wfi,
+  int $wfo,
+): string {
   switch ($wfi) {
     case WireFormat::PROTOBUF:
       \Protobuf\Unmarshal($in, $tm);

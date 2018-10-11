@@ -10,5 +10,4 @@ include './conformance_strict.php';
   },
 );
 
-
 main($argv);
