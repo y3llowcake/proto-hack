@@ -87,8 +87,10 @@ func gen(req *ppb.CodeGeneratorRequest) *ppb.CodeGeneratorResponse {
 		case "plugin=grpc":
 			genService = true
 		case "allow_proto2_dangerous":
-			// proto2 is not fully supported. In particular the marshaling of default
-			// values is incorrectly handled.
+			// proto2 is not fully supported. In particular:
+			// - the marshaling of default values is handled like proto3.
+			// - custom default values are not supproted
+			// - possibly other things.
 			allowProto2 = true
 		default:
 			panic(fmt.Errorf("unsupported compiler option: '%s'", opt))
@@ -229,11 +231,11 @@ type field struct {
 	typePhpNs, typePhpName string
 	typeDescriptor         interface{}
 	typeNs                 *Namespace
-	typeEnumDefault        string
-	isMap                  bool
-	oneof                  *oneof
-	typeFqProtoName        string
-	syn                    syntax
+	// typeEnumDefault        string
+	isMap           bool
+	oneof           *oneof
+	typeFqProtoName string
+	syn             syntax
 }
 
 func newField(fd *desc.FieldDescriptorProto, ns *Namespace, syn syntax) *field {
@@ -252,14 +254,14 @@ func newField(fd *desc.FieldDescriptorProto, ns *Namespace, syn syntax) *field {
 				f.isMap = true
 			}
 		}
-		if ed, ok := f.typeDescriptor.(*desc.EnumDescriptorProto); ok {
+		/*if ed, ok := f.typeDescriptor.(*desc.EnumDescriptorProto); ok {
 			for _, v := range ed.Value {
 				if v.GetNumber() == 0 {
 					f.typeEnumDefault = v.GetName()
 					break
 				}
 			}
-		}
+		}*/
 	}
 
 	return f
@@ -316,7 +318,8 @@ func (f field) defaultValue() string {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		return "false"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return f.typePhpNs + "\\" + f.typePhpName + "::" + f.typeEnumDefault
+		// return f.typePhpNs + "\\" + f.typePhpName + "::" + f.typeEnumDefault
+		return f.typePhpNs + "\\" + f.typePhpName + "::XXX_FromInt(0)"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE,
 		desc.FieldDescriptorProto_TYPE_GROUP:
 		return "null"

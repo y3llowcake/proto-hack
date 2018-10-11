@@ -360,9 +360,9 @@ class example1 implements \Protobuf\Message {
     $this->abool = false;
     $this->astring = '';
     $this->abytes = '';
-    $this->aenum1 = \foo\bar\AEnum1::A;
-    $this->aenum2 = \foo\bar\example1_AEnum2::C;
-    $this->aenum22 = \fiz\baz\AEnum2::Z;
+    $this->aenum1 = \foo\bar\AEnum1::XXX_FromInt(0);
+    $this->aenum2 = \foo\bar\example1_AEnum2::XXX_FromInt(0);
+    $this->aenum22 = \fiz\baz\AEnum2::XXX_FromInt(0);
     $this->manystring = vec[];
     $this->manyint64 = vec[];
     $this->aexample2 = null;
@@ -548,15 +548,15 @@ class example1 implements \Protobuf\Message {
       $e->writeTag(15, 2);
       $e->writeString($this->abytes);
     }
-    if ($this->aenum1 !== \foo\bar\AEnum1::A) {
+    if ($this->aenum1 !== \foo\bar\AEnum1::XXX_FromInt(0)) {
       $e->writeTag(20, 0);
       $e->writeVarint($this->aenum1);
     }
-    if ($this->aenum2 !== \foo\bar\example1_AEnum2::C) {
+    if ($this->aenum2 !== \foo\bar\example1_AEnum2::XXX_FromInt(0)) {
       $e->writeTag(21, 0);
       $e->writeVarint($this->aenum2);
     }
-    if ($this->aenum22 !== \fiz\baz\AEnum2::Z) {
+    if ($this->aenum22 !== \fiz\baz\AEnum2::XXX_FromInt(0)) {
       $e->writeTag(22, 0);
       $e->writeVarint($this->aenum22);
     }
