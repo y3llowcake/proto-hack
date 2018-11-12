@@ -20,6 +20,13 @@ namespace Grpc {
     const Code Unavailable = 14;
     const Code DataLoss = 15;
     const Code Unauthenticated = 16;
+
+    public static function FromInt(int $code): Code {
+      if ($code < 0 || $code > 16) {
+        return \Grpc\Codes::Unknown;
+      }
+      return $code;
+    }
   }
 
   class GrpcException extends \Exception {
