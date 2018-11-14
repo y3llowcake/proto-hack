@@ -1,9 +1,14 @@
-all: bin
+all: compiler_lib
 
-bin: third_party
+compiler: third_party
 	cd protoc-gen-hack && go install
 
-typecheck: bin
+lib-gen:
+	$(MAKE) -C lib gen
+
+compiler_lib: compiler lib-gen
+
+typecheck: compiler_lib
 	$(MAKE) -C test gen
 	$(MAKE) -C conformance gen
 	hh_client

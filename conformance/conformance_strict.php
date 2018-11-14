@@ -2,17 +2,16 @@
 namespace conformance;
 
 include '../lib/protobuf.php';
-include 'gen-src/google/protobuf/any_proto.php';
-include 'gen-src/google/protobuf/duration_proto.php';
-include 'gen-src/google/protobuf/field_mask_proto.php';
-include 'gen-src/google/protobuf/struct_proto.php';
+include '../lib/wellknowntype/any_proto.php';
+include '../lib/wellknowntype/duration_proto.php';
+include '../lib/wellknowntype/field_mask_proto.php';
+include '../lib/wellknowntype/struct_proto.php';
+include '../lib/wellknowntype/timestamp_proto.php';
+include '../lib/wellknowntype/wrappers_proto.php';
+
 include 'gen-src/google/protobuf/test_messages_proto2_proto.php';
 include 'gen-src/google/protobuf/test_messages_proto3_proto.php';
-include 'gen-src/google/protobuf/timestamp_proto.php';
-include 'gen-src/google/protobuf/wrappers_proto.php';
-include
-  'gen-src/third_party/google/protobuf/conformance/conformance_proto.php'
-;
+include 'gen-src/third_party/google/protobuf/conformance/conformance_proto.php';
 
 # https://github.com/google/protobuf/blob/master/conformance/conformance_test_runner.cc
 # https://github.com/google/protobuf/blob/master/conformance/conformance.proto

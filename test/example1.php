@@ -1,8 +1,8 @@
 <?hh // partial
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
-include "../lib/wkt.php";
-include "../lib/wkt/any_proto.php";
+include "../lib/wellknowntype.php";
+include "../lib/wellknowntype/any_proto.php";
 include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
 include "./gen-src/example4_proto.php";
