@@ -19,6 +19,6 @@ go_binary(
 filegroup(
     name = "hack_library",
     srcs = glob([
-        "lib/*.php",
+        "lib/**/*.php",
     ]),
 )
