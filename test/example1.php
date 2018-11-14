@@ -174,22 +174,27 @@ function testAny(): void {
   $e1->astring = "Hello World!";
   $t1 = new AnyTest();
 
-  // Test marshaling.
-  $t1->any = Protobuf\AnyMarshal($e1);
-  assert($t1->any->type_url === 'type.googleapis.com/foo.bar.example1');
-  assert($t1->any->value === Protobuf\Marshal($e1));
+	// Test marshaling.
+	$t1->any = Protobuf\AnyMarshal($e1);
+	$any = $t1->any;
+	invariant($any != null, "");
+
+	assert($any->type_url === 'type.googleapis.com/foo.bar.example1');
+  assert($any->value === Protobuf\Marshal($e1));
 
   // Test utility function.
-  assert(Protobuf\AnyIs($t1->any, foo\bar\example1::class));
+	assert(Protobuf\AnyIs($t1->any, foo\bar\example1::class));
   assert(!Protobuf\AnyIs($t1->any, foo\bar\example2::class));
   assert(Protobuf\AnyMessageName($t1->any) === 'foo.bar.example1');
 
   // Test serde.
   $str = Protobuf\Marshal($t1);
   $t2 = new AnyTest();
-  Protobuf\Unmarshal($str, $t2);
-  assert($t2->any->type_url === $t1->any->type_url);
-  assert($t2->any->value === $t1->any->value);
+	Protobuf\Unmarshal($str, $t2);
+	$any2 = $t2->any;
+	invariant($any2 != null, "");
+  assert($any2->type_url === $any->type_url);
+  assert($any2->value === $any->value);
 
   // Test utility function.
   assert(Protobuf\AnyIs($t2->any, foo\bar\example1::class));
@@ -197,8 +202,8 @@ function testAny(): void {
   assert(Protobuf\AnyMessageName($t2->any) === 'foo.bar.example1');
 
   // Test unmarshaling
-  $e2 = new foo\bar\example1();
-  Protobuf\AnyUnmarshal($t2->any, $e2);
+	$e2 = new foo\bar\example1();
+  Protobuf\AnyUnmarshal($any2, $e2);
   assert($e2->astring === "Hello World!");
 }
 
