@@ -1,9 +1,12 @@
 <?hh // partial
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
+include "../lib/wkt.php";
+include "../lib/wkt/any_proto.php";
 include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
 include "./gen-src/example4_proto.php";
+include "./gen-src/exampleany_proto.php";
 
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got != $exp) {
@@ -165,6 +168,40 @@ function testReservedClassNames(): void {
   $n = new NotClass();
 }
 
+function testAny(): void {
+  // This should run without errors.
+  $e1 = new foo\bar\example1();
+	$e1->astring = "Hello World!";
+  $t1 = new AnyTest();
+
+	// Test marshaling.
+	$t1->any = Protobuf\AnyMarshal($e1);
+	assert($t1->any->type_url === 'type.googleapis.com/foo.bar.example1');
+	assert($t1->any->value === Protobuf\Marshal($e1));
+
+	// Test utility function.
+	assert(Protobuf\AnyIs($t1->any, foo\bar\example1::class));
+	assert(!Protobuf\AnyIs($t1->any, foo\bar\example2::class));
+	assert(Protobuf\AnyMessageName($t1->any) === 'foo.bar.example1');
+
+	// Test serde.
+	$str = Protobuf\Marshal($t1);
+	$t2 = new AnyTest();
+	Protobuf\Unmarshal($str, $t2);
+	assert($t2->any->type_url === $t1->any->type_url);
+	assert($t2->any->value === $t1->any->value);
+
+	// Test utility function.
+	assert(Protobuf\AnyIs($t2->any, foo\bar\example1::class));
+	assert(!Protobuf\AnyIs($t2->any, foo\bar\example2::class));
+	assert(Protobuf\AnyMessageName($t2->any) === 'foo.bar.example1');
+
+	// Test unmarshaling
+  $e2 = new foo\bar\example1();
+	Protobuf\AnyUnmarshal($t2->any, $e2);
+	assert($e2->astring === "Hello World!");
+}
+
 function test(): void {
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
@@ -196,6 +233,9 @@ function test(): void {
 
   // Reserved class names
   testReservedClassNames();
+
+	// Any
+	testAny();
 }
 
 set_time_limit(5);
