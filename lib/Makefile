@@ -1,5 +1,5 @@
 gen:
-	for proto in any duration field_mask struct timestamp wrappers; do \
+	for proto in any duration field_mask struct timestamp wrappers empty; do \
 		protoc -I ../third_party/google/protobuf/src/google/protobuf \
 		--hack_out=./wellknowntype \
 		../third_party/google/protobuf/src/google/protobuf/$$proto.proto; \
