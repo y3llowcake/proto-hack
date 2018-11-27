@@ -158,7 +158,7 @@ func (n *Namespace) FindFullyQualifiedName(fqn string) (string, string, interfac
 		panic("couldn't resolve name: " + fqn)
 	}
 	ns = strings.TrimSuffix(ns, ".")
-	return ns, name, i
+	return ns, escapeReservedName(name), i
 }
 
 func (n *Namespace) find(fqn string, checkParent bool) (string, string, interface{}) {

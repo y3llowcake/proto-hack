@@ -140,10 +140,35 @@ class NotClass implements \Protobuf\Message {
   }
 }
 
+class AndClient {
+  public function __construct(private \Grpc\ClientConn $cc) {
+  }
+
+  public async function throw(\Grpc\Context $ctx, \pb_Class $in, \Grpc\CallOption ...$co): Awaitable<\google\protobuf\pb_Empty> {
+    $out = new \google\protobuf\pb_Empty();
+    await $this->cc->Invoke($ctx, '/And/throw', $in, $out, ...$co);
+    return $out;
+  }
+}
+
+interface AndServer {
+  public function throw(\Grpc\Context $ctx, \pb_Class $in): \google\protobuf\pb_Empty;
+}
+
+function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
+  $methods = vec[];
+  $handler = function(\Grpc\Context $ctx, \Grpc\DecoderFunc $df): \Protobuf\Message use ($service) {
+    $in = new \pb_Class();
+    $df($in);
+    return $service->throw($ctx, $in);
+  };
+  $methods []= new \Grpc\MethodDesc('throw', $handler);
+  $server->RegisterService(new \Grpc\ServiceDesc('And', $methods));
+}
 
 class XXX_FileDescriptor_example4__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example4.proto';
-  const string RAW = 'eNp00b9OwzAQBnDf+Rzsa1yaY0Hij6pOsHQovAETDAx5g9CaqW2qJALejldDviYjW77c+afPMs/TT3M47dPz+tS1Q7u6Yfeyb/pehOnYHNI1LOEh1Pq9euTwehxS99lsk9yy2+ZN3ZhtirWeq88/V/fs39vhX+rtF7kQMmYO7BlKscYI3zGSESJTwKZa1qlP3VfaLb/bbtevmZktGRBLPvKMiQwasQ6FI7scSMghXXJ5ji4P/ZRArAtxSlasW1TMjARC3jCoDiDW+0p1yHoYdVA9oL9SAdAUeXgxJRAbfJySFRtGHYXKfMmsI4gt/UJ1zHocdVQ9YikqoHaPY3dUPY7dUfW4qD4KfbCnvwAAAP//QzgxnQ';
+  const string RAW = 'eNp00cGO0zAQBmB7xnHc323TThBCuwuqKg7sJQsFHgAhDnDg0Dfobr3LoW2qJFB4FN4W2UmO3PLHM5/+OJiH37vj+RA+VOem7uqr66e6fjqEu5Tufz7eheO5+9Mfrq+RfT7s2lYE5rQ7hhd6pd9Mtul5fYvJ11MXmsfdQ5AbZA9xMk34ja3S3rZ/uX4F973u/ktt3oI/nfZyi6z70dQXGdavnld9u2psV32J7dbq21+GFaPUMw0HPRVWSjABsRKm/DVegowSY5XTm+VqG9rQ/Ar71aVu9m0FAGyUFrZuBg9jFCnhnAQzZDEYMTnZAtM+ZvHQjUkL55PZmFg4XywBkNFioKY66VoLwy2TrqPuB10n3RPKJGhSNh7mY9LC3s3GxMJ+0EnMXC16nbTw3C2STlEvBp2SXtBckkCpezF0p6QXQ3dKetHrVomReJsA2zglzkfdppsp6WNcsf3Hl9aPiYTL6XJMLFzevLu36W+9/xcAAP//e3BPDg';
   public function Name(): string {
     return self::NAME;
   }
