@@ -33,8 +33,6 @@ In addition to generated code, you will need the library code in `/lib`.
 - Unsigned 64 bit integer types (e.g. uint64, fixed64) are represented using
 their signed counterparts, with the top bit simply being stored in the sign bit.
 (similar to java).
-- Any is not yet fully supported
 
 # Recommendations
 - Avoid unsigned 64 bit types (uint64, fixed64)
-- Avoid Any
