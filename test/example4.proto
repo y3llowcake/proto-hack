@@ -13,3 +13,7 @@ message Interface {
 message NotClass {
   string name = 1;
 }
+
+service And {
+  rpc throw(Class) returns (google.protobuf.Empty) {}
+}
