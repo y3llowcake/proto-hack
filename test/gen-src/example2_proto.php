@@ -123,12 +123,9 @@ class refexample3 implements \Protobuf\Message {
 class XXX_FileDescriptor_example2__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example2.proto';
   const string RAW =
-  'eNo0kctKA0EQRevRL6sn05MSUUREshKFLJIvcKELl1m6SyAR0TwIBnS+xw+V7qF3c+pWXc'
-  .'7Q0q5/ltvD13o2PRz333v1m49+ulr21zWYD8HkVkJdVRXT77fvV3iH93ZRviePEo/rTT3S'
-  .'G7Gb0+7zt+zEmZu+ZFoMw4ck7ul5d9rO1Aq+dfD6R+LUAHQoQbBRBlA5E2JQJn+Zh6RsQh'
-  .'IRMqDGQUARYQOo7EInUYwBAmVPYxmJzWDUeHIqzYA2h74SKvvQVGJln7rcbkGNQFPabd4S'
-  .'G3O7Le2RQj6xQ0EkrkTK0fmih2ra/CdZD1G5DedFD3NBIi16WPQStRdFAQlcDn0lVE5hVI'
-  .'mVUzdeufIW8/8AAAD//9+MMTY';
+  'eNri4kutSMwtyEk10isoyi/JF2JPy6zSS0qskoJJGEMklOS4OGBKhYS4WKryc9MlGBUYNV'
+  .'iDwGwlbS7uotQ0mCYhGS7WtNK87EqwGm4jNj03EC8IIqjFz8Xm6JpXmmskxMrFGCXAkMQG'
+  .'tsQYEAAA///mLCgg';
   public function Name(): string {
     return self::NAME;
   }

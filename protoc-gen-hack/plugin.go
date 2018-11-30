@@ -177,6 +177,9 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	w.p("class %s implements %s\\FileDescriptor {", fdClassName, libNsInternal)
 	w.p("const string NAME = '%s';", fdp.GetName())
 
+	// First clear out things we don't need.
+	fdp.SourceCodeInfo = nil
+
 	linelength := 70
 	raw := fdpToPhpString(fdp)
 	w.p("const string RAW =")
