@@ -168,7 +168,10 @@ function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
 
 class XXX_FileDescriptor_example4__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example4.proto';
-  const string RAW = 'eNp00cGO0zAQBmB7xnHc323TThBCuwuqKg7sJQsFHgAhDnDg0Dfobr3LoW2qJFB4FN4W2UmO3PLHM5/+OJiH37vj+RA+VOem7uqr66e6fjqEu5Tufz7eheO5+9Mfrq+RfT7s2lYE5rQ7hhd6pd9Mtul5fYvJ11MXmsfdQ5AbZA9xMk34ja3S3rZ/uX4F973u/ktt3oI/nfZyi6z70dQXGdavnld9u2psV32J7dbq21+GFaPUMw0HPRVWSjABsRKm/DVegowSY5XTm+VqG9rQ/Ar71aVu9m0FAGyUFrZuBg9jFCnhnAQzZDEYMTnZAtM+ZvHQjUkL55PZmFg4XywBkNFioKY66VoLwy2TrqPuB10n3RPKJGhSNh7mY9LC3s3GxMJ+0EnMXC16nbTw3C2STlEvBp2SXtBckkCpezF0p6QXQ3dKetHrVomReJsA2zglzkfdppsp6WNcsf3Hl9aPiYTL6XJMLFzevLu36W+9/xcAAP//e3BPDg';
+  const string RAW =
+  'eNri4kutSMwtyEk10Ssoyi/Jl5JOz89Pz0nVB/OSStP0U3MLSiohkkrSXKzOOYnFxUJCXC'
+  .'x5ibmpEowKjBqcQWC2kiYXp2deSWpRWmJyqpAMF2sySCVYBbcRmx5YXxBEUEmOi8MvvwSn'
+  .'UUYGXMyOeSlCmlysJRlF+eVCUO1SYnoQ1+nBXKfnCnKdEkMSG1jEGBAAAP//vs48Lg';
   public function Name(): string {
     return self::NAME;
   }

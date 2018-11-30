@@ -7,6 +7,7 @@ include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
 include "./gen-src/example4_proto.php";
 include "./gen-src/exampleany_proto.php";
+include "./gen-src/descriptor_proto.php";
 
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got != $exp) {
@@ -149,15 +150,23 @@ function testDescriptorReflection(): void {
   $fds = Protobuf\Internal\LoadedFileDescriptors();
   $names = array();
   foreach ($fds as $fd) {
-    $names[] = $fd->Name();
     $raw = $fd->FileDescriptorProtoBytes();
     if ($raw == false) {
       throw new \Exception('descriptor decode failed');
-    }
+		}
+		$dp = new google\protobuf\FileDescriptorProto();
+		Protobuf\Unmarshal($raw, $dp);
+		// print_r($dp);
+    $names[$fd->Name()] = $raw;
   }
-  if (!in_array('example1.proto', $names)) {
-    throw new \Exception('missing file descriptor for example1');
-  }
+  if (!$names['example1.proto']) {
+		throw new \Exception('missing file descriptor for example1');
+	}
+  $dp = new google\protobuf\FileDescriptorProto();
+	Protobuf\Unmarshal($names['example1.proto'], $dp);
+	if ($dp->package != 'foo.bar') {
+		throw new \Exception('descriptor proto for example1.proto has unexpected package: '. $dp->package);
+	}
 }
 
 function testReservedClassNames(): void {

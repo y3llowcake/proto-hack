@@ -176,7 +176,26 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	fdClassName = specialPrefix + "FileDescriptor_" + fdClassName
 	w.p("class %s implements %s\\FileDescriptor {", fdClassName, libNsInternal)
 	w.p("const string NAME = '%s';", fdp.GetName())
-	w.p("const string RAW = '%s';", toPhpString(fdp))
+
+	// First clear out things we don't need.
+	fdp.SourceCodeInfo = nil
+
+	linelength := 70
+	raw := fdpToPhpString(fdp)
+	w.p("const string RAW =")
+	for i := 0; i < len(raw); i += linelength {
+		prefix := "."
+		if i == 0 {
+			prefix = ""
+		}
+		suffix := ""
+		end := i + linelength
+		if end >= len(raw) {
+			end = len(raw)
+			suffix = ";"
+		}
+		w.p("%s'%s'%s", prefix, raw[i:end], suffix)
+	}
 	w.p("public function Name(): string {")
 	w.p("return self::NAME;")
 	w.p("}")
@@ -187,7 +206,7 @@ func writeFile(w *writer, fdp *desc.FileDescriptorProto, rootNs *Namespace, genS
 	w.p("}")
 }
 
-func toPhpString(fdp *desc.FileDescriptorProto) string {
+func fdpToPhpString(fdp *desc.FileDescriptorProto) string {
 	bfdp, err := proto.Marshal(fdp)
 	if err != nil {
 		panic(err)

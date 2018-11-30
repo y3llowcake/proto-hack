@@ -161,7 +161,10 @@ class Funky implements \Protobuf\Message {
 
 class XXX_FileDescriptor_example3__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'example3.proto';
-  const string RAW = 'eNpskkFLw0AQhXd2JpvN2yRtpz0UQZCC4CkH+xfEg9BL/4FisaW2KaJgb/502U1iLx6/eS/fYyGoN9/Ph9P7ZtmcPtrPdjGHe2iP+81Za9jtbk43dFes7Xa3eEP2+HXcn/UW7pAqKQz3VZPuzSod132o18he29iyqZU3nXfdXa/mcKt/h55+GE7FmJLgQaWyMQrAilGxRggAiyFl62sEiBhrlNmOUSGLICps7Rhlh1kM/UCkzEUYiJW5HiU7qbi4Ge1Eys5XKCFCbFRyW3D6hjgacsQxFylue1GMkHcoKl5yRT0csljAhUnZh+rCrOzHk/QSijbYWXoJJRf+lq1xMfQDkTKK0UCsDJ32FlIOdtpbSFSCxaxvkovhYIkvDUU9ECuHib649DMsfwMAAP//Mj0z+g';
+  const string RAW =
+  'eNri4kutSMwtyEk11isoyi/JV5LgYnPJz8tOrRTi42LKyJRgVGDU4AxiyshUSudidSvNy6'
+  .'4UUuViywUrAUtyG/HqgcX1fMGCQVBJIVku1pR8kComsCp2PYi5QRBRKQkuNl+sFiWxgV1i'
+  .'DAgAAP//iA4o6g';
   public function Name(): string {
     return self::NAME;
   }
