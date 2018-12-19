@@ -741,7 +741,7 @@ namespace Protobuf\Internal {
     }
 
     public static function readObject(mixed $m): dict<string, mixed> {
-      if (\is_dict($m)) {
+      if ($m is dict<_, _>) {
         $ret = dict[];
         foreach ($m as $k => $v) {
           $ret[(string)$k] = $v;
@@ -757,7 +757,7 @@ namespace Protobuf\Internal {
       $ret = vec[];
       if ($m === null)
         return $ret;
-      if (\is_vec($m)) {
+      if ($m is vec<_>) {
         foreach ($m as $v) {
           $ret[] = $v;
         }
@@ -771,7 +771,7 @@ namespace Protobuf\Internal {
     public static function readBytes(mixed $m): string {
       if ($m === null)
         return '';
-      if (is_string($m)) {
+      if ($m is string) {
         return self::decodeBytes($m);
       }
       throw new \Protobuf\ProtobufException(
@@ -784,7 +784,7 @@ namespace Protobuf\Internal {
       $b = \base64_decode(
         \str_pad(\strtr($d, '-_', '+/'), \strlen($d) % 4, '=', \STR_PAD_RIGHT),
       );
-      if (is_string($b))
+      if ($b is string)
         return $b;
       throw new \Protobuf\ProtobufException("base64 decode failed");
     }
@@ -792,7 +792,7 @@ namespace Protobuf\Internal {
     public static function readString(mixed $m): string {
       if ($m === null)
         return '';
-      if (is_string($m))
+      if ($m is string)
         return $m;
       throw new \Protobuf\ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
@@ -809,9 +809,9 @@ namespace Protobuf\Internal {
     private static function readInt(mixed $m, bool $signed, bool $b64): int {
       if ($m === null)
         return 0;
-      if (\is_int($m))
+      if ($m is int)
         return $m;
-      if (\is_string($m)) {
+      if ($m is string) {
         if ($m === '') {
           throw new \Protobuf\ProtobufException('empty integer string');
         }
@@ -843,7 +843,7 @@ namespace Protobuf\Internal {
 
         return \gmp_intval($mgmp);
       }
-      if (\is_float($m)) {
+      if ($m is float) {
         if (\fmod($m, 1) !== 0.00) {
           throw new \Protobuf\ProtobufException(
             'expected int got non integral float',
@@ -883,7 +883,7 @@ namespace Protobuf\Internal {
     public static function readFloat(mixed $m): float {
       if ($m === null)
         return 0.0;
-      if (is_string($m)) {
+      if ($m is string) {
         if ($m == "NaN")
           return \NAN;
         if ($m == "Infinity")
@@ -902,7 +902,7 @@ namespace Protobuf\Internal {
     public static function readBool(mixed $m): bool {
       if ($m === null)
         return false;
-      if (is_bool($m))
+      if ($m is bool)
         return $m;
       throw new \Protobuf\ProtobufException(
         \sprintf("expected bool got %s", \gettype($m)),
@@ -910,7 +910,7 @@ namespace Protobuf\Internal {
     }
 
     public static function readBoolMapKey(mixed $m): bool_map_key_t {
-      if (is_string($m)) {
+      if ($m is string) {
         if ($m === 'true')
           return $m;
         if ($m === 'false')
@@ -925,7 +925,7 @@ namespace Protobuf\Internal {
     public static function readDuration(mixed $m): (int, int) {
       if ($m === null)
         return tuple(0, 0);
-      if (is_string($m)) {
+      if ($m is string) {
         if (\substr($m, -1) != 's') {
           throw
             new \Protobuf\ProtobufException('duration missing trailing \'s\'');

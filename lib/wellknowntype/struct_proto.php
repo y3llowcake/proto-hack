@@ -17,8 +17,8 @@ abstract class NullValue {
     'NULL_VALUE' => 0,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_NullValue_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_NullValue_t {
@@ -129,7 +129,7 @@ class Struct implements \Protobuf\Message {
   }
 
   public function MergeJsonFrom(mixed $m): void {
-    if (\is_dict($m)) {
+    if ($m is dict<_,_>) {
       foreach ($m as $k => $vv) {
         $val = new \google\protobuf\Value();
         $val->MergeJsonFrom($vv);
@@ -339,17 +339,17 @@ class Value implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     if ($m === null) {
       $this->kind = new \google\protobuf\Value_null_value(\google\protobuf\NullValue::NULL_VALUE);
-    } else if (is_string($m)) {
+    } else if ($m is string) {
       $this->kind = new \google\protobuf\Value_string_value($m);
-    } else if (is_bool($m)) {
+    } else if ($m is bool) {
       $this->kind = new \google\protobuf\Value_bool_value($m);
     } else if (is_numeric($m)) {
       $this->kind = new \google\protobuf\Value_number_value((float)$m);
-    } else if (\is_vec($m)) {
+    } else if ($m is vec<_>) {
       $lv = new \google\protobuf\ListValue();
       $lv->MergeJsonFrom($m);
       $this->kind = new \google\protobuf\Value_list_value($lv);
-    } else if (\is_dict($m)) {
+    } else if ($m is dict<_,_>) {
       $struct = new \google\protobuf\Struct();
       $struct->MergeJsonFrom($m);
       $this->kind = new \google\protobuf\Value_struct_value($struct);
@@ -396,7 +396,7 @@ class ListValue implements \Protobuf\Message {
   }
 
   public function MergeJsonFrom(mixed $m): void {
-    if (\is_vec($m)) {
+    if ($m is vec<_>) {
       foreach ($m as $vv) {
         $val = new \google\protobuf\Value();
         $val->MergeJsonFrom($vv);

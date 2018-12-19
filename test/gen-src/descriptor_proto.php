@@ -764,8 +764,8 @@ abstract class FieldDescriptorProto_Type {
     'TYPE_SINT64' => 18,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_FieldDescriptorProto_Type_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_FieldDescriptorProto_Type_t {
@@ -792,8 +792,8 @@ abstract class FieldDescriptorProto_Label {
     'LABEL_REPEATED' => 3,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_FieldDescriptorProto_Label_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_FieldDescriptorProto_Label_t {
@@ -1493,8 +1493,8 @@ abstract class FileOptions_OptimizeMode {
     'LITE_RUNTIME' => 3,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_FileOptions_OptimizeMode_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_FileOptions_OptimizeMode_t {
@@ -1935,8 +1935,8 @@ abstract class FieldOptions_CType {
     'STRING_PIECE' => 2,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_FieldOptions_CType_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_FieldOptions_CType_t {
@@ -1963,8 +1963,8 @@ abstract class FieldOptions_JSType {
     'JS_NUMBER' => 2,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_FieldOptions_JSType_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_FieldOptions_JSType_t {
@@ -2376,8 +2376,8 @@ abstract class MethodOptions_IdempotencyLevel {
     'IDEMPOTENT' => 2,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_MethodOptions_IdempotencyLevel_t {
-    if (is_string($m)) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
-    if (is_int($m)) return $m;
+    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is int) return $m;
     return 0;
   }
   public static function XXX_FromInt(int $i): XXX_MethodOptions_IdempotencyLevel_t {
