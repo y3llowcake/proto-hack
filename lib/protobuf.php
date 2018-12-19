@@ -741,7 +741,7 @@ namespace Protobuf\Internal {
     }
 
     public static function readObject(mixed $m): dict<string, mixed> {
-			if ($m is dict<_,_>) {
+      if ($m is dict<_, _>) {
         $ret = dict[];
         foreach ($m as $k => $v) {
           $ret[(string)$k] = $v;
