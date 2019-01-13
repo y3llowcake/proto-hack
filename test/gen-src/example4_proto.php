@@ -157,9 +157,9 @@ interface AndServer {
 
 function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
   $methods = vec[];
-  $handler = function(\Grpc\Context $ctx, \Grpc\DecoderFunc $df): \Protobuf\Message use ($service) {
+  $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
     $in = new \pb_Class();
-    $df($in);
+    $u->Unmarshal($in);
     return $service->throw($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('throw', $handler);

@@ -783,9 +783,9 @@ interface ExampleServiceServer {
 
 function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer $service): void {
   $methods = vec[];
-  $handler = function(\Grpc\Context $ctx, \Grpc\DecoderFunc $df): \Protobuf\Message use ($service) {
+  $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
     $in = new \foo\bar\example1();
-    $df($in);
+    $u->Unmarshal($in);
     return $service->OneToTwo($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);

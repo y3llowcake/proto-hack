@@ -42,9 +42,18 @@ namespace Grpc {
     }
   }
 
-  interface CallOption {}
+  interface Metadata { // Copy-on-write immutable
+    // TODO fill this in. Maybe implement ConstMap?
+    public function GetFirst(string $k): ?string;
+  }
 
-  interface Context {}
+  interface Context { // Copy-on-write immutable.
+    public function IncomingMetadata(): Metadata;
+    public function WithTimeoutMicros(int $to): Context;
+    public function WithOugoingMetadata(Metadata $m): Context;
+  }
+
+  interface CallOption {}
 
   use \Protobuf\Message;
 
@@ -58,14 +67,25 @@ namespace Grpc {
     ): Awaitable<void>;
   }
 
-  type DecoderFunc = (function(Message): void);
-  function DefaultDecoderFunc(string $raw): DecoderFunc {
-    return function(Message $m): void use ($raw) {
-      \Protobuf\Unmarshal($raw, $m);
-    };
+  interface Unmarshaller {
+    public function Unmarshal(Message $into): void;
   }
 
-  type MethodHandler = (function(Context, DecoderFunc): Message);
+  class BinaryUnmarshaller implements Unmarshaller {
+    public function __construct(private string $raw) {}
+    public function Unmarshal(Message $into): void {
+      \Protobuf\Unmarshal($this->raw, $into);
+    }
+  }
+
+  class JsonUnmarshaller implements Unmarshaller {
+    public function __construct(private string $raw) {}
+    public function Unmarshal(Message $into): void {
+      \Protobuf\UnmarshalJson($this->raw, $into);
+    }
+  }
+
+  type MethodHandler = (function(Context, Unmarshaller): Message);
 
   class MethodDesc {
     public function __construct(
@@ -81,11 +101,29 @@ namespace Grpc {
     ) {}
   }
 
+  interface Interceptor {
+    public function Intercept(
+      Context $ctx,
+      string $service_name,
+      string $method_name,
+      Unmarshaller $unmarshaller,
+      MethodHandler $handler,
+    ): Message;
+    // Interceptors are responsible for returning $handler($unmarshaller, $handler);
+  }
+
   class Server {
     // A map from service names, to method names, to method handlers.
     protected dict<string, dict<string, MethodHandler>> $services;
+    protected ?Interceptor $interceptor;
+
     public function __construct() {
       $this->services = dict[];
+      $this->interceptor = null;
+    }
+
+    public function SetInterceptor(Interceptor $i): void {
+      $this->interceptor = $i;
     }
 
     public function RegisterService(ServiceDesc $sd): void {
@@ -117,7 +155,7 @@ namespace Grpc {
     public function Dispatch(
       Context $ctx,
       string $fqmethod,
-      DecoderFunc $dec,
+      Unmarshaller $unm,
     ): Message {
       list($service_name, $method_name) = Server::SplitFQMethod($fqmethod);
       if (!\array_key_exists($service_name, $this->services)) {
@@ -141,8 +179,12 @@ namespace Grpc {
           ),
         );
       }
-      $method = $service[$method_name];
-      return $method($ctx, $dec);
+      $handler = $service[$method_name];
+      if ($this->interceptor !== null) {
+        return $this->interceptor
+          ->Intercept($ctx, $service_name, $method_name, $unm, $handler);
+      }
+      return $handler($ctx, $unm);
     }
   }
 }
