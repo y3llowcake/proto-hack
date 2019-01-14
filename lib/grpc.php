@@ -50,7 +50,7 @@ namespace Grpc {
   interface Context { // Copy-on-write immutable.
     public function IncomingMetadata(): Metadata;
     public function WithTimeoutMicros(int $to): Context;
-    public function WithOugoingMetadata(Metadata $m): Context;
+    public function WithOutgoingMetadata(Metadata $m): Context;
   }
 
   interface CallOption {}
