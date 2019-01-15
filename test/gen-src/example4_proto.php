@@ -155,7 +155,7 @@ interface AndServer {
   public function throw(\Grpc\Context $ctx, \pb_Class $in): \google\protobuf\pb_Empty;
 }
 
-function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
+function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
   $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
     $in = new \pb_Class();
@@ -163,7 +163,11 @@ function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
     return $service->throw($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('throw', $handler);
-  $server->RegisterService(new \Grpc\ServiceDesc('And', $methods));
+  return new \Grpc\ServiceDesc('And', $methods);
+}
+
+function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
+  $server->RegisterService(AndServiceDescriptor($service));
 }
 
 class XXX_FileDescriptor_example4__proto implements \Protobuf\Internal\FileDescriptor {

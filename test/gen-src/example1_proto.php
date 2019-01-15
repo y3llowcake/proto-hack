@@ -781,7 +781,7 @@ interface ExampleServiceServer {
   public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \foo\bar\example2;
 }
 
-function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer $service): void {
+function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
   $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
     $in = new \foo\bar\example1();
@@ -789,7 +789,11 @@ function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer
     return $service->OneToTwo($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
-  $server->RegisterService(new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods));
+  return new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods);
+}
+
+function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer $service): void {
+  $server->RegisterService(ExampleServiceServiceDescriptor($service));
 }
 
 class XXX_FileDescriptor_example1__proto implements \Protobuf\Internal\FileDescriptor {

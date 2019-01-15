@@ -1299,7 +1299,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 	w.p("}")
 	w.ln()
 
-	w.p("function Register%sServer(\\Grpc\\Server $server, %sServer $service): void {", sdp.GetName(), sdp.GetName())
+	w.p("function %sServiceDescriptor(%sServer $service): \\Grpc\\ServiceDesc {", sdp.GetName(), sdp.GetName())
 	w.p("$methods = vec[];")
 	for _, m := range methods {
 		if m.isStreaming() && !isReflectionApi {
@@ -1311,8 +1311,13 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("return $service->%s($ctx, $in);", m.PhpName)
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
+		w.p("return new \\Grpc\\ServiceDesc('%s', $methods);", fqname)
 	}
-	w.p("$server->RegisterService(new \\Grpc\\ServiceDesc('%s', $methods));", fqname)
+	w.p("}")
+	w.ln()
+
+	w.p("function Register%sServer(\\Grpc\\Server $server, %sServer $service): void {", sdp.GetName(), sdp.GetName())
+	w.p("$server->RegisterService(%sServiceDescriptor($service));", sdp.GetName())
 	w.p("}")
 }
 
