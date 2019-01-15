@@ -1311,8 +1311,8 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("return $service->%s($ctx, $in);", m.PhpName)
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
-		w.p("return new \\Grpc\\ServiceDesc('%s', $methods);", fqname)
 	}
+	w.p("return new \\Grpc\\ServiceDesc('%s', $methods);", fqname)
 	w.p("}")
 	w.ln()
 
