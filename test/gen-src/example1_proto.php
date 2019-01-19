@@ -395,7 +395,7 @@ class example1 implements \Protobuf\Message {
           $this->auint32 = $d->readVarint32();
           break;
         case 6:
-          $this->auint64 = $d->readVarint32();
+          $this->auint64 = $d->readVarint();
           break;
         case 7:
           $this->asint32 = $d->readVarintZigZag32();
@@ -622,7 +622,7 @@ class example1 implements \Protobuf\Message {
     $e->writeInt32('aint32', 'aint32', $this->aint32, false);
     $e->writeInt64Signed('aint64', 'aint64', $this->aint64, false);
     $e->writeInt32('auint32', 'auint32', $this->auint32, false);
-    $e->writeInt32('auint64', 'auint64', $this->auint64, false);
+    $e->writeInt64Unsigned('auint64', 'auint64', $this->auint64, false);
     $e->writeInt32('asint32', 'asint32', $this->asint32, false);
     $e->writeInt64Signed('asint64', 'asint64', $this->asint64, false);
     $e->writeInt32('afixed32', 'afixed32', $this->afixed32, false);
@@ -668,7 +668,7 @@ class example1 implements \Protobuf\Message {
           $this->auint32 = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($v);
           break;
         case 'auint64':
-          $this->auint64 = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($v);
+          $this->auint64 = \Protobuf\Internal\JsonDecoder::readInt64Unsigned($v);
           break;
         case 'asint32':
           $this->asint32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
@@ -802,16 +802,16 @@ class XXX_FileDescriptor_example1__proto implements \Protobuf\Internal\FileDescr
   'eNpsVFFP2zwUrVvaJhcoxeKr/GWIWdUkDA9hcasOTdsDDCSkPWzy+APOcFG1Nq5Cyij/aP'
   .'9yih0nYfQpOeeec2PfHBt66kkulnMVhctUZxp3p1qHsUyD/++1vp+rM0PHq+mZTNZWEzgP'
   .'t3g4BM8xeAAdOUuyESeIItYWBRr+8UtRhAl05Z1exXNlVEg4aOzTuZYZaVLEmqJAtbatel'
-  .'vHT8ZkiyLWEgUyX1hZQ5sitiscLCuTMenUKoXnwXq6FLF94WBZmYyJRxHDwkEcgCensyd1'
-  .'N+LEp4h1RYmr2mRMgCLWESXGh+DLB2fcpojtiYqoVSdjskMR64uKwAfQlrHWc7JLEfOEBX'
-  .'aNWTpL7kmPIuYLB82M4nWmHsgeRWxHFAgfQ0eqZLWIyAFFrMf3wuLfhxfXOS2KMn5fCDn5'
-  .'zwhJKSzDYxy8cHB8Al37xsnA9Z49h7F8dkpXx0cAC5msi6Uf0RbzRY3JZ5EjO/23tMVaoi'
-  .'LwOfjSZY8witg2D16vzilEJcYRQAk4OTHW/X+tXNRELywjcuosxcY2WEb4DLbkQi7JiLbY'
-  .'Nn+zYXALubxOsnQtjBBzaOdPTsbGcbjZwa3FSvMR6lWmpzq9UymJzEGoMfgQPK2LAX/Ks3'
-  .'HTECWDB9DWepZk5HN+sm4awkJ8Cm2ZyGRNvpuNHoT2QgjdhRBeJPkKcknwrnYD1IKIXgQx'
-  .'+AB+uV3ch9YvtS4k+Wue60c5Xylz9H1hwcfmOQq+AlS73uA8rjs3/pOq2XAAHZtB3Ab0pd'
-  .'/IH1d9uPSgI3Wi9PTUKaK8dGEVl/0mv4LetW34Q6WPs58Kc/C+JepW3/7W+FV4ouB1noaN'
-  .'uGMGOPobAAD//28jews';
+  .'vHT8ZkiyLWEgUyX1hZQ5sitiscLCuTMelQxLaEg6byYD1diti+cLCsTMbEo4hh4SAOwJPT'
+  .'2ZO6G3HiU8S6osRVbTImQBHriBLjQ/DlgzNuU8T2REXUqpMx2aGI9UVF4ANoy1jrOdmliH'
+  .'nCArvGLJ0l96RHEfOFg2ZG8TpTD2SPIrYjCoSPoSNVslpE5IAi1uN7YfHvw4vrnBZFGb8v'
+  .'hJz8Z4SkFJbhMQ5eODg+ga5942Tges+ew1g+O6Wr4yOAhUzWxdKPaIv5osbks8iRnf5b2m'
+  .'ItURH4HHzpskcYRWybB69X5xSiEuMIoAScnBjr/r9WLmqiF5YROXWWYmMbLCN8BltyIZdk'
+  .'RFtsm7/ZMLiFXF4nWboWRog5tPMnJ2PjONzs4NZipfkI9SrTU53eqZRE5iDUGHwIntbFgD'
+  .'/l2bhpiJLBA2hrPUsy8jk/WTcNYSE+hbZMZLIm381GD0J7IYTuQggvknwFuSR4V7sBakFE'
+  .'L4IYfAC/3C7uQ+uXWheS/DXP9aOcr5Q5+r6w4GPzHAVfAapdb3Ae150b/0nVbDiAjs0gbg'
+  .'P60m/kj6s+XHrQkTpRenrqFFFeurCKy36TX0Hv2jb8odLH2U+FOXjfEnWrb39r/Co8UfA6'
+  .'T8NG3DEDHP0NAAD//0biewI';
   public function Name(): string {
     return self::NAME;
   }
