@@ -339,7 +339,7 @@ class example1 implements \Protobuf\Message {
   public ?\foo\bar\example2 $aexample22;
   public ?\fiz\baz\example2 $aexample23;
   public dict<string, string> $amap;
-  public dict<string, ?\fiz\baz\example2> $amap2;
+  public dict<string, \fiz\baz\example2> $amap2;
   public int $outoforder;
   public ?\google\protobuf\Any $anany;
   public example1_aoneof $aoneof;
@@ -469,7 +469,7 @@ class example1 implements \Protobuf\Message {
         case 52:
           $obj = new \foo\bar\example1_Amap2Entry();
           $obj->MergeFrom($d->readDecoder());
-          $this->amap2[$obj->key] = $obj->value;
+          $this->amap2[$obj->key] = $obj->value ?? new \fiz\baz\example2();
           break;
         case 60:
           $this->aoneof = new example1_oostring($d->readString());

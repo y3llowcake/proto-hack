@@ -88,7 +88,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
 }
 
 class Struct implements \Protobuf\Message {
-  public dict<string, ?\google\protobuf\Value> $fields;
+  public dict<string, \google\protobuf\Value> $fields;
 
   public function __construct() {
     $this->fields = dict[];
@@ -101,7 +101,7 @@ class Struct implements \Protobuf\Message {
         case 1:
           $obj = new \google\protobuf\Struct_FieldsEntry();
           $obj->MergeFrom($d->readDecoder());
-          $this->fields[$obj->key] = $obj->value;
+          $this->fields[$obj->key] = $obj->value ?? new \google\protobuf\Value();
           break;
         default:
           $d->skipWireType($wt);

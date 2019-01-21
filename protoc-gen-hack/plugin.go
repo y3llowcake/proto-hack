@@ -360,7 +360,7 @@ func (f field) labeledType() string {
 		if f.isMapWithBoolKey() {
 			kt = fmt.Sprintf("%s\\bool_map_key_t", libNsInternal)
 		}
-		return fmt.Sprintf("dict<%s, %s>", kt, v.labeledType())
+		return fmt.Sprintf("dict<%s, %s>", kt, v.phpType())
 	}
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
@@ -422,7 +422,12 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 		if f.isMapWithBoolKey() {
 			k = fmt.Sprintf("%s\\BoolMapKey::FromBool($obj->key)", libNs)
 		}
-		w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
+		_, vv := f.mapFields()
+		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+			w.p("$this->%s[%s] = $obj->value ?? new %s();", f.varName(), k, vv.phpType())
+		} else {
+			w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
+		}
 		return
 	}
 	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
