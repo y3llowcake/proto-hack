@@ -21,6 +21,38 @@ namespace Grpc {
     const Code DataLoss = 15;
     const Code Unauthenticated = 16;
 
+    public static function Name(Code $code): string {
+      switch ($code) {
+        case Codes::OK:
+          return "OK";
+        case Codes::Canceled:
+          return "Canceld";
+        case Codes::InvalidArgument:
+          return "InvalidArgument";
+        case Codes::DeadlineExceeded:
+          return "DeadlineExceeded";
+        case Codes::NotFound:
+          return "NotFound";
+        case Codes::AlreadyExists:
+          return "AlreadyExists";
+        case Codes::PermissionDenied:
+          return "PermissionDenied";
+        case Codes::FailedPrecondition:
+          return "FailedPrecondition";
+        case Codes::Aborted:
+          return "Aborted";
+        case Codes::OutOfRange:
+          return "OutOfRange";
+        case Codes::Unimplemented:
+          return "Unimplemented";
+        case Codes::DataLoss:
+          return "DataLoss";
+        case Codes::Unauthenticated:
+          return "Unauthenticated";
+      }
+      return "Unknown";
+    }
+
     public static function FromInt(int $code): Code {
       if ($code < 0 || $code > 16) {
         return \Grpc\Codes::Unknown;
@@ -34,7 +66,12 @@ namespace Grpc {
     public string $grpc_message;
     public function __construct(Code $code, string $message) {
       parent::__construct(
-        \sprintf("grpc exception: %d; %s", $code, $message),
+        \sprintf(
+          "grpc exception: %s (%d); %s",
+          Codes::Name($code),
+          $code,
+          $message,
+        ),
         $code,
       );
       $this->grpc_code = $code;
