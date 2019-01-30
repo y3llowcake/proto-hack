@@ -46,7 +46,7 @@ function testVarintZigZag64(int $dec, string $enc): void {
   a((string)$e, $enc, "write varint zigzag 64");
 }
 
-function testLittleEndianInt32Signed(int $dec, string $enc):void {
+function testLittleEndianInt32Signed(int $dec, string $enc): void {
   $d = Decoder::FromString($enc);
   a($d->readLittleEndianInt32Signed(), $dec, "read le int32");
   $e = new Encoder();
@@ -54,7 +54,7 @@ function testLittleEndianInt32Signed(int $dec, string $enc):void {
   a((string)$e, $enc, "write le int32");
 }
 
-function testLittleEndianInt64(int $dec, string $enc):void {
+function testLittleEndianInt64(int $dec, string $enc): void {
   $d = Decoder::FromString($enc);
   a($d->readLittleEndianInt64(), $dec, "read le int64");
   $e = new Encoder();
