@@ -1,4 +1,4 @@
-<?hh // partial
+<?hh // strict
 namespace Protobuf\Internal;
 include "protobuf.php";
 
@@ -62,9 +62,10 @@ function testLittleEndianInt64(int $dec, string $enc) {
   a((string)$e, $enc, "write le int64");
 }
 
-// TODO all the read write funcs.
+<<__Entrypoint>>
+function main(): void {
+  AssertEndiannessAndIntSize();
 
-function test(): void {
   // Varint 128
   testVarint(0, cat(0x0));
   testVarint(3, cat(0x3));
@@ -105,6 +106,3 @@ function test(): void {
     cat(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF),
   );
 }
-
-AssertEndiannessAndIntSize();
-test();
