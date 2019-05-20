@@ -937,7 +937,7 @@ namespace Protobuf\Internal {
         if (\count($parts) == 2) {
           $sns = \str_pad($parts[1], 9, '0');
           $ns = (int)$sns;
-        } else if (\count($parts) > 0) {
+        } else if (\count($parts) > 2) {
           throw new \Protobuf\ProtobufException(\sprintf(
             'duration has wrong number of parts; got %d expected <= 2',
             \count($parts),
