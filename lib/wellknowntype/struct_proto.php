@@ -17,7 +17,7 @@ abstract class NullValue {
     'NULL_VALUE' => 0,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_NullValue_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
@@ -343,7 +343,7 @@ class Value implements \Protobuf\Message {
       $this->kind = new \google\protobuf\Value_string_value($m);
     } else if ($m is bool) {
       $this->kind = new \google\protobuf\Value_bool_value($m);
-    } else if (is_numeric($m)) {
+    } else if (\is_numeric($m)) {
       $this->kind = new \google\protobuf\Value_number_value((float)$m);
     } else if ($m is vec<_>) {
       $lv = new \google\protobuf\ListValue();

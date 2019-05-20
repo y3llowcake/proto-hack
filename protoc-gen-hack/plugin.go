@@ -706,7 +706,7 @@ func customMergeJson(w *writer, fqn, v string) bool {
 		w.p("$this->kind = new \\google\\protobuf\\Value_string_value(%s);", v)
 		w.p("} else if (%s is bool) {", v)
 		w.p("$this->kind = new \\google\\protobuf\\Value_bool_value(%s);", v)
-		w.p("} else if (is_numeric(%s)) {", v)
+		w.p("} else if (\\is_numeric(%s)) {", v)
 		w.p("$this->kind = new \\google\\protobuf\\Value_number_value((float)%s);", v)
 		w.p("} else if (%s is vec<_>) {", v)
 		w.p("$lv = new \\google\\protobuf\\ListValue();")
@@ -968,7 +968,7 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.p("];")
 
 	w.p("public static function XXX_FromMixed(mixed $m): %s {", typename)
-	w.p("if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);")
+	w.p("if ($m is string) return idx(self::$XXX_stoi, $m, \\is_numeric($m) ? ((int) $m) : 0);")
 	w.p("if ($m is int) return $m;")
 	w.p("return 0;")
 	w.p("}")

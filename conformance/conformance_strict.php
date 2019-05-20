@@ -131,7 +131,11 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   } else if ($creq->payload instanceof ConformanceRequest_json_payload) {
     $payload = $creq->payload->json_payload;
     $wfi = WireFormat::JSON;
-  }
+	} else {
+  	$cresp->result =
+    	new ConformanceResponse_skipped("unsupported input type");
+		return $cresp;
+	}
   $wfo = $creq->requested_output_format;
   try {
     switch ($wfo) {
@@ -144,7 +148,7 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
         $cresp->result = new ConformanceResponse_json_payload(
           remarshal($tm, $payload, $wfi, $wfo),
         );
-        break;
+				break;
       default:
         $cresp->result =
           new ConformanceResponse_skipped("unsupported output type");
@@ -171,7 +175,7 @@ function remarshal(
       \Protobuf\UnmarshalJson($in, $tm);
       break;
     default:
-      throw new \Exception('wtf');
+      throw new \Exception('unexpected wire format');
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {

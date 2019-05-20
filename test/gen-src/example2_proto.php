@@ -17,7 +17,7 @@ abstract class AEnum2 {
     'Z' => 0,
   ];
   public static function XXX_FromMixed(mixed $m): XXX_AEnum2_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, is_numeric($m) ? ((int) $m) : 0);
+    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }

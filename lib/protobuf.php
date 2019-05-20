@@ -844,7 +844,7 @@ namespace Protobuf\Internal {
         return \gmp_intval($mgmp);
       }
       if ($m is float) {
-        if (\fmod($m, 1) !== 0.00) {
+        if (\fmod($m, 1.0) !== 0.00) {
           throw new \Protobuf\ProtobufException(
             'expected int got non integral float',
           );
@@ -891,7 +891,7 @@ namespace Protobuf\Internal {
         if ($m == "-Infinity")
           return -\INF;
       }
-      if (is_numeric($m)) {
+      if (\is_numeric($m)) {
         return (float)$m;
       }
       throw new \Protobuf\ProtobufException(
