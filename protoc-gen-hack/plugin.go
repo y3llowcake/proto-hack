@@ -1135,6 +1135,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("public %s $%s;", oo.interfaceName, oo.name)
 	}
+	w.p("private string $%sskipped;", specialPrefix)
 	w.ln()
 
 	// Constructor.
@@ -1148,6 +1149,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("$this->%s = new %s();", oo.name, oo.notsetClass)
 	}
+	w.p("$this->%sskipped = '';", specialPrefix)
 	w.p("}")
 	w.ln()
 
@@ -1173,10 +1175,11 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("default:")
 	w.i++
 	w.pdebug("skipping unknown field:$fn wiretype:$wt")
-	w.p("$d->skipWireType($wt);")
+	w.p("$d->skip($fn, $wt);")
 	w.i--
 	w.p("}") // switch
 	w.p("}") // while
+	w.p("$this->%sskipped = $d->skippedRaw();", specialPrefix)
 	w.p("}") // function MergeFrom
 	w.ln()
 
@@ -1195,6 +1198,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("$this->%s->WriteTo($e);", oo.name)
 	}
+	w.p("$e->writeRaw($this->%sskipped);", specialPrefix)
 	w.p("}") // WriteToFunction
 	w.ln()
 

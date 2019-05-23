@@ -29,10 +29,12 @@ abstract class NullValue {
 class Struct_FieldsEntry implements \Protobuf\Message {
   public string $key;
   public ?\google\protobuf\Value $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->key = '';
     $this->value = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -47,9 +49,10 @@ class Struct_FieldsEntry implements \Protobuf\Message {
           $this->value->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -63,6 +66,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -89,9 +93,11 @@ class Struct_FieldsEntry implements \Protobuf\Message {
 
 class Struct implements \Protobuf\Message {
   public dict<string, \google\protobuf\Value> $fields;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->fields = dict[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -104,9 +110,10 @@ class Struct implements \Protobuf\Message {
           $this->fields[$obj->key] = $obj->value ?? new \google\protobuf\Value();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -118,6 +125,7 @@ class Struct implements \Protobuf\Message {
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -268,9 +276,11 @@ class Value_list_value implements Value_kind {
 
 class Value implements \Protobuf\Message {
   public Value_kind $kind;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->kind = new XXX_Value_kind_NOT_SET();
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -300,13 +310,15 @@ class Value implements \Protobuf\Message {
           $this->kind = new Value_list_value($obj);
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $this->kind->WriteTo($e);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -359,9 +371,11 @@ class Value implements \Protobuf\Message {
 
 class ListValue implements \Protobuf\Message {
   public vec<\google\protobuf\Value> $values;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->values = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -374,9 +388,10 @@ class ListValue implements \Protobuf\Message {
           $this->values []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -385,6 +400,7 @@ class ListValue implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

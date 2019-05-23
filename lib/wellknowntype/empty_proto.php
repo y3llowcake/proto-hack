@@ -5,8 +5,10 @@ namespace google\protobuf;
 // Source: empty.proto
 
 class pb_Empty implements \Protobuf\Message {
+  private string $XXX_skipped;
 
   public function __construct() {
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -14,12 +16,14 @@ class pb_Empty implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

@@ -5,9 +5,11 @@
 
 class pb_Class implements \Protobuf\Message {
   public string $name;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -18,9 +20,10 @@ class pb_Class implements \Protobuf\Message {
           $this->name = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -28,6 +31,7 @@ class pb_Class implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->name);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -49,9 +53,11 @@ class pb_Class implements \Protobuf\Message {
 
 class pb_Interface implements \Protobuf\Message {
   public ?\pb_Class $class;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->class = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -63,9 +69,10 @@ class pb_Interface implements \Protobuf\Message {
           $this->class->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -75,6 +82,7 @@ class pb_Interface implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -98,9 +106,11 @@ class pb_Interface implements \Protobuf\Message {
 
 class NotClass implements \Protobuf\Message {
   public string $name;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -111,9 +121,10 @@ class NotClass implements \Protobuf\Message {
           $this->name = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -121,6 +132,7 @@ class NotClass implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->name);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

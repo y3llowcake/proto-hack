@@ -5,9 +5,11 @@
 
 class AnyTest implements \Protobuf\Message {
   public ?\google\protobuf\Any $any;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->any = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -19,9 +21,10 @@ class AnyTest implements \Protobuf\Message {
           $this->any->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -31,6 +34,7 @@ class AnyTest implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -55,7 +59,9 @@ class AnyTest implements \Protobuf\Message {
 
 class XXX_FileDescriptor_exampleany__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'exampleany.proto';
-  const string RAW = 'eNo8zsFKAzEQxvGZzJisXyvqoGJFpfQgnlKsT7BXj+ILbCH2UpOiFczZF5ftsh5/fPOHwVn66T5229TlGnefZV9uZptSNtu0PGj9/b78nxZPCG2ub+lrbw+QLtdrnvPjZHURhyaOTWxzfe0PXn4Z3pSoYTTgqQmR4RhOyMSFBQxOydRTwys/b3ONACBKbOKbU0ygSo5MgrvHCY56qGlw/hzTgb4fL0exSbiajRKTcHu39ofHnv8CAAD//8IRKIs';
+  const string RAW =
+  'eNriEkitSMwtyElNzKvUKyjKL8mXkkzPz0/PSdUH85JK0/ThUkqGXOyOeZUhqcUlQmpczI'
+  .'l5lRKMCowa3EYiehA9ejA9eo55lUEgBUlsYCFjQAAAAP//K5EiUg';
   public function Name(): string {
     return self::NAME;
   }

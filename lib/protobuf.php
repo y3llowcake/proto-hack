@@ -77,10 +77,11 @@ namespace Protobuf\Internal {
       private string $buf,
       private int $offset,
       private int $len,
+      private Encoder $skipped,
     ) {}
 
     public static function FromString(string $buf): Decoder {
-      return new Decoder($buf, 0, \strlen($buf));
+      return new Decoder($buf, 0, \strlen($buf), new Encoder());
     }
 
     public function readVarint(): int {
@@ -196,7 +197,7 @@ namespace Protobuf\Internal {
           "buffer overrun while reading buffer: ".$size,
         );
       }
-      $buf = new Decoder($this->buf, $this->offset, $noff);
+      $buf = new Decoder($this->buf, $this->offset, $noff, new Encoder());
       $this->offset = $noff;
       return $buf;
     }
@@ -205,28 +206,30 @@ namespace Protobuf\Internal {
       return $this->offset >= $this->len;
     }
 
-    public function skipWireType(int $wt): void {
+    public function skip(int $fn, int $wt): void {
+      $this->skipped->writeTag($fn, $wt);
       switch ($wt) {
         case 0:
-          $this->readVarint(); // We could technically optimize this to skip.
+          $this->skipped->writeVarint($this->readVarint());
           break;
         case 1:
-          $this->offset += 8;
+          $this->skipped->writeRaw($this->readRaw(8));
           break;
         case 2:
-          $this->offset += $this->readVarint();
+          $this->skipped->writeString($this->readString());
           break;
         case 5:
-          $this->offset += 4;
+          $this->skipped->writeRaw($this->readRaw(4));
           break;
         default:
           throw new \Protobuf\ProtobufException(
             "encountered unknown wire type $wt during skip",
           );
       }
-      if ($this->offset > $this->len) { // Note: not EOF.
-        throw new \Protobuf\ProtobufException("buffer overrun after skip");
-      }
+    }
+
+    public function skippedRaw(): string {
+      return (string)$this->skipped;
     }
   }
 
@@ -280,6 +283,10 @@ namespace Protobuf\Internal {
 
     public function writeDouble(float $d): void {
       $this->buf .= \pack('d', $d);
+    }
+
+    public function writeRaw(string $s): void {
+      $this->buf .= $s;
     }
 
     public function writeString(string $s): void {

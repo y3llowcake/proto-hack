@@ -31,9 +31,11 @@ abstract class AEnum1 {
 
 class example2 implements \Protobuf\Message {
   public int $aint32;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->aint32 = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -44,9 +46,10 @@ class example2 implements \Protobuf\Message {
           $this->aint32 = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -54,6 +57,7 @@ class example2 implements \Protobuf\Message {
       $e->writeTag(1, 0);
       $e->writeVarint($this->aint32);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -153,9 +157,11 @@ class example1_ooint implements example1_aoneof {
 
 class example1_example2 implements \Protobuf\Message {
   public string $astring;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->astring = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -166,9 +172,10 @@ class example1_example2 implements \Protobuf\Message {
           $this->astring = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -176,6 +183,7 @@ class example1_example2 implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->astring);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -198,10 +206,12 @@ class example1_example2 implements \Protobuf\Message {
 class example1_AmapEntry implements \Protobuf\Message {
   public string $key;
   public string $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->key = '';
     $this->value = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -215,9 +225,10 @@ class example1_AmapEntry implements \Protobuf\Message {
           $this->value = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -229,6 +240,7 @@ class example1_AmapEntry implements \Protobuf\Message {
       $e->writeTag(2, 2);
       $e->writeString($this->value);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -255,10 +267,12 @@ class example1_AmapEntry implements \Protobuf\Message {
 class example1_Amap2Entry implements \Protobuf\Message {
   public string $key;
   public ?\fiz\baz\example2 $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->key = '';
     $this->value = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -273,9 +287,10 @@ class example1_Amap2Entry implements \Protobuf\Message {
           $this->value->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -289,6 +304,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -343,6 +359,7 @@ class example1 implements \Protobuf\Message {
   public int $outoforder;
   public ?\google\protobuf\Any $anany;
   public example1_aoneof $aoneof;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->adouble = 0.0;
@@ -373,6 +390,7 @@ class example1 implements \Protobuf\Message {
     $this->outoforder = 0;
     $this->anany = null;
     $this->aoneof = new XXX_example1_aoneof_NOT_SET();
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -482,9 +500,10 @@ class example1 implements \Protobuf\Message {
           $this->anany->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -614,6 +633,7 @@ class example1 implements \Protobuf\Message {
       $e->writeEncoder($nested, 80);
     }
     $this->aoneof->WriteTo($e);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
