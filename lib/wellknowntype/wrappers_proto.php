@@ -6,9 +6,11 @@ namespace google\protobuf;
 
 class DoubleValue implements \Protobuf\Message {
   public float $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0.0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -19,14 +21,16 @@ class DoubleValue implements \Protobuf\Message {
           $this->value = $d->readDouble();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 1);
     $e->writeDouble($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -40,9 +44,11 @@ class DoubleValue implements \Protobuf\Message {
 
 class FloatValue implements \Protobuf\Message {
   public float $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0.0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -53,14 +59,16 @@ class FloatValue implements \Protobuf\Message {
           $this->value = $d->readFloat();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 5);
     $e->writeFloat($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -74,9 +82,11 @@ class FloatValue implements \Protobuf\Message {
 
 class Int64Value implements \Protobuf\Message {
   public int $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -87,14 +97,16 @@ class Int64Value implements \Protobuf\Message {
           $this->value = $d->readVarint();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 0);
     $e->writeVarint($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -108,9 +120,11 @@ class Int64Value implements \Protobuf\Message {
 
 class UInt64Value implements \Protobuf\Message {
   public int $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -121,14 +135,16 @@ class UInt64Value implements \Protobuf\Message {
           $this->value = $d->readVarint();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 0);
     $e->writeVarint($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -142,9 +158,11 @@ class UInt64Value implements \Protobuf\Message {
 
 class Int32Value implements \Protobuf\Message {
   public int $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -155,14 +173,16 @@ class Int32Value implements \Protobuf\Message {
           $this->value = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 0);
     $e->writeVarint($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -176,9 +196,11 @@ class Int32Value implements \Protobuf\Message {
 
 class UInt32Value implements \Protobuf\Message {
   public int $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -189,14 +211,16 @@ class UInt32Value implements \Protobuf\Message {
           $this->value = $d->readVarint32();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 0);
     $e->writeVarint($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -210,9 +234,11 @@ class UInt32Value implements \Protobuf\Message {
 
 class BoolValue implements \Protobuf\Message {
   public bool $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = false;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -223,14 +249,16 @@ class BoolValue implements \Protobuf\Message {
           $this->value = $d->readBool();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 0);
     $e->writeBool($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -244,9 +272,11 @@ class BoolValue implements \Protobuf\Message {
 
 class StringValue implements \Protobuf\Message {
   public string $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -257,14 +287,16 @@ class StringValue implements \Protobuf\Message {
           $this->value = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 2);
     $e->writeString($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -278,9 +310,11 @@ class StringValue implements \Protobuf\Message {
 
 class BytesValue implements \Protobuf\Message {
   public string $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->value = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -291,14 +325,16 @@ class BytesValue implements \Protobuf\Message {
           $this->value = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $e->writeTag(1, 2);
     $e->writeString($this->value);
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

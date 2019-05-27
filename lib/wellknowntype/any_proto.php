@@ -7,10 +7,12 @@ namespace google\protobuf;
 class Any implements \Protobuf\Message {
   public string $type_url;
   public string $value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->type_url = '';
     $this->value = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -24,9 +26,10 @@ class Any implements \Protobuf\Message {
           $this->value = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -38,6 +41,7 @@ class Any implements \Protobuf\Message {
       $e->writeTag(2, 2);
       $e->writeString($this->value);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

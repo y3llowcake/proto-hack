@@ -6,9 +6,11 @@ namespace google\protobuf;
 
 class FileDescriptorSet implements \Protobuf\Message {
   public vec<\google\protobuf\FileDescriptorProto> $file;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->file = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -21,9 +23,10 @@ class FileDescriptorSet implements \Protobuf\Message {
           $this->file []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -32,6 +35,7 @@ class FileDescriptorSet implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -68,6 +72,7 @@ class FileDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\FileOptions $options;
   public ?\google\protobuf\SourceCodeInfo $source_code_info;
   public string $syntax;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
@@ -82,6 +87,7 @@ class FileDescriptorProto implements \Protobuf\Message {
     $this->options = null;
     $this->source_code_info = null;
     $this->syntax = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -149,9 +155,10 @@ class FileDescriptorProto implements \Protobuf\Message {
           $this->syntax = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -211,6 +218,7 @@ class FileDescriptorProto implements \Protobuf\Message {
       $e->writeTag(12, 2);
       $e->writeString($this->syntax);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -304,11 +312,13 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
   public int $start;
   public int $end;
   public ?\google\protobuf\ExtensionRangeOptions $options;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->start = 0;
     $this->end = 0;
     $this->options = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -326,9 +336,10 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
           $this->options->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -346,6 +357,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -378,10 +390,12 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
 class DescriptorProto_ReservedRange implements \Protobuf\Message {
   public int $start;
   public int $end;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->start = 0;
     $this->end = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -395,9 +409,10 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
           $this->end = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -409,6 +424,7 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->end);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -443,6 +459,7 @@ class DescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\MessageOptions $options;
   public vec<\google\protobuf\DescriptorProto_ReservedRange> $reserved_range;
   public vec<string> $reserved_name;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
@@ -455,6 +472,7 @@ class DescriptorProto implements \Protobuf\Message {
     $this->options = null;
     $this->reserved_range = vec[];
     $this->reserved_name = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -507,9 +525,10 @@ class DescriptorProto implements \Protobuf\Message {
           $this->reserved_name []= $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -562,6 +581,7 @@ class DescriptorProto implements \Protobuf\Message {
       $e->writeTag(10, 2);
       $e->writeString($elem);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -651,9 +671,11 @@ class DescriptorProto implements \Protobuf\Message {
 
 class ExtensionRangeOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -666,9 +688,10 @@ class ExtensionRangeOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -677,6 +700,7 @@ class ExtensionRangeOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -812,6 +836,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
   public int $oneof_index;
   public string $json_name;
   public ?\google\protobuf\FieldOptions $options;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
@@ -824,6 +849,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
     $this->oneof_index = 0;
     $this->json_name = '';
     $this->options = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -862,9 +888,10 @@ class FieldDescriptorProto implements \Protobuf\Message {
           $this->json_name = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -910,6 +937,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
       $e->writeTag(10, 2);
       $e->writeString($this->json_name);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -970,10 +998,12 @@ class FieldDescriptorProto implements \Protobuf\Message {
 class OneofDescriptorProto implements \Protobuf\Message {
   public string $name;
   public ?\google\protobuf\OneofOptions $options;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
     $this->options = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -988,9 +1018,10 @@ class OneofDescriptorProto implements \Protobuf\Message {
           $this->options->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1004,6 +1035,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1032,10 +1064,12 @@ class OneofDescriptorProto implements \Protobuf\Message {
 class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
   public int $start;
   public int $end;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->start = 0;
     $this->end = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1049,9 +1083,10 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
           $this->end = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1063,6 +1098,7 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->end);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1092,6 +1128,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\EnumOptions $options;
   public vec<\google\protobuf\EnumDescriptorProto_EnumReservedRange> $reserved_range;
   public vec<string> $reserved_name;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
@@ -1099,6 +1136,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
     $this->options = null;
     $this->reserved_range = vec[];
     $this->reserved_name = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1126,9 +1164,10 @@ class EnumDescriptorProto implements \Protobuf\Message {
           $this->reserved_name []= $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1156,6 +1195,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
       $e->writeTag(5, 2);
       $e->writeString($elem);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1207,11 +1247,13 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
   public string $name;
   public int $number;
   public ?\google\protobuf\EnumValueOptions $options;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
     $this->number = 0;
     $this->options = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1229,9 +1271,10 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
           $this->options->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1249,6 +1292,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1282,11 +1326,13 @@ class ServiceDescriptorProto implements \Protobuf\Message {
   public string $name;
   public vec<\google\protobuf\MethodDescriptorProto> $method;
   public ?\google\protobuf\ServiceOptions $options;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
     $this->method = vec[];
     $this->options = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1306,9 +1352,10 @@ class ServiceDescriptorProto implements \Protobuf\Message {
           $this->options->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1327,6 +1374,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1367,6 +1415,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\MethodOptions $options;
   public bool $client_streaming;
   public bool $server_streaming;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = '';
@@ -1375,6 +1424,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
     $this->options = null;
     $this->client_streaming = false;
     $this->server_streaming = false;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1401,9 +1451,10 @@ class MethodDescriptorProto implements \Protobuf\Message {
           $this->server_streaming = $d->readBool();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1433,6 +1484,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
       $e->writeTag(6, 0);
       $e->writeBool($this->server_streaming);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1524,6 +1576,7 @@ class FileOptions implements \Protobuf\Message {
   public string $php_metadata_namespace;
   public string $ruby_package;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->java_package = '';
@@ -1547,6 +1600,7 @@ class FileOptions implements \Protobuf\Message {
     $this->php_metadata_namespace = '';
     $this->ruby_package = '';
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1619,9 +1673,10 @@ class FileOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1710,6 +1765,7 @@ class FileOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1819,6 +1875,7 @@ class MessageOptions implements \Protobuf\Message {
   public bool $deprecated;
   public bool $map_entry;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->message_set_wire_format = false;
@@ -1826,6 +1883,7 @@ class MessageOptions implements \Protobuf\Message {
     $this->deprecated = false;
     $this->map_entry = false;
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1850,9 +1908,10 @@ class MessageOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1877,6 +1936,7 @@ class MessageOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1980,6 +2040,7 @@ class FieldOptions implements \Protobuf\Message {
   public bool $deprecated;
   public bool $weak;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->ctype = \google\protobuf\FieldOptions_CType::XXX_FromInt(0);
@@ -1989,6 +2050,7 @@ class FieldOptions implements \Protobuf\Message {
     $this->deprecated = false;
     $this->weak = false;
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2019,9 +2081,10 @@ class FieldOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2054,6 +2117,7 @@ class FieldOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2103,9 +2167,11 @@ class FieldOptions implements \Protobuf\Message {
 
 class OneofOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2118,9 +2184,10 @@ class OneofOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2129,6 +2196,7 @@ class OneofOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2156,11 +2224,13 @@ class EnumOptions implements \Protobuf\Message {
   public bool $allow_alias;
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->allow_alias = false;
     $this->deprecated = false;
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2179,9 +2249,10 @@ class EnumOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2198,6 +2269,7 @@ class EnumOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2232,10 +2304,12 @@ class EnumOptions implements \Protobuf\Message {
 class EnumValueOptions implements \Protobuf\Message {
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->deprecated = false;
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2251,9 +2325,10 @@ class EnumValueOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2266,6 +2341,7 @@ class EnumValueOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2296,10 +2372,12 @@ class EnumValueOptions implements \Protobuf\Message {
 class ServiceOptions implements \Protobuf\Message {
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->deprecated = false;
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2315,9 +2393,10 @@ class ServiceOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2330,6 +2409,7 @@ class ServiceOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2389,11 +2469,13 @@ class MethodOptions implements \Protobuf\Message {
   public bool $deprecated;
   public \google\protobuf\XXX_MethodOptions_IdempotencyLevel_t $idempotency_level;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->deprecated = false;
     $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt(0);
     $this->uninterpreted_option = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2412,9 +2494,10 @@ class MethodOptions implements \Protobuf\Message {
           $this->uninterpreted_option []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2431,6 +2514,7 @@ class MethodOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2465,10 +2549,12 @@ class MethodOptions implements \Protobuf\Message {
 class UninterpretedOption_NamePart implements \Protobuf\Message {
   public string $name_part;
   public bool $is_extension;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name_part = '';
     $this->is_extension = false;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2482,9 +2568,10 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
           $this->is_extension = $d->readBool();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2496,6 +2583,7 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeBool($this->is_extension);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2527,6 +2615,7 @@ class UninterpretedOption implements \Protobuf\Message {
   public float $double_value;
   public string $string_value;
   public string $aggregate_value;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->name = vec[];
@@ -2536,6 +2625,7 @@ class UninterpretedOption implements \Protobuf\Message {
     $this->double_value = 0.0;
     $this->string_value = '';
     $this->aggregate_value = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2566,9 +2656,10 @@ class UninterpretedOption implements \Protobuf\Message {
           $this->aggregate_value = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2601,6 +2692,7 @@ class UninterpretedOption implements \Protobuf\Message {
       $e->writeTag(8, 2);
       $e->writeString($this->aggregate_value);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2654,6 +2746,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
   public string $leading_comments;
   public string $trailing_comments;
   public vec<string> $leading_detached_comments;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->path = vec[];
@@ -2661,6 +2754,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
     $this->leading_comments = '';
     $this->trailing_comments = '';
     $this->leading_detached_comments = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2697,9 +2791,10 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
           $this->leading_detached_comments []= $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2725,6 +2820,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
       $e->writeTag(6, 2);
       $e->writeString($elem);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2768,9 +2864,11 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
 
 class SourceCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\SourceCodeInfo_Location> $location;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->location = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2783,9 +2881,10 @@ class SourceCodeInfo implements \Protobuf\Message {
           $this->location []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2794,6 +2893,7 @@ class SourceCodeInfo implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2822,12 +2922,14 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
   public string $source_file;
   public int $begin;
   public int $end;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->path = vec[];
     $this->source_file = '';
     $this->begin = 0;
     $this->end = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2854,9 +2956,10 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
           $this->end = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2877,6 +2980,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
       $e->writeTag(4, 0);
       $e->writeVarint($this->end);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2912,9 +3016,11 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
 
 class GeneratedCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\GeneratedCodeInfo_Annotation> $annotation;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->annotation = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2927,9 +3033,10 @@ class GeneratedCodeInfo implements \Protobuf\Message {
           $this->annotation []= $obj;
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2938,6 +3045,7 @@ class GeneratedCodeInfo implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

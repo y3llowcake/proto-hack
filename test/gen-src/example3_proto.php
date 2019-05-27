@@ -5,9 +5,11 @@
 
 class Donkey implements \Protobuf\Message {
   public string $hi;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->hi = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -18,9 +20,10 @@ class Donkey implements \Protobuf\Message {
           $this->hi = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -28,6 +31,7 @@ class Donkey implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->hi);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -49,9 +53,11 @@ class Donkey implements \Protobuf\Message {
 
 class Funky_Monkey implements \Protobuf\Message {
   public string $hi;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->hi = '';
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -62,9 +68,10 @@ class Funky_Monkey implements \Protobuf\Message {
           $this->hi = $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -72,6 +79,7 @@ class Funky_Monkey implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->hi);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -94,10 +102,12 @@ class Funky_Monkey implements \Protobuf\Message {
 class Funky implements \Protobuf\Message {
   public ?\Funky_Monkey $monkey;
   public ?\Donkey $dokey;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->monkey = null;
     $this->dokey = null;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -113,9 +123,10 @@ class Funky implements \Protobuf\Message {
           $this->dokey->MergeFrom($d->readDecoder());
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -131,6 +142,7 @@ class Funky implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

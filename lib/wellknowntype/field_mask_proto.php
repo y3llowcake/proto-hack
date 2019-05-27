@@ -6,9 +6,11 @@ namespace google\protobuf;
 
 class FieldMask implements \Protobuf\Message {
   public vec<string> $paths;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->paths = vec[];
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -19,9 +21,10 @@ class FieldMask implements \Protobuf\Message {
           $this->paths []= $d->readString();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -29,6 +32,7 @@ class FieldMask implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($elem);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

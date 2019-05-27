@@ -18,7 +18,6 @@ Required.DurationProtoInputTooSmall.JsonOutput
 Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED32.ProtobufOutput
 Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.FIXED64.ProtobufOutput
 Required.Proto2.ProtobufInput.RepeatedScalarSelectsLast.UINT64.ProtobufOutput
-Required.Proto2.ProtobufInput.UnknownVarint.ProtobufOutput
 Required.Proto3.JsonInput.Any.JsonOutput
 Required.Proto3.JsonInput.Any.ProtobufOutput
 Required.Proto3.JsonInput.AnyNested.JsonOutput
@@ -71,6 +70,5 @@ Required.Proto3.JsonInput.TimestampWithPositiveOffset.JsonOutput
 Required.Proto3.JsonInput.TimestampWithPositiveOffset.ProtobufOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.JsonOutput
 Required.Proto3.JsonInput.Uint64FieldMaxValue.ProtobufOutput
-Required.Proto3.ProtobufInput.UnknownVarint.ProtobufOutput
 Required.TimestampProtoInputTooLarge.JsonOutput
 Required.TimestampProtoInputTooSmall.JsonOutput

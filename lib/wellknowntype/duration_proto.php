@@ -7,10 +7,12 @@ namespace google\protobuf;
 class Duration implements \Protobuf\Message {
   public int $seconds;
   public int $nanos;
+  private string $XXX_skipped;
 
   public function __construct() {
     $this->seconds = 0;
     $this->nanos = 0;
+    $this->XXX_skipped = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -24,9 +26,10 @@ class Duration implements \Protobuf\Message {
           $this->nanos = $d->readVarint32Signed();
           break;
         default:
-          $d->skipWireType($wt);
+          $d->skip($fn, $wt);
       }
     }
+    $this->XXX_skipped = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -38,6 +41,7 @@ class Duration implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->nanos);
     }
+    $e->writeRaw($this->XXX_skipped);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
