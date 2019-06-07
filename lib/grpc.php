@@ -26,7 +26,7 @@ namespace Grpc {
         case Codes::OK:
           return "OK";
         case Codes::Canceled:
-          return "Canceld";
+          return "Canceled";
         case Codes::InvalidArgument:
           return "InvalidArgument";
         case Codes::DeadlineExceeded:
@@ -35,6 +35,8 @@ namespace Grpc {
           return "NotFound";
         case Codes::AlreadyExists:
           return "AlreadyExists";
+        case Codes::ResourceExhausted:
+          return "ResourceExhausted";
         case Codes::PermissionDenied:
           return "PermissionDenied";
         case Codes::FailedPrecondition:
@@ -45,6 +47,10 @@ namespace Grpc {
           return "OutOfRange";
         case Codes::Unimplemented:
           return "Unimplemented";
+        case Codes::Internal:
+          return "Internal";
+        case Codes::Unavailable:
+          return "Unavailable";
         case Codes::DataLoss:
           return "DataLoss";
         case Codes::Unauthenticated:
