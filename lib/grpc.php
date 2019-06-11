@@ -144,28 +144,30 @@ namespace Grpc {
     ) {}
   }
 
-  interface Interceptor {
-    public function Intercept(
+  // TODO make this look more like standard APIs. (support chaining?)
+  // Interceptors are responsible for invoking and returning the result of:
+  // $handler($unmarshaller, $handler)
+  interface ServerInterceptor {
+    public function ServerIntercept(
       Context $ctx,
       string $service_name,
       string $method_name,
       Unmarshaller $unmarshaller,
       MethodHandler $handler,
     ): Message;
-    // Interceptors are responsible for returning $handler($unmarshaller, $handler);
   }
 
   class Server {
     // A map from service names, to method names, to method handlers.
     protected dict<string, dict<string, MethodHandler>> $services;
-    protected ?Interceptor $interceptor;
+    protected ?ServerInterceptor $interceptor;
 
     public function __construct() {
       $this->services = dict[];
       $this->interceptor = null;
     }
 
-    public function SetInterceptor(Interceptor $i): void {
+    public function SetInterceptor(ServerInterceptor $i): void {
       $this->interceptor = $i;
     }
 
@@ -225,7 +227,7 @@ namespace Grpc {
       $handler = $service[$method_name];
       if ($this->interceptor !== null) {
         return $this->interceptor
-          ->Intercept($ctx, $service_name, $method_name, $unm, $handler);
+          ->ServerIntercept($ctx, $service_name, $method_name, $unm, $handler);
       }
       return $handler($ctx, $unm);
     }
