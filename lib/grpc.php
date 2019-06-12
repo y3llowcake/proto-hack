@@ -85,16 +85,73 @@ namespace Grpc {
     }
   }
 
-  interface Metadata { // Copy-on-write immutable
-    // TODO fill this in. Maybe implement ConstMap?
-    public function GetFirst(string $k): ?string;
+  class Metadata { // Copy-on-write immutable
+    private function __construct( // Does not sanitize keys.
+      private dict<string, vec<string>> $m,
+    ) {}
+
+    public static function Empty(): Metadata {
+      return new Metadata(dict[]);
+    }
+
+    public static function FromDict(dict<string, vec<string>> $d): Metadata {
+      $nd = dict[];
+      foreach ($d as $k => $vs) {
+        $nd[\strtolower($k)] = $vs;
+      }
+      return new Metadata($nd);
+    }
+
+    public static function FromPair(string $k, string $v): Metadata {
+      $d = dict[\strtolower($k) => vec[$v]];
+      return new Metadata($d);
+    }
+
+    public static function Merge(Metadata $a, Metadata $b): Metadata {
+      $c = $a->copy();
+      foreach ($b->m as $k => $vs) {
+        $nvs = $c->m[$k] ?? vec[];
+        foreach ($vs as $v) {
+          $nvs[] = $v;
+        }
+        $c->m[$k] = $nvs;
+      }
+      return $c;
+    }
+
+    public function GetFirst(string $k): ?string {
+      $v = $this->m[\strtolower($k)] ?? vec[];
+      if (\count($v) > 0) {
+        return $v[0];
+      }
+      return null;
+    }
+
+    public function ToDict(): dict<string, vec<string>> {
+      return $this->m;
+    }
+
+    private function copy(): Metadata {
+      /*
+      $out = dict[];
+      foreach ($this->m as $k => $vs) {
+        $nvs = vec[];
+        foreach ($vs as $v) {
+          $nvs[] = $v;
+        }
+        $out[$k] = $nvs;
+      }
+      return new Metadata($out);
+			 */
+      return new Metadata($this->m);
+    }
   }
 
   interface Context { // Copy-on-write immutable.
     public function IncomingMetadata(): Metadata;
     public function WithTimeoutMicros(int $to): Context;
     public function WithOutgoingMetadata(Metadata $m): Context;
-  }
+	}
 
   interface CallOption {}
 
