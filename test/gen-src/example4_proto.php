@@ -153,12 +153,12 @@ class NotClass implements \Protobuf\Message {
 }
 
 class AndClient {
-  public function __construct(private \Grpc\ClientConn $cc) {
+  public function __construct(private \Grpc\Invoker $invoker) {
   }
 
   public async function throw(\Grpc\Context $ctx, \pb_Class $in, \Grpc\CallOption ...$co): Awaitable<\google\protobuf\pb_Empty> {
     $out = new \google\protobuf\pb_Empty();
-    await $this->cc->Invoke($ctx, '/And/throw', $in, $out, ...$co);
+    await $this->invoker->Invoke($ctx, '/And/throw', $in, $out, ...$co);
     return $out;
   }
 }

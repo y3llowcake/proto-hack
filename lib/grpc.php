@@ -166,7 +166,18 @@ namespace Grpc {
 
   use \Protobuf\Message;
 
-  interface ClientConn {
+  interface ClientInterceptor {
+    public function ClientIntercept(
+      Context $ctx,
+      string $method,
+      Message $in,
+			Message $out,
+			Invoker $invoker,
+      CallOption ...$co
+    ): Awaitable<void>;
+  }
+
+  interface Invoker {
     public function Invoke(
       Context $ctx,
       string $method,
