@@ -85,6 +85,15 @@ namespace Grpc {
     }
   }
 
+  // Only the following ASCII characters are allowed in keys:
+  //  - digits: 0-9
+  //  - uppercase letters: A-Z (normalized to lower)
+  //  - lowercase letters: a-z
+  //  - special characters: -_.
+  // Uppercase letters are automatically converted to lowercase.
+  //
+  // Keys beginning with "grpc-" are reserved for grpc-internal use only and may
+  // result in errors if set in metadata.
   class Metadata { // Copy-on-write immutable
     private function __construct( // Does not sanitize keys.
       private dict<string, vec<string>> $m,
@@ -142,7 +151,7 @@ namespace Grpc {
         $out[$k] = $nvs;
       }
       return new Metadata($out);
-			 */
+      			 */
       return new Metadata($this->m);
     }
   }
@@ -151,7 +160,7 @@ namespace Grpc {
     public function IncomingMetadata(): Metadata;
     public function WithTimeoutMicros(int $to): Context;
     public function WithOutgoingMetadata(Metadata $m): Context;
-	}
+  }
 
   interface CallOption {}
 
