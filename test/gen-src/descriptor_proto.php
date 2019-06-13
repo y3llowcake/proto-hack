@@ -6,13 +6,13 @@ namespace google\protobuf;
 
 class FileDescriptorSet implements \Protobuf\Message {
   public vec<\google\protobuf\FileDescriptorProto> $file;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'file' => vec<\google\protobuf\FileDescriptorProto>,
   ) $s = shape()) {
     $this->file = $s['file'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -28,7 +28,7 @@ class FileDescriptorSet implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -37,7 +37,7 @@ class FileDescriptorSet implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -74,7 +74,7 @@ class FileDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\FileOptions $options;
   public ?\google\protobuf\SourceCodeInfo $source_code_info;
   public string $syntax;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -102,7 +102,7 @@ class FileDescriptorProto implements \Protobuf\Message {
     $this->options = $s['options'] ?? null;
     $this->source_code_info = $s['source_code_info'] ?? null;
     $this->syntax = $s['syntax'] ?? '';
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -173,7 +173,7 @@ class FileDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -233,7 +233,7 @@ class FileDescriptorProto implements \Protobuf\Message {
       $e->writeTag(12, 2);
       $e->writeString($this->syntax);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -327,7 +327,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
   public int $start;
   public int $end;
   public ?\google\protobuf\ExtensionRangeOptions $options;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'start' => int,
@@ -337,7 +337,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
     $this->start = $s['start'] ?? 0;
     $this->end = $s['end'] ?? 0;
     $this->options = $s['options'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -358,7 +358,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -376,7 +376,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -409,7 +409,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
 class DescriptorProto_ReservedRange implements \Protobuf\Message {
   public int $start;
   public int $end;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'start' => int,
@@ -417,7 +417,7 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
   ) $s = shape()) {
     $this->start = $s['start'] ?? 0;
     $this->end = $s['end'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -434,7 +434,7 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -446,7 +446,7 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->end);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -481,7 +481,7 @@ class DescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\MessageOptions $options;
   public vec<\google\protobuf\DescriptorProto_ReservedRange> $reserved_range;
   public vec<string> $reserved_name;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -505,7 +505,7 @@ class DescriptorProto implements \Protobuf\Message {
     $this->options = $s['options'] ?? null;
     $this->reserved_range = $s['reserved_range'] ?? vec[];
     $this->reserved_name = $s['reserved_name'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -561,7 +561,7 @@ class DescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -614,7 +614,7 @@ class DescriptorProto implements \Protobuf\Message {
       $e->writeTag(10, 2);
       $e->writeString($elem);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -704,13 +704,13 @@ class DescriptorProto implements \Protobuf\Message {
 
 class ExtensionRangeOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
   ) $s = shape()) {
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -726,7 +726,7 @@ class ExtensionRangeOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -735,7 +735,7 @@ class ExtensionRangeOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -779,7 +779,7 @@ abstract class FieldDescriptorProto_Type {
   const FieldDescriptorProto_Type_enum_t TYPE_SFIXED64 = 16;
   const FieldDescriptorProto_Type_enum_t TYPE_SINT32 = 17;
   const FieldDescriptorProto_Type_enum_t TYPE_SINT64 = 18;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     1 => 'TYPE_DOUBLE',
     2 => 'TYPE_FLOAT',
     3 => 'TYPE_INT64',
@@ -799,10 +799,10 @@ abstract class FieldDescriptorProto_Type {
     17 => 'TYPE_SINT32',
     18 => 'TYPE_SINT64',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'TYPE_DOUBLE' => 1,
     'TYPE_FLOAT' => 2,
     'TYPE_INT64' => 3,
@@ -822,12 +822,12 @@ abstract class FieldDescriptorProto_Type {
     'TYPE_SINT32' => 17,
     'TYPE_SINT64' => 18,
   ];
-  public static function XXX_FromMixed(mixed $m): FieldDescriptorProto_Type_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): FieldDescriptorProto_Type_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): FieldDescriptorProto_Type_enum_t {
+  public static function FromInt(int $i): FieldDescriptorProto_Type_enum_t {
     return $i;
   }
 }
@@ -837,25 +837,25 @@ abstract class FieldDescriptorProto_Label {
   const FieldDescriptorProto_Label_enum_t LABEL_OPTIONAL = 1;
   const FieldDescriptorProto_Label_enum_t LABEL_REQUIRED = 2;
   const FieldDescriptorProto_Label_enum_t LABEL_REPEATED = 3;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     1 => 'LABEL_OPTIONAL',
     2 => 'LABEL_REQUIRED',
     3 => 'LABEL_REPEATED',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'LABEL_OPTIONAL' => 1,
     'LABEL_REQUIRED' => 2,
     'LABEL_REPEATED' => 3,
   ];
-  public static function XXX_FromMixed(mixed $m): FieldDescriptorProto_Label_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): FieldDescriptorProto_Label_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): FieldDescriptorProto_Label_enum_t {
+  public static function FromInt(int $i): FieldDescriptorProto_Label_enum_t {
     return $i;
   }
 }
@@ -871,7 +871,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
   public int $oneof_index;
   public string $json_name;
   public ?\google\protobuf\FieldOptions $options;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -887,15 +887,15 @@ class FieldDescriptorProto implements \Protobuf\Message {
   ) $s = shape()) {
     $this->name = $s['name'] ?? '';
     $this->number = $s['number'] ?? 0;
-    $this->label = $s['label'] ?? \google\protobuf\FieldDescriptorProto_Label::XXX_FromInt(0);
-    $this->type = $s['type'] ?? \google\protobuf\FieldDescriptorProto_Type::XXX_FromInt(0);
+    $this->label = $s['label'] ?? \google\protobuf\FieldDescriptorProto_Label::FromInt(0);
+    $this->type = $s['type'] ?? \google\protobuf\FieldDescriptorProto_Type::FromInt(0);
     $this->type_name = $s['type_name'] ?? '';
     $this->extendee = $s['extendee'] ?? '';
     $this->default_value = $s['default_value'] ?? '';
     $this->oneof_index = $s['oneof_index'] ?? 0;
     $this->json_name = $s['json_name'] ?? '';
     $this->options = $s['options'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -912,10 +912,10 @@ class FieldDescriptorProto implements \Protobuf\Message {
           $this->number = $d->readVarint32Signed();
           break;
         case 4:
-          $this->label = \google\protobuf\FieldDescriptorProto_Label::XXX_FromInt($d->readVarint());
+          $this->label = \google\protobuf\FieldDescriptorProto_Label::FromInt($d->readVarint());
           break;
         case 5:
-          $this->type = \google\protobuf\FieldDescriptorProto_Type::XXX_FromInt($d->readVarint());
+          $this->type = \google\protobuf\FieldDescriptorProto_Type::FromInt($d->readVarint());
           break;
         case 6:
           $this->type_name = $d->readString();
@@ -937,7 +937,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -953,11 +953,11 @@ class FieldDescriptorProto implements \Protobuf\Message {
       $e->writeTag(3, 0);
       $e->writeVarint($this->number);
     }
-    if ($this->label !== \google\protobuf\FieldDescriptorProto_Label::XXX_FromInt(0)) {
+    if ($this->label !== \google\protobuf\FieldDescriptorProto_Label::FromInt(0)) {
       $e->writeTag(4, 0);
       $e->writeVarint($this->label);
     }
-    if ($this->type !== \google\protobuf\FieldDescriptorProto_Type::XXX_FromInt(0)) {
+    if ($this->type !== \google\protobuf\FieldDescriptorProto_Type::FromInt(0)) {
       $e->writeTag(5, 0);
       $e->writeVarint($this->type);
     }
@@ -983,15 +983,15 @@ class FieldDescriptorProto implements \Protobuf\Message {
       $e->writeTag(10, 2);
       $e->writeString($this->json_name);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('name', 'name', $this->name, false);
     $e->writeString('extendee', 'extendee', $this->extendee, false);
     $e->writeInt32('number', 'number', $this->number, false);
-    $e->writeEnum('label', 'label', \google\protobuf\FieldDescriptorProto_Label::XXX_ItoS(), $this->label, false);
-    $e->writeEnum('type', 'type', \google\protobuf\FieldDescriptorProto_Type::XXX_ItoS(), $this->type, false);
+    $e->writeEnum('label', 'label', \google\protobuf\FieldDescriptorProto_Label::ToStringDict(), $this->label, false);
+    $e->writeEnum('type', 'type', \google\protobuf\FieldDescriptorProto_Type::ToStringDict(), $this->type, false);
     $e->writeString('type_name', 'typeName', $this->type_name, false);
     $e->writeString('default_value', 'defaultValue', $this->default_value, false);
     $e->writeMessage('options', 'options', $this->options, false);
@@ -1014,10 +1014,10 @@ class FieldDescriptorProto implements \Protobuf\Message {
           $this->number = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
         case 'label':
-          $this->label = \google\protobuf\FieldDescriptorProto_Label::XXX_FromMixed($v);
+          $this->label = \google\protobuf\FieldDescriptorProto_Label::FromMixed($v);
           break;
         case 'type':
-          $this->type = \google\protobuf\FieldDescriptorProto_Type::XXX_FromMixed($v);
+          $this->type = \google\protobuf\FieldDescriptorProto_Type::FromMixed($v);
           break;
         case 'type_name': case 'typeName':
           $this->type_name = \Protobuf\Internal\JsonDecoder::readString($v);
@@ -1044,7 +1044,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
 class OneofDescriptorProto implements \Protobuf\Message {
   public string $name;
   public ?\google\protobuf\OneofOptions $options;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -1052,7 +1052,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
   ) $s = shape()) {
     $this->name = $s['name'] ?? '';
     $this->options = $s['options'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1070,7 +1070,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1084,7 +1084,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1113,7 +1113,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
 class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
   public int $start;
   public int $end;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'start' => int,
@@ -1121,7 +1121,7 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
   ) $s = shape()) {
     $this->start = $s['start'] ?? 0;
     $this->end = $s['end'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1138,7 +1138,7 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1150,7 +1150,7 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->end);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1180,7 +1180,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\EnumOptions $options;
   public vec<\google\protobuf\EnumDescriptorProto_EnumReservedRange> $reserved_range;
   public vec<string> $reserved_name;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -1194,7 +1194,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
     $this->options = $s['options'] ?? null;
     $this->reserved_range = $s['reserved_range'] ?? vec[];
     $this->reserved_name = $s['reserved_name'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1225,7 +1225,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1253,7 +1253,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
       $e->writeTag(5, 2);
       $e->writeString($elem);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1305,7 +1305,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
   public string $name;
   public int $number;
   public ?\google\protobuf\EnumValueOptions $options;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -1315,7 +1315,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
     $this->name = $s['name'] ?? '';
     $this->number = $s['number'] ?? 0;
     $this->options = $s['options'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1336,7 +1336,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1354,7 +1354,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1388,7 +1388,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
   public string $name;
   public vec<\google\protobuf\MethodDescriptorProto> $method;
   public ?\google\protobuf\ServiceOptions $options;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -1398,7 +1398,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
     $this->name = $s['name'] ?? '';
     $this->method = $s['method'] ?? vec[];
     $this->options = $s['options'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1421,7 +1421,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1440,7 +1440,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 3);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1481,7 +1481,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\MethodOptions $options;
   public bool $client_streaming;
   public bool $server_streaming;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => string,
@@ -1497,7 +1497,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
     $this->options = $s['options'] ?? null;
     $this->client_streaming = $s['client_streaming'] ?? false;
     $this->server_streaming = $s['server_streaming'] ?? false;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1527,7 +1527,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1557,7 +1557,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
       $e->writeTag(6, 0);
       $e->writeBool($this->server_streaming);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -1604,25 +1604,25 @@ abstract class FileOptions_OptimizeMode {
   const FileOptions_OptimizeMode_enum_t SPEED = 1;
   const FileOptions_OptimizeMode_enum_t CODE_SIZE = 2;
   const FileOptions_OptimizeMode_enum_t LITE_RUNTIME = 3;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     1 => 'SPEED',
     2 => 'CODE_SIZE',
     3 => 'LITE_RUNTIME',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'SPEED' => 1,
     'CODE_SIZE' => 2,
     'LITE_RUNTIME' => 3,
   ];
-  public static function XXX_FromMixed(mixed $m): FileOptions_OptimizeMode_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): FileOptions_OptimizeMode_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): FileOptions_OptimizeMode_enum_t {
+  public static function FromInt(int $i): FileOptions_OptimizeMode_enum_t {
     return $i;
   }
 }
@@ -1649,7 +1649,7 @@ class FileOptions implements \Protobuf\Message {
   public string $php_metadata_namespace;
   public string $ruby_package;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'java_package' => string,
@@ -1679,7 +1679,7 @@ class FileOptions implements \Protobuf\Message {
     $this->java_multiple_files = $s['java_multiple_files'] ?? false;
     $this->java_generate_equals_and_hash = $s['java_generate_equals_and_hash'] ?? false;
     $this->java_string_check_utf8 = $s['java_string_check_utf8'] ?? false;
-    $this->optimize_for = $s['optimize_for'] ?? \google\protobuf\FileOptions_OptimizeMode::XXX_FromInt(0);
+    $this->optimize_for = $s['optimize_for'] ?? \google\protobuf\FileOptions_OptimizeMode::FromInt(0);
     $this->go_package = $s['go_package'] ?? '';
     $this->cc_generic_services = $s['cc_generic_services'] ?? false;
     $this->java_generic_services = $s['java_generic_services'] ?? false;
@@ -1695,7 +1695,7 @@ class FileOptions implements \Protobuf\Message {
     $this->php_metadata_namespace = $s['php_metadata_namespace'] ?? '';
     $this->ruby_package = $s['ruby_package'] ?? '';
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1709,7 +1709,7 @@ class FileOptions implements \Protobuf\Message {
           $this->java_outer_classname = $d->readString();
           break;
         case 9:
-          $this->optimize_for = \google\protobuf\FileOptions_OptimizeMode::XXX_FromInt($d->readVarint());
+          $this->optimize_for = \google\protobuf\FileOptions_OptimizeMode::FromInt($d->readVarint());
           break;
         case 10:
           $this->java_multiple_files = $d->readBool();
@@ -1771,7 +1771,7 @@ class FileOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -1783,7 +1783,7 @@ class FileOptions implements \Protobuf\Message {
       $e->writeTag(8, 2);
       $e->writeString($this->java_outer_classname);
     }
-    if ($this->optimize_for !== \google\protobuf\FileOptions_OptimizeMode::XXX_FromInt(0)) {
+    if ($this->optimize_for !== \google\protobuf\FileOptions_OptimizeMode::FromInt(0)) {
       $e->writeTag(9, 0);
       $e->writeVarint($this->optimize_for);
     }
@@ -1860,13 +1860,13 @@ class FileOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('java_package', 'javaPackage', $this->java_package, false);
     $e->writeString('java_outer_classname', 'javaOuterClassname', $this->java_outer_classname, false);
-    $e->writeEnum('optimize_for', 'optimizeFor', \google\protobuf\FileOptions_OptimizeMode::XXX_ItoS(), $this->optimize_for, false);
+    $e->writeEnum('optimize_for', 'optimizeFor', \google\protobuf\FileOptions_OptimizeMode::ToStringDict(), $this->optimize_for, false);
     $e->writeBool('java_multiple_files', 'javaMultipleFiles', $this->java_multiple_files, false);
     $e->writeString('go_package', 'goPackage', $this->go_package, false);
     $e->writeBool('cc_generic_services', 'ccGenericServices', $this->cc_generic_services, false);
@@ -1899,7 +1899,7 @@ class FileOptions implements \Protobuf\Message {
           $this->java_outer_classname = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
         case 'optimize_for': case 'optimizeFor':
-          $this->optimize_for = \google\protobuf\FileOptions_OptimizeMode::XXX_FromMixed($v);
+          $this->optimize_for = \google\protobuf\FileOptions_OptimizeMode::FromMixed($v);
           break;
         case 'java_multiple_files': case 'javaMultipleFiles':
           $this->java_multiple_files = \Protobuf\Internal\JsonDecoder::readBool($v);
@@ -1970,7 +1970,7 @@ class MessageOptions implements \Protobuf\Message {
   public bool $deprecated;
   public bool $map_entry;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'message_set_wire_format' => bool,
@@ -1984,7 +1984,7 @@ class MessageOptions implements \Protobuf\Message {
     $this->deprecated = $s['deprecated'] ?? false;
     $this->map_entry = $s['map_entry'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2012,7 +2012,7 @@ class MessageOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2037,7 +2037,7 @@ class MessageOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2082,25 +2082,25 @@ abstract class FieldOptions_CType {
   const FieldOptions_CType_enum_t STRING = 0;
   const FieldOptions_CType_enum_t CORD = 1;
   const FieldOptions_CType_enum_t STRING_PIECE = 2;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'STRING',
     1 => 'CORD',
     2 => 'STRING_PIECE',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'STRING' => 0,
     'CORD' => 1,
     'STRING_PIECE' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): FieldOptions_CType_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): FieldOptions_CType_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): FieldOptions_CType_enum_t {
+  public static function FromInt(int $i): FieldOptions_CType_enum_t {
     return $i;
   }
 }
@@ -2110,25 +2110,25 @@ abstract class FieldOptions_JSType {
   const FieldOptions_JSType_enum_t JS_NORMAL = 0;
   const FieldOptions_JSType_enum_t JS_STRING = 1;
   const FieldOptions_JSType_enum_t JS_NUMBER = 2;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'JS_NORMAL',
     1 => 'JS_STRING',
     2 => 'JS_NUMBER',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'JS_NORMAL' => 0,
     'JS_STRING' => 1,
     'JS_NUMBER' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): FieldOptions_JSType_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): FieldOptions_JSType_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): FieldOptions_JSType_enum_t {
+  public static function FromInt(int $i): FieldOptions_JSType_enum_t {
     return $i;
   }
 }
@@ -2141,7 +2141,7 @@ class FieldOptions implements \Protobuf\Message {
   public bool $deprecated;
   public bool $weak;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'ctype' => \google\protobuf\FieldOptions_CType_enum_t,
@@ -2152,14 +2152,14 @@ class FieldOptions implements \Protobuf\Message {
     ?'weak' => bool,
     ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
   ) $s = shape()) {
-    $this->ctype = $s['ctype'] ?? \google\protobuf\FieldOptions_CType::XXX_FromInt(0);
+    $this->ctype = $s['ctype'] ?? \google\protobuf\FieldOptions_CType::FromInt(0);
     $this->packed = $s['packed'] ?? false;
-    $this->jstype = $s['jstype'] ?? \google\protobuf\FieldOptions_JSType::XXX_FromInt(0);
+    $this->jstype = $s['jstype'] ?? \google\protobuf\FieldOptions_JSType::FromInt(0);
     $this->lazy = $s['lazy'] ?? false;
     $this->deprecated = $s['deprecated'] ?? false;
     $this->weak = $s['weak'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2167,7 +2167,7 @@ class FieldOptions implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->ctype = \google\protobuf\FieldOptions_CType::XXX_FromInt($d->readVarint());
+          $this->ctype = \google\protobuf\FieldOptions_CType::FromInt($d->readVarint());
           break;
         case 2:
           $this->packed = $d->readBool();
@@ -2179,7 +2179,7 @@ class FieldOptions implements \Protobuf\Message {
           $this->lazy = $d->readBool();
           break;
         case 6:
-          $this->jstype = \google\protobuf\FieldOptions_JSType::XXX_FromInt($d->readVarint());
+          $this->jstype = \google\protobuf\FieldOptions_JSType::FromInt($d->readVarint());
           break;
         case 10:
           $this->weak = $d->readBool();
@@ -2193,11 +2193,11 @@ class FieldOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
-    if ($this->ctype !== \google\protobuf\FieldOptions_CType::XXX_FromInt(0)) {
+    if ($this->ctype !== \google\protobuf\FieldOptions_CType::FromInt(0)) {
       $e->writeTag(1, 0);
       $e->writeVarint($this->ctype);
     }
@@ -2213,7 +2213,7 @@ class FieldOptions implements \Protobuf\Message {
       $e->writeTag(5, 0);
       $e->writeBool($this->lazy);
     }
-    if ($this->jstype !== \google\protobuf\FieldOptions_JSType::XXX_FromInt(0)) {
+    if ($this->jstype !== \google\protobuf\FieldOptions_JSType::FromInt(0)) {
       $e->writeTag(6, 0);
       $e->writeVarint($this->jstype);
     }
@@ -2226,15 +2226,15 @@ class FieldOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeEnum('ctype', 'ctype', \google\protobuf\FieldOptions_CType::XXX_ItoS(), $this->ctype, false);
+    $e->writeEnum('ctype', 'ctype', \google\protobuf\FieldOptions_CType::ToStringDict(), $this->ctype, false);
     $e->writeBool('packed', 'packed', $this->packed, false);
     $e->writeBool('deprecated', 'deprecated', $this->deprecated, false);
     $e->writeBool('lazy', 'lazy', $this->lazy, false);
-    $e->writeEnum('jstype', 'jstype', \google\protobuf\FieldOptions_JSType::XXX_ItoS(), $this->jstype, false);
+    $e->writeEnum('jstype', 'jstype', \google\protobuf\FieldOptions_JSType::ToStringDict(), $this->jstype, false);
     $e->writeBool('weak', 'weak', $this->weak, false);
     $e->writeMessageList('uninterpreted_option', 'uninterpretedOption', $this->uninterpreted_option);
   }
@@ -2245,7 +2245,7 @@ class FieldOptions implements \Protobuf\Message {
     foreach ($d as $k => $v) {
       switch ($k) {
         case 'ctype':
-          $this->ctype = \google\protobuf\FieldOptions_CType::XXX_FromMixed($v);
+          $this->ctype = \google\protobuf\FieldOptions_CType::FromMixed($v);
           break;
         case 'packed':
           $this->packed = \Protobuf\Internal\JsonDecoder::readBool($v);
@@ -2257,7 +2257,7 @@ class FieldOptions implements \Protobuf\Message {
           $this->lazy = \Protobuf\Internal\JsonDecoder::readBool($v);
           break;
         case 'jstype':
-          $this->jstype = \google\protobuf\FieldOptions_JSType::XXX_FromMixed($v);
+          $this->jstype = \google\protobuf\FieldOptions_JSType::FromMixed($v);
           break;
         case 'weak':
           $this->weak = \Protobuf\Internal\JsonDecoder::readBool($v);
@@ -2276,13 +2276,13 @@ class FieldOptions implements \Protobuf\Message {
 
 class OneofOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
   ) $s = shape()) {
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2298,7 +2298,7 @@ class OneofOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2307,7 +2307,7 @@ class OneofOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2335,7 +2335,7 @@ class EnumOptions implements \Protobuf\Message {
   public bool $allow_alias;
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'allow_alias' => bool,
@@ -2345,7 +2345,7 @@ class EnumOptions implements \Protobuf\Message {
     $this->allow_alias = $s['allow_alias'] ?? false;
     $this->deprecated = $s['deprecated'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2367,7 +2367,7 @@ class EnumOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2384,7 +2384,7 @@ class EnumOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2419,7 +2419,7 @@ class EnumOptions implements \Protobuf\Message {
 class EnumValueOptions implements \Protobuf\Message {
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'deprecated' => bool,
@@ -2427,7 +2427,7 @@ class EnumValueOptions implements \Protobuf\Message {
   ) $s = shape()) {
     $this->deprecated = $s['deprecated'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2446,7 +2446,7 @@ class EnumValueOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2459,7 +2459,7 @@ class EnumValueOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2490,7 +2490,7 @@ class EnumValueOptions implements \Protobuf\Message {
 class ServiceOptions implements \Protobuf\Message {
   public bool $deprecated;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'deprecated' => bool,
@@ -2498,7 +2498,7 @@ class ServiceOptions implements \Protobuf\Message {
   ) $s = shape()) {
     $this->deprecated = $s['deprecated'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2517,7 +2517,7 @@ class ServiceOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2530,7 +2530,7 @@ class ServiceOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2563,25 +2563,25 @@ abstract class MethodOptions_IdempotencyLevel {
   const MethodOptions_IdempotencyLevel_enum_t IDEMPOTENCY_UNKNOWN = 0;
   const MethodOptions_IdempotencyLevel_enum_t NO_SIDE_EFFECTS = 1;
   const MethodOptions_IdempotencyLevel_enum_t IDEMPOTENT = 2;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'IDEMPOTENCY_UNKNOWN',
     1 => 'NO_SIDE_EFFECTS',
     2 => 'IDEMPOTENT',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'IDEMPOTENCY_UNKNOWN' => 0,
     'NO_SIDE_EFFECTS' => 1,
     'IDEMPOTENT' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): MethodOptions_IdempotencyLevel_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): MethodOptions_IdempotencyLevel_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): MethodOptions_IdempotencyLevel_enum_t {
+  public static function FromInt(int $i): MethodOptions_IdempotencyLevel_enum_t {
     return $i;
   }
 }
@@ -2590,7 +2590,7 @@ class MethodOptions implements \Protobuf\Message {
   public bool $deprecated;
   public \google\protobuf\MethodOptions_IdempotencyLevel_enum_t $idempotency_level;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'deprecated' => bool,
@@ -2598,9 +2598,9 @@ class MethodOptions implements \Protobuf\Message {
     ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
   ) $s = shape()) {
     $this->deprecated = $s['deprecated'] ?? false;
-    $this->idempotency_level = $s['idempotency_level'] ?? \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt(0);
+    $this->idempotency_level = $s['idempotency_level'] ?? \google\protobuf\MethodOptions_IdempotencyLevel::FromInt(0);
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2611,7 +2611,7 @@ class MethodOptions implements \Protobuf\Message {
           $this->deprecated = $d->readBool();
           break;
         case 34:
-          $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt($d->readVarint());
+          $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::FromInt($d->readVarint());
           break;
         case 999:
           $obj = new \google\protobuf\UninterpretedOption();
@@ -2622,7 +2622,7 @@ class MethodOptions implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2630,7 +2630,7 @@ class MethodOptions implements \Protobuf\Message {
       $e->writeTag(33, 0);
       $e->writeBool($this->deprecated);
     }
-    if ($this->idempotency_level !== \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt(0)) {
+    if ($this->idempotency_level !== \google\protobuf\MethodOptions_IdempotencyLevel::FromInt(0)) {
       $e->writeTag(34, 0);
       $e->writeVarint($this->idempotency_level);
     }
@@ -2639,12 +2639,12 @@ class MethodOptions implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 999);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeBool('deprecated', 'deprecated', $this->deprecated, false);
-    $e->writeEnum('idempotency_level', 'idempotencyLevel', \google\protobuf\MethodOptions_IdempotencyLevel::XXX_ItoS(), $this->idempotency_level, false);
+    $e->writeEnum('idempotency_level', 'idempotencyLevel', \google\protobuf\MethodOptions_IdempotencyLevel::ToStringDict(), $this->idempotency_level, false);
     $e->writeMessageList('uninterpreted_option', 'uninterpretedOption', $this->uninterpreted_option);
   }
 
@@ -2657,7 +2657,7 @@ class MethodOptions implements \Protobuf\Message {
           $this->deprecated = \Protobuf\Internal\JsonDecoder::readBool($v);
           break;
         case 'idempotency_level': case 'idempotencyLevel':
-          $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromMixed($v);
+          $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::FromMixed($v);
           break;
         case 'uninterpreted_option': case 'uninterpretedOption':
           foreach(\Protobuf\Internal\JsonDecoder::readList($v) as $vv) {
@@ -2674,7 +2674,7 @@ class MethodOptions implements \Protobuf\Message {
 class UninterpretedOption_NamePart implements \Protobuf\Message {
   public string $name_part;
   public bool $is_extension;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name_part' => string,
@@ -2682,7 +2682,7 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
   ) $s = shape()) {
     $this->name_part = $s['name_part'] ?? '';
     $this->is_extension = $s['is_extension'] ?? false;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2699,7 +2699,7 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2711,7 +2711,7 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeBool($this->is_extension);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2743,7 +2743,7 @@ class UninterpretedOption implements \Protobuf\Message {
   public float $double_value;
   public string $string_value;
   public string $aggregate_value;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'name' => vec<\google\protobuf\UninterpretedOption_NamePart>,
@@ -2761,7 +2761,7 @@ class UninterpretedOption implements \Protobuf\Message {
     $this->double_value = $s['double_value'] ?? 0.0;
     $this->string_value = $s['string_value'] ?? '';
     $this->aggregate_value = $s['aggregate_value'] ?? '';
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2795,7 +2795,7 @@ class UninterpretedOption implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2828,7 +2828,7 @@ class UninterpretedOption implements \Protobuf\Message {
       $e->writeTag(8, 2);
       $e->writeString($this->aggregate_value);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -2882,7 +2882,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
   public string $leading_comments;
   public string $trailing_comments;
   public vec<string> $leading_detached_comments;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'path' => vec<int>,
@@ -2896,7 +2896,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
     $this->leading_comments = $s['leading_comments'] ?? '';
     $this->trailing_comments = $s['trailing_comments'] ?? '';
     $this->leading_detached_comments = $s['leading_detached_comments'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2936,7 +2936,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -2962,7 +2962,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
       $e->writeTag(6, 2);
       $e->writeString($elem);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -3006,13 +3006,13 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
 
 class SourceCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\SourceCodeInfo_Location> $location;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'location' => vec<\google\protobuf\SourceCodeInfo_Location>,
   ) $s = shape()) {
     $this->location = $s['location'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -3028,7 +3028,7 @@ class SourceCodeInfo implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -3037,7 +3037,7 @@ class SourceCodeInfo implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -3066,7 +3066,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
   public string $source_file;
   public int $begin;
   public int $end;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'path' => vec<int>,
@@ -3078,7 +3078,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
     $this->source_file = $s['source_file'] ?? '';
     $this->begin = $s['begin'] ?? 0;
     $this->end = $s['end'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -3108,7 +3108,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -3129,7 +3129,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
       $e->writeTag(4, 0);
       $e->writeVarint($this->end);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -3165,13 +3165,13 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
 
 class GeneratedCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\GeneratedCodeInfo_Annotation> $annotation;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'annotation' => vec<\google\protobuf\GeneratedCodeInfo_Annotation>,
   ) $s = shape()) {
     $this->annotation = $s['annotation'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -3187,7 +3187,7 @@ class GeneratedCodeInfo implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -3196,7 +3196,7 @@ class GeneratedCodeInfo implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

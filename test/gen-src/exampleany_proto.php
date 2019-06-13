@@ -5,13 +5,13 @@
 
 class AnyTest implements \Protobuf\Message {
   public ?\google\protobuf\Any $any;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'any' => ?\google\protobuf\Any,
   ) $s = shape()) {
     $this->any = $s['any'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -26,7 +26,7 @@ class AnyTest implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -36,7 +36,7 @@ class AnyTest implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

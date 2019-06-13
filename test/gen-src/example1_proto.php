@@ -8,36 +8,36 @@ newtype AEnum1_enum_t as int = int;
 abstract class AEnum1 {
   const AEnum1_enum_t A = 0;
   const AEnum1_enum_t B = 2;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'A',
     2 => 'B',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'A' => 0,
     'B' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): AEnum1_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): AEnum1_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): AEnum1_enum_t {
+  public static function FromInt(int $i): AEnum1_enum_t {
     return $i;
   }
 }
 
 class example2 implements \Protobuf\Message {
   public int $aint32;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'aint32' => int,
   ) $s = shape()) {
     $this->aint32 = $s['aint32'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -51,7 +51,7 @@ class example2 implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -59,7 +59,7 @@ class example2 implements \Protobuf\Message {
       $e->writeTag(1, 0);
       $e->writeVarint($this->aint32);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -83,23 +83,23 @@ newtype example1_AEnum2_enum_t as int = int;
 abstract class example1_AEnum2 {
   const example1_AEnum2_enum_t C = 0;
   const example1_AEnum2_enum_t D = 10;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'C',
     10 => 'D',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'C' => 0,
     'D' => 10,
   ];
-  public static function XXX_FromMixed(mixed $m): example1_AEnum2_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): example1_AEnum2_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): example1_AEnum2_enum_t {
+  public static function FromInt(int $i): example1_AEnum2_enum_t {
     return $i;
   }
 }
@@ -159,13 +159,13 @@ class example1_ooint implements example1_aoneof {
 
 class example1_example2 implements \Protobuf\Message {
   public string $astring;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'astring' => string,
   ) $s = shape()) {
     $this->astring = $s['astring'] ?? '';
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -179,7 +179,7 @@ class example1_example2 implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -187,7 +187,7 @@ class example1_example2 implements \Protobuf\Message {
       $e->writeTag(1, 2);
       $e->writeString($this->astring);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -210,7 +210,7 @@ class example1_example2 implements \Protobuf\Message {
 class example1_AmapEntry implements \Protobuf\Message {
   public string $key;
   public string $value;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'key' => string,
@@ -218,7 +218,7 @@ class example1_AmapEntry implements \Protobuf\Message {
   ) $s = shape()) {
     $this->key = $s['key'] ?? '';
     $this->value = $s['value'] ?? '';
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -235,7 +235,7 @@ class example1_AmapEntry implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -247,7 +247,7 @@ class example1_AmapEntry implements \Protobuf\Message {
       $e->writeTag(2, 2);
       $e->writeString($this->value);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -274,7 +274,7 @@ class example1_AmapEntry implements \Protobuf\Message {
 class example1_Amap2Entry implements \Protobuf\Message {
   public string $key;
   public ?\fiz\baz\example2 $value;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'key' => string,
@@ -282,7 +282,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
   ) $s = shape()) {
     $this->key = $s['key'] ?? '';
     $this->value = $s['value'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -300,7 +300,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -314,7 +314,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -369,7 +369,7 @@ class example1 implements \Protobuf\Message {
   public int $outoforder;
   public ?\google\protobuf\Any $anany;
   public example1_aoneof $aoneof;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'adouble' => float,
@@ -416,9 +416,9 @@ class example1 implements \Protobuf\Message {
     $this->abool = $s['abool'] ?? false;
     $this->astring = $s['astring'] ?? '';
     $this->abytes = $s['abytes'] ?? '';
-    $this->aenum1 = $s['aenum1'] ?? \foo\bar\AEnum1::XXX_FromInt(0);
-    $this->aenum2 = $s['aenum2'] ?? \foo\bar\example1_AEnum2::XXX_FromInt(0);
-    $this->aenum22 = $s['aenum22'] ?? \fiz\baz\AEnum2::XXX_FromInt(0);
+    $this->aenum1 = $s['aenum1'] ?? \foo\bar\AEnum1::FromInt(0);
+    $this->aenum2 = $s['aenum2'] ?? \foo\bar\example1_AEnum2::FromInt(0);
+    $this->aenum22 = $s['aenum22'] ?? \fiz\baz\AEnum2::FromInt(0);
     $this->manystring = $s['manystring'] ?? vec[];
     $this->manyint64 = $s['manyint64'] ?? vec[];
     $this->aexample2 = $s['aexample2'] ?? null;
@@ -429,7 +429,7 @@ class example1 implements \Protobuf\Message {
     $this->outoforder = $s['outoforder'] ?? 0;
     $this->anany = $s['anany'] ?? null;
     $this->aoneof = $s['aoneof'] ?? new XXX_example1_aoneof_NOT_SET();
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -482,13 +482,13 @@ class example1 implements \Protobuf\Message {
           $this->abytes = $d->readString();
           break;
         case 20:
-          $this->aenum1 = \foo\bar\AEnum1::XXX_FromInt($d->readVarint());
+          $this->aenum1 = \foo\bar\AEnum1::FromInt($d->readVarint());
           break;
         case 21:
-          $this->aenum2 = \foo\bar\example1_AEnum2::XXX_FromInt($d->readVarint());
+          $this->aenum2 = \foo\bar\example1_AEnum2::FromInt($d->readVarint());
           break;
         case 22:
-          $this->aenum22 = \fiz\baz\AEnum2::XXX_FromInt($d->readVarint());
+          $this->aenum22 = \fiz\baz\AEnum2::FromInt($d->readVarint());
           break;
         case 30:
           $this->manystring []= $d->readString();
@@ -542,7 +542,7 @@ class example1 implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -606,15 +606,15 @@ class example1 implements \Protobuf\Message {
       $e->writeTag(15, 2);
       $e->writeString($this->abytes);
     }
-    if ($this->aenum1 !== \foo\bar\AEnum1::XXX_FromInt(0)) {
+    if ($this->aenum1 !== \foo\bar\AEnum1::FromInt(0)) {
       $e->writeTag(20, 0);
       $e->writeVarint($this->aenum1);
     }
-    if ($this->aenum2 !== \foo\bar\example1_AEnum2::XXX_FromInt(0)) {
+    if ($this->aenum2 !== \foo\bar\example1_AEnum2::FromInt(0)) {
       $e->writeTag(21, 0);
       $e->writeVarint($this->aenum2);
     }
-    if ($this->aenum22 !== \fiz\baz\AEnum2::XXX_FromInt(0)) {
+    if ($this->aenum22 !== \fiz\baz\AEnum2::FromInt(0)) {
       $e->writeTag(22, 0);
       $e->writeVarint($this->aenum22);
     }
@@ -672,7 +672,7 @@ class example1 implements \Protobuf\Message {
       $e->writeEncoder($nested, 80);
     }
     $this->aoneof->WriteTo($e);
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -691,9 +691,9 @@ class example1 implements \Protobuf\Message {
     $e->writeBool('abool', 'abool', $this->abool, false);
     $e->writeString('astring', 'astring', $this->astring, false);
     $e->writeBytes('abytes', 'abytes', $this->abytes, false);
-    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::XXX_ItoS(), $this->aenum1, false);
-    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::XXX_ItoS(), $this->aenum2, false);
-    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::XXX_ItoS(), $this->aenum22, false);
+    $e->writeEnum('aenum1', 'aenum1', \foo\bar\AEnum1::ToStringDict(), $this->aenum1, false);
+    $e->writeEnum('aenum2', 'aenum2', \foo\bar\example1_AEnum2::ToStringDict(), $this->aenum2, false);
+    $e->writeEnum('aenum22', 'aenum22', \fiz\baz\AEnum2::ToStringDict(), $this->aenum22, false);
     $e->writePrimitiveList('manystring', 'manystring', $this->manystring);
     $e->writeInt64SignedList('manyint64', 'manyint64', $this->manyint64);
     $e->writeMessage('aexample2', 'aexample2', $this->aexample2, false);
@@ -757,13 +757,13 @@ class example1 implements \Protobuf\Message {
           $this->abytes = \Protobuf\Internal\JsonDecoder::readBytes($v);
           break;
         case 'aenum1':
-          $this->aenum1 = \foo\bar\AEnum1::XXX_FromMixed($v);
+          $this->aenum1 = \foo\bar\AEnum1::FromMixed($v);
           break;
         case 'aenum2':
-          $this->aenum2 = \foo\bar\example1_AEnum2::XXX_FromMixed($v);
+          $this->aenum2 = \foo\bar\example1_AEnum2::FromMixed($v);
           break;
         case 'aenum22':
-          $this->aenum22 = \fiz\baz\AEnum2::XXX_FromMixed($v);
+          $this->aenum22 = \fiz\baz\AEnum2::FromMixed($v);
           break;
         case 'manystring':
           foreach(\Protobuf\Internal\JsonDecoder::readList($v) as $vv) {

@@ -7,21 +7,21 @@ namespace google\protobuf;
 newtype NullValue_enum_t as int = int;
 abstract class NullValue {
   const NullValue_enum_t NULL_VALUE = 0;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'NULL_VALUE',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'NULL_VALUE' => 0,
   ];
-  public static function XXX_FromMixed(mixed $m): NullValue_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): NullValue_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): NullValue_enum_t {
+  public static function FromInt(int $i): NullValue_enum_t {
     return $i;
   }
 }
@@ -29,7 +29,7 @@ abstract class NullValue {
 class Struct_FieldsEntry implements \Protobuf\Message {
   public string $key;
   public ?\google\protobuf\Value $value;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'key' => string,
@@ -37,7 +37,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
   ) $s = shape()) {
     $this->key = $s['key'] ?? '';
     $this->value = $s['value'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -55,7 +55,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -69,7 +69,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 2);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -96,13 +96,13 @@ class Struct_FieldsEntry implements \Protobuf\Message {
 
 class Struct implements \Protobuf\Message {
   public dict<string, \google\protobuf\Value> $fields;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'fields' => dict<string, \google\protobuf\Value>,
   ) $s = shape()) {
     $this->fields = $s['fields'] ?? dict[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -118,7 +118,7 @@ class Struct implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -130,7 +130,7 @@ class Struct implements \Protobuf\Message {
       $obj->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -188,7 +188,7 @@ class Value_null_value implements Value_kind {
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    $e->writeEnum('null_value', 'nullValue', \google\protobuf\NullValue::XXX_ItoS(), $this->null_value, true);
+    $e->writeEnum('null_value', 'nullValue', \google\protobuf\NullValue::ToStringDict(), $this->null_value, true);
   }
 }
 
@@ -281,13 +281,13 @@ class Value_list_value implements Value_kind {
 
 class Value implements \Protobuf\Message {
   public Value_kind $kind;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'kind' => Value_kind,
   ) $s = shape()) {
     $this->kind = $s['kind'] ?? new XXX_Value_kind_NOT_SET();
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -295,7 +295,7 @@ class Value implements \Protobuf\Message {
       list($fn, $wt) = $d->readTag();
       switch ($fn) {
         case 1:
-          $this->kind = new Value_null_value(\google\protobuf\NullValue::XXX_FromInt($d->readVarint()));
+          $this->kind = new Value_null_value(\google\protobuf\NullValue::FromInt($d->readVarint()));
           break;
         case 2:
           $this->kind = new Value_number_value($d->readDouble());
@@ -320,12 +320,12 @@ class Value implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
     $this->kind->WriteTo($e);
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -378,13 +378,13 @@ class Value implements \Protobuf\Message {
 
 class ListValue implements \Protobuf\Message {
   public vec<\google\protobuf\Value> $values;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'values' => vec<\google\protobuf\Value>,
   ) $s = shape()) {
     $this->values = $s['values'] ?? vec[];
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -400,7 +400,7 @@ class ListValue implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -409,7 +409,7 @@ class ListValue implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

@@ -340,7 +340,7 @@ func (f field) defaultValue() string {
 		return "false"
 	case desc.FieldDescriptorProto_TYPE_ENUM:
 		// return f.typePhpNs + "\\" + f.typePhpName + "::" + f.typeEnumDefault
-		return f.typePhpNs + "\\" + f.typePhpName + "::XXX_FromInt(0)"
+		return f.typePhpNs + "\\" + f.typePhpName + "::FromInt(0)"
 	case desc.FieldDescriptorProto_TYPE_MESSAGE,
 		desc.FieldDescriptorProto_TYPE_GROUP:
 		return "null"
@@ -482,7 +482,7 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 	case desc.FieldDescriptorProto_TYPE_BOOL:
 		reader = fmt.Sprintf("%s->readBool()", dec)
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		reader = fmt.Sprintf("%s\\%s::XXX_FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
+		reader = fmt.Sprintf("%s\\%s::FromInt(%s->readVarint())", f.typePhpNs, f.typePhpName, dec)
 	default:
 		panic(fmt.Errorf("unknown reader for fd type: %s", f.fd.GetType()))
 	}
@@ -795,7 +795,7 @@ func (f *field) jsonReader(v string) string {
 		rt = "Bool"
 	case
 		desc.FieldDescriptorProto_TYPE_ENUM:
-		return fmt.Sprintf("%s\\%s::XXX_FromMixed(%s)", f.typePhpNs, f.typePhpName, v)
+		return fmt.Sprintf("%s\\%s::FromMixed(%s)", f.typePhpNs, f.typePhpName, v)
 	default:
 		panic(fmt.Errorf("bad json reader: %v", f.fd.GetType()))
 	}
@@ -904,7 +904,7 @@ func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 		_, v := f.mapFields()
 		_, manyWriter := v.jsonWriter()
 		if manyWriter == "Enum" {
-			itos := v.typePhpNs + "\\" + v.typePhpName + "::XXX_ItoS()"
+			itos := v.typePhpNs + "\\" + v.typePhpName + "::ToStringDict()"
 			w.p("%s->writeEnumMap('%s', '%s', %s, $this->%s);", enc, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName())
 		} else {
 			w.p("%s->write%sMap('%s', '%s', $this->%s);", enc, manyWriter, f.fd.GetName(), f.fd.GetJsonName(), f.varName())
@@ -926,7 +926,7 @@ func (f field) writeJsonEncoder(w *writer, enc string, forceEmitDefault bool) {
 	}
 
 	if writer == "Enum" {
-		itos := f.typePhpNs + "\\" + f.typePhpName + "::XXX_ItoS()"
+		itos := f.typePhpNs + "\\" + f.typePhpName + "::ToStringDict()"
 		w.p("%s->writeEnum%s('%s', '%s', %s, $this->%s%s);", enc, repeated, f.fd.GetName(), f.fd.GetJsonName(), itos, f.varName(), emitDefault)
 	} else {
 		w.p("%s->write%s%s('%s', '%s', $this->%s%s);", enc, writer, repeated, f.fd.GetName(), f.fd.GetJsonName(), f.varName(), emitDefault)
@@ -947,7 +947,7 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 		w.p("const %s %s = %d;", typename, *v.Name, *v.Number)
 	}
 
-	w.p("private static dict<int, string> $XXX_itos = dict[")
+	w.p("private static dict<int, string> $itos = dict[")
 	w.i++
 	for _, v := range ed.Value {
 		w.p("%d => '%s',", v.GetNumber(), v.GetName())
@@ -955,11 +955,11 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.i--
 	w.p("];")
 
-	w.p("public static function XXX_ItoS(): dict<int, string> {")
-	w.p("return self::$XXX_itos;")
+	w.p("public static function ToStringDict(): dict<int, string> {")
+	w.p("return self::$itos;")
 	w.p("}")
 
-	w.p("private static dict<string, int> $XXX_stoi = dict[")
+	w.p("private static dict<string, int> $stoi = dict[")
 	w.i++
 	for _, v := range ed.Value {
 		w.p("'%s' => %d,", v.GetName(), v.GetNumber())
@@ -967,13 +967,13 @@ func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	w.i--
 	w.p("];")
 
-	w.p("public static function XXX_FromMixed(mixed $m): %s {", typename)
-	w.p("if ($m is string) return idx(self::$XXX_stoi, $m, \\is_numeric($m) ? ((int) $m) : 0);")
+	w.p("public static function FromMixed(mixed $m): %s {", typename)
+	w.p("if ($m is string) return idx(self::$stoi, $m, \\is_numeric($m) ? ((int) $m) : 0);")
 	w.p("if ($m is int) return $m;")
 	w.p("return 0;")
 	w.p("}")
 
-	w.p("public static function XXX_FromInt(int $i): %s {", typename)
+	w.p("public static function FromInt(int $i): %s {", typename)
 	w.p("return $i;")
 	w.p("}")
 	w.p("}")
@@ -1135,7 +1135,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("public %s $%s;", oo.interfaceName, oo.name)
 	}
-	w.p("private string $%sskipped;", specialPrefix)
+	w.p("private string $%sunrecognized;", specialPrefix)
 	w.ln()
 
 	// Constructor.
@@ -1161,7 +1161,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("$this->%s = $s['%s'] ?? new %s();", oo.name, oo.name, oo.notsetClass)
 	}
-	w.p("$this->%sskipped = '';", specialPrefix)
+	w.p("$this->%sunrecognized = '';", specialPrefix)
 	w.p("}")
 	w.ln()
 
@@ -1191,7 +1191,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.i--
 	w.p("}") // switch
 	w.p("}") // while
-	w.p("$this->%sskipped = $d->skippedRaw();", specialPrefix)
+	w.p("$this->%sunrecognized = $d->skippedRaw();", specialPrefix)
 	w.p("}") // function MergeFrom
 	w.ln()
 
@@ -1210,7 +1210,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	for _, oo := range oneofs {
 		w.p("$this->%s->WriteTo($e);", oo.name)
 	}
-	w.p("$e->writeRaw($this->%sskipped);", specialPrefix)
+	w.p("$e->writeRaw($this->%sunrecognized);", specialPrefix)
 	w.p("}") // WriteToFunction
 	w.ln()
 

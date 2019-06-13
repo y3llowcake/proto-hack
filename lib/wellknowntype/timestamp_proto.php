@@ -7,7 +7,7 @@ namespace google\protobuf;
 class Timestamp implements \Protobuf\Message {
   public int $seconds;
   public int $nanos;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'seconds' => int,
@@ -15,7 +15,7 @@ class Timestamp implements \Protobuf\Message {
   ) $s = shape()) {
     $this->seconds = $s['seconds'] ?? 0;
     $this->nanos = $s['nanos'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -32,7 +32,7 @@ class Timestamp implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -44,7 +44,7 @@ class Timestamp implements \Protobuf\Message {
       $e->writeTag(2, 0);
       $e->writeVarint($this->nanos);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

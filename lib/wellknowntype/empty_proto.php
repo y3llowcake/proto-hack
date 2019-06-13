@@ -5,11 +5,11 @@ namespace google\protobuf;
 // Source: empty.proto
 
 class pb_Empty implements \Protobuf\Message {
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
   ) $s = shape()) {
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -20,11 +20,11 @@ class pb_Empty implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {

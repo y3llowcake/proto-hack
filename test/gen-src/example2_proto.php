@@ -7,34 +7,34 @@ namespace fiz\baz;
 newtype AEnum2_enum_t as int = int;
 abstract class AEnum2 {
   const AEnum2_enum_t Z = 0;
-  private static dict<int, string> $XXX_itos = dict[
+  private static dict<int, string> $itos = dict[
     0 => 'Z',
   ];
-  public static function XXX_ItoS(): dict<int, string> {
-    return self::$XXX_itos;
+  public static function ToStringDict(): dict<int, string> {
+    return self::$itos;
   }
-  private static dict<string, int> $XXX_stoi = dict[
+  private static dict<string, int> $stoi = dict[
     'Z' => 0,
   ];
-  public static function XXX_FromMixed(mixed $m): AEnum2_enum_t {
-    if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
+  public static function FromMixed(mixed $m): AEnum2_enum_t {
+    if ($m is string) return idx(self::$stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): AEnum2_enum_t {
+  public static function FromInt(int $i): AEnum2_enum_t {
     return $i;
   }
 }
 
 class example2 implements \Protobuf\Message {
   public int $zomg;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'zomg' => int,
   ) $s = shape()) {
     $this->zomg = $s['zomg'] ?? 0;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -48,7 +48,7 @@ class example2 implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -56,7 +56,7 @@ class example2 implements \Protobuf\Message {
       $e->writeTag(1, 0);
       $e->writeVarint($this->zomg);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
@@ -78,13 +78,13 @@ class example2 implements \Protobuf\Message {
 
 class refexample3 implements \Protobuf\Message {
   public ?\Funky $funky;
-  private string $XXX_skipped;
+  private string $XXX_unrecognized;
 
   public function __construct(shape(
     ?'funky' => ?\Funky,
   ) $s = shape()) {
     $this->funky = $s['funky'] ?? null;
-    $this->XXX_skipped = '';
+    $this->XXX_unrecognized = '';
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -99,7 +99,7 @@ class refexample3 implements \Protobuf\Message {
           $d->skip($fn, $wt);
       }
     }
-    $this->XXX_skipped = $d->skippedRaw();
+    $this->XXX_unrecognized = $d->skippedRaw();
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -109,7 +109,7 @@ class refexample3 implements \Protobuf\Message {
       $msg->WriteTo($nested);
       $e->writeEncoder($nested, 1);
     }
-    $e->writeRaw($this->XXX_skipped);
+    $e->writeRaw($this->XXX_unrecognized);
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
