@@ -187,6 +187,23 @@ namespace Grpc {
     ): Awaitable<void>;
   }
 
+  class ChainedClientInterceptor implements Invoker {
+    public function __construct(
+      private ClientInterceptor $intercept,
+      private Invoker $invoke,
+    ) {}
+    public function Invoke(
+      Context $ctx,
+      string $method,
+      Message $in,
+      Message $out,
+      CallOption ...$co
+    ): Awaitable<void> {
+      return $this->intercept
+        ->ClientIntercept($ctx, $method, $in, $out, $this->invoke, ...$co);
+    }
+  }
+
   interface Unmarshaller {
     public function Unmarshal(Message $into): void;
   }
