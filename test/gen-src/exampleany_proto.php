@@ -7,8 +7,10 @@ class AnyTest implements \Protobuf\Message {
   public ?\google\protobuf\Any $any;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->any = null;
+  public function __construct(shape(
+    ?'any' => ?\google\protobuf\Any,
+  ) $s = shape()) {
+    $this->any = $s['any'] ?? null;
     $this->XXX_skipped = '';
   }
 

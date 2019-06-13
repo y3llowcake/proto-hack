@@ -8,8 +8,10 @@ class FileDescriptorSet implements \Protobuf\Message {
   public vec<\google\protobuf\FileDescriptorProto> $file;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->file = vec[];
+  public function __construct(shape(
+    ?'file' => vec<\google\protobuf\FileDescriptorProto>,
+  ) $s = shape()) {
+    $this->file = $s['file'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -74,19 +76,32 @@ class FileDescriptorProto implements \Protobuf\Message {
   public string $syntax;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->package = '';
-    $this->dependency = vec[];
-    $this->public_dependency = vec[];
-    $this->weak_dependency = vec[];
-    $this->message_type = vec[];
-    $this->enum_type = vec[];
-    $this->service = vec[];
-    $this->extension = vec[];
-    $this->options = null;
-    $this->source_code_info = null;
-    $this->syntax = '';
+  public function __construct(shape(
+    ?'name' => string,
+    ?'package' => string,
+    ?'dependency' => vec<string>,
+    ?'public_dependency' => vec<int>,
+    ?'weak_dependency' => vec<int>,
+    ?'message_type' => vec<\google\protobuf\DescriptorProto>,
+    ?'enum_type' => vec<\google\protobuf\EnumDescriptorProto>,
+    ?'service' => vec<\google\protobuf\ServiceDescriptorProto>,
+    ?'extension' => vec<\google\protobuf\FieldDescriptorProto>,
+    ?'options' => ?\google\protobuf\FileOptions,
+    ?'source_code_info' => ?\google\protobuf\SourceCodeInfo,
+    ?'syntax' => string,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->package = $s['package'] ?? '';
+    $this->dependency = $s['dependency'] ?? vec[];
+    $this->public_dependency = $s['public_dependency'] ?? vec[];
+    $this->weak_dependency = $s['weak_dependency'] ?? vec[];
+    $this->message_type = $s['message_type'] ?? vec[];
+    $this->enum_type = $s['enum_type'] ?? vec[];
+    $this->service = $s['service'] ?? vec[];
+    $this->extension = $s['extension'] ?? vec[];
+    $this->options = $s['options'] ?? null;
+    $this->source_code_info = $s['source_code_info'] ?? null;
+    $this->syntax = $s['syntax'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -314,10 +329,14 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
   public ?\google\protobuf\ExtensionRangeOptions $options;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->start = 0;
-    $this->end = 0;
-    $this->options = null;
+  public function __construct(shape(
+    ?'start' => int,
+    ?'end' => int,
+    ?'options' => ?\google\protobuf\ExtensionRangeOptions,
+  ) $s = shape()) {
+    $this->start = $s['start'] ?? 0;
+    $this->end = $s['end'] ?? 0;
+    $this->options = $s['options'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -392,9 +411,12 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
   public int $end;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->start = 0;
-    $this->end = 0;
+  public function __construct(shape(
+    ?'start' => int,
+    ?'end' => int,
+  ) $s = shape()) {
+    $this->start = $s['start'] ?? 0;
+    $this->end = $s['end'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -461,17 +483,28 @@ class DescriptorProto implements \Protobuf\Message {
   public vec<string> $reserved_name;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->field = vec[];
-    $this->extension = vec[];
-    $this->nested_type = vec[];
-    $this->enum_type = vec[];
-    $this->extension_range = vec[];
-    $this->oneof_decl = vec[];
-    $this->options = null;
-    $this->reserved_range = vec[];
-    $this->reserved_name = vec[];
+  public function __construct(shape(
+    ?'name' => string,
+    ?'field' => vec<\google\protobuf\FieldDescriptorProto>,
+    ?'extension' => vec<\google\protobuf\FieldDescriptorProto>,
+    ?'nested_type' => vec<\google\protobuf\DescriptorProto>,
+    ?'enum_type' => vec<\google\protobuf\EnumDescriptorProto>,
+    ?'extension_range' => vec<\google\protobuf\DescriptorProto_ExtensionRange>,
+    ?'oneof_decl' => vec<\google\protobuf\OneofDescriptorProto>,
+    ?'options' => ?\google\protobuf\MessageOptions,
+    ?'reserved_range' => vec<\google\protobuf\DescriptorProto_ReservedRange>,
+    ?'reserved_name' => vec<string>,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->field = $s['field'] ?? vec[];
+    $this->extension = $s['extension'] ?? vec[];
+    $this->nested_type = $s['nested_type'] ?? vec[];
+    $this->enum_type = $s['enum_type'] ?? vec[];
+    $this->extension_range = $s['extension_range'] ?? vec[];
+    $this->oneof_decl = $s['oneof_decl'] ?? vec[];
+    $this->options = $s['options'] ?? null;
+    $this->reserved_range = $s['reserved_range'] ?? vec[];
+    $this->reserved_name = $s['reserved_name'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -673,8 +706,10 @@ class ExtensionRangeOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -838,17 +873,28 @@ class FieldDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\FieldOptions $options;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->number = 0;
-    $this->label = \google\protobuf\FieldDescriptorProto_Label::XXX_FromInt(0);
-    $this->type = \google\protobuf\FieldDescriptorProto_Type::XXX_FromInt(0);
-    $this->type_name = '';
-    $this->extendee = '';
-    $this->default_value = '';
-    $this->oneof_index = 0;
-    $this->json_name = '';
-    $this->options = null;
+  public function __construct(shape(
+    ?'name' => string,
+    ?'number' => int,
+    ?'label' => \google\protobuf\XXX_FieldDescriptorProto_Label_t,
+    ?'type' => \google\protobuf\XXX_FieldDescriptorProto_Type_t,
+    ?'type_name' => string,
+    ?'extendee' => string,
+    ?'default_value' => string,
+    ?'oneof_index' => int,
+    ?'json_name' => string,
+    ?'options' => ?\google\protobuf\FieldOptions,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->number = $s['number'] ?? 0;
+    $this->label = $s['label'] ?? \google\protobuf\FieldDescriptorProto_Label::XXX_FromInt(0);
+    $this->type = $s['type'] ?? \google\protobuf\FieldDescriptorProto_Type::XXX_FromInt(0);
+    $this->type_name = $s['type_name'] ?? '';
+    $this->extendee = $s['extendee'] ?? '';
+    $this->default_value = $s['default_value'] ?? '';
+    $this->oneof_index = $s['oneof_index'] ?? 0;
+    $this->json_name = $s['json_name'] ?? '';
+    $this->options = $s['options'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -1000,9 +1046,12 @@ class OneofDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\OneofOptions $options;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->options = null;
+  public function __construct(shape(
+    ?'name' => string,
+    ?'options' => ?\google\protobuf\OneofOptions,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->options = $s['options'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -1066,9 +1115,12 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
   public int $end;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->start = 0;
-    $this->end = 0;
+  public function __construct(shape(
+    ?'start' => int,
+    ?'end' => int,
+  ) $s = shape()) {
+    $this->start = $s['start'] ?? 0;
+    $this->end = $s['end'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -1130,12 +1182,18 @@ class EnumDescriptorProto implements \Protobuf\Message {
   public vec<string> $reserved_name;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->value = vec[];
-    $this->options = null;
-    $this->reserved_range = vec[];
-    $this->reserved_name = vec[];
+  public function __construct(shape(
+    ?'name' => string,
+    ?'value' => vec<\google\protobuf\EnumValueDescriptorProto>,
+    ?'options' => ?\google\protobuf\EnumOptions,
+    ?'reserved_range' => vec<\google\protobuf\EnumDescriptorProto_EnumReservedRange>,
+    ?'reserved_name' => vec<string>,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->value = $s['value'] ?? vec[];
+    $this->options = $s['options'] ?? null;
+    $this->reserved_range = $s['reserved_range'] ?? vec[];
+    $this->reserved_name = $s['reserved_name'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -1249,10 +1307,14 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\EnumValueOptions $options;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->number = 0;
-    $this->options = null;
+  public function __construct(shape(
+    ?'name' => string,
+    ?'number' => int,
+    ?'options' => ?\google\protobuf\EnumValueOptions,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->number = $s['number'] ?? 0;
+    $this->options = $s['options'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -1328,10 +1390,14 @@ class ServiceDescriptorProto implements \Protobuf\Message {
   public ?\google\protobuf\ServiceOptions $options;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->method = vec[];
-    $this->options = null;
+  public function __construct(shape(
+    ?'name' => string,
+    ?'method' => vec<\google\protobuf\MethodDescriptorProto>,
+    ?'options' => ?\google\protobuf\ServiceOptions,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->method = $s['method'] ?? vec[];
+    $this->options = $s['options'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -1417,13 +1483,20 @@ class MethodDescriptorProto implements \Protobuf\Message {
   public bool $server_streaming;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
-    $this->input_type = '';
-    $this->output_type = '';
-    $this->options = null;
-    $this->client_streaming = false;
-    $this->server_streaming = false;
+  public function __construct(shape(
+    ?'name' => string,
+    ?'input_type' => string,
+    ?'output_type' => string,
+    ?'options' => ?\google\protobuf\MethodOptions,
+    ?'client_streaming' => bool,
+    ?'server_streaming' => bool,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
+    $this->input_type = $s['input_type'] ?? '';
+    $this->output_type = $s['output_type'] ?? '';
+    $this->options = $s['options'] ?? null;
+    $this->client_streaming = $s['client_streaming'] ?? false;
+    $this->server_streaming = $s['server_streaming'] ?? false;
     $this->XXX_skipped = '';
   }
 
@@ -1578,28 +1651,50 @@ class FileOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->java_package = '';
-    $this->java_outer_classname = '';
-    $this->java_multiple_files = false;
-    $this->java_generate_equals_and_hash = false;
-    $this->java_string_check_utf8 = false;
-    $this->optimize_for = \google\protobuf\FileOptions_OptimizeMode::XXX_FromInt(0);
-    $this->go_package = '';
-    $this->cc_generic_services = false;
-    $this->java_generic_services = false;
-    $this->py_generic_services = false;
-    $this->php_generic_services = false;
-    $this->deprecated = false;
-    $this->cc_enable_arenas = false;
-    $this->objc_class_prefix = '';
-    $this->csharp_namespace = '';
-    $this->swift_prefix = '';
-    $this->php_class_prefix = '';
-    $this->php_namespace = '';
-    $this->php_metadata_namespace = '';
-    $this->ruby_package = '';
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'java_package' => string,
+    ?'java_outer_classname' => string,
+    ?'java_multiple_files' => bool,
+    ?'java_generate_equals_and_hash' => bool,
+    ?'java_string_check_utf8' => bool,
+    ?'optimize_for' => \google\protobuf\XXX_FileOptions_OptimizeMode_t,
+    ?'go_package' => string,
+    ?'cc_generic_services' => bool,
+    ?'java_generic_services' => bool,
+    ?'py_generic_services' => bool,
+    ?'php_generic_services' => bool,
+    ?'deprecated' => bool,
+    ?'cc_enable_arenas' => bool,
+    ?'objc_class_prefix' => string,
+    ?'csharp_namespace' => string,
+    ?'swift_prefix' => string,
+    ?'php_class_prefix' => string,
+    ?'php_namespace' => string,
+    ?'php_metadata_namespace' => string,
+    ?'ruby_package' => string,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->java_package = $s['java_package'] ?? '';
+    $this->java_outer_classname = $s['java_outer_classname'] ?? '';
+    $this->java_multiple_files = $s['java_multiple_files'] ?? false;
+    $this->java_generate_equals_and_hash = $s['java_generate_equals_and_hash'] ?? false;
+    $this->java_string_check_utf8 = $s['java_string_check_utf8'] ?? false;
+    $this->optimize_for = $s['optimize_for'] ?? \google\protobuf\FileOptions_OptimizeMode::XXX_FromInt(0);
+    $this->go_package = $s['go_package'] ?? '';
+    $this->cc_generic_services = $s['cc_generic_services'] ?? false;
+    $this->java_generic_services = $s['java_generic_services'] ?? false;
+    $this->py_generic_services = $s['py_generic_services'] ?? false;
+    $this->php_generic_services = $s['php_generic_services'] ?? false;
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->cc_enable_arenas = $s['cc_enable_arenas'] ?? false;
+    $this->objc_class_prefix = $s['objc_class_prefix'] ?? '';
+    $this->csharp_namespace = $s['csharp_namespace'] ?? '';
+    $this->swift_prefix = $s['swift_prefix'] ?? '';
+    $this->php_class_prefix = $s['php_class_prefix'] ?? '';
+    $this->php_namespace = $s['php_namespace'] ?? '';
+    $this->php_metadata_namespace = $s['php_metadata_namespace'] ?? '';
+    $this->ruby_package = $s['ruby_package'] ?? '';
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -1877,12 +1972,18 @@ class MessageOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->message_set_wire_format = false;
-    $this->no_standard_descriptor_accessor = false;
-    $this->deprecated = false;
-    $this->map_entry = false;
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'message_set_wire_format' => bool,
+    ?'no_standard_descriptor_accessor' => bool,
+    ?'deprecated' => bool,
+    ?'map_entry' => bool,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->message_set_wire_format = $s['message_set_wire_format'] ?? false;
+    $this->no_standard_descriptor_accessor = $s['no_standard_descriptor_accessor'] ?? false;
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->map_entry = $s['map_entry'] ?? false;
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2042,14 +2143,22 @@ class FieldOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->ctype = \google\protobuf\FieldOptions_CType::XXX_FromInt(0);
-    $this->packed = false;
-    $this->jstype = \google\protobuf\FieldOptions_JSType::XXX_FromInt(0);
-    $this->lazy = false;
-    $this->deprecated = false;
-    $this->weak = false;
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'ctype' => \google\protobuf\XXX_FieldOptions_CType_t,
+    ?'packed' => bool,
+    ?'jstype' => \google\protobuf\XXX_FieldOptions_JSType_t,
+    ?'lazy' => bool,
+    ?'deprecated' => bool,
+    ?'weak' => bool,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->ctype = $s['ctype'] ?? \google\protobuf\FieldOptions_CType::XXX_FromInt(0);
+    $this->packed = $s['packed'] ?? false;
+    $this->jstype = $s['jstype'] ?? \google\protobuf\FieldOptions_JSType::XXX_FromInt(0);
+    $this->lazy = $s['lazy'] ?? false;
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->weak = $s['weak'] ?? false;
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2169,8 +2278,10 @@ class OneofOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2226,10 +2337,14 @@ class EnumOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->allow_alias = false;
-    $this->deprecated = false;
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'allow_alias' => bool,
+    ?'deprecated' => bool,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->allow_alias = $s['allow_alias'] ?? false;
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2306,9 +2421,12 @@ class EnumValueOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->deprecated = false;
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'deprecated' => bool,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2374,9 +2492,12 @@ class ServiceOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->deprecated = false;
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'deprecated' => bool,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2471,10 +2592,14 @@ class MethodOptions implements \Protobuf\Message {
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->deprecated = false;
-    $this->idempotency_level = \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt(0);
-    $this->uninterpreted_option = vec[];
+  public function __construct(shape(
+    ?'deprecated' => bool,
+    ?'idempotency_level' => \google\protobuf\XXX_MethodOptions_IdempotencyLevel_t,
+    ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
+  ) $s = shape()) {
+    $this->deprecated = $s['deprecated'] ?? false;
+    $this->idempotency_level = $s['idempotency_level'] ?? \google\protobuf\MethodOptions_IdempotencyLevel::XXX_FromInt(0);
+    $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2551,9 +2676,12 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
   public bool $is_extension;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name_part = '';
-    $this->is_extension = false;
+  public function __construct(shape(
+    ?'name_part' => string,
+    ?'is_extension' => bool,
+  ) $s = shape()) {
+    $this->name_part = $s['name_part'] ?? '';
+    $this->is_extension = $s['is_extension'] ?? false;
     $this->XXX_skipped = '';
   }
 
@@ -2617,14 +2745,22 @@ class UninterpretedOption implements \Protobuf\Message {
   public string $aggregate_value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = vec[];
-    $this->identifier_value = '';
-    $this->positive_int_value = 0;
-    $this->negative_int_value = 0;
-    $this->double_value = 0.0;
-    $this->string_value = '';
-    $this->aggregate_value = '';
+  public function __construct(shape(
+    ?'name' => vec<\google\protobuf\UninterpretedOption_NamePart>,
+    ?'identifier_value' => string,
+    ?'positive_int_value' => int,
+    ?'negative_int_value' => int,
+    ?'double_value' => float,
+    ?'string_value' => string,
+    ?'aggregate_value' => string,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? vec[];
+    $this->identifier_value = $s['identifier_value'] ?? '';
+    $this->positive_int_value = $s['positive_int_value'] ?? 0;
+    $this->negative_int_value = $s['negative_int_value'] ?? 0;
+    $this->double_value = $s['double_value'] ?? 0.0;
+    $this->string_value = $s['string_value'] ?? '';
+    $this->aggregate_value = $s['aggregate_value'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -2748,12 +2884,18 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
   public vec<string> $leading_detached_comments;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->path = vec[];
-    $this->span = vec[];
-    $this->leading_comments = '';
-    $this->trailing_comments = '';
-    $this->leading_detached_comments = vec[];
+  public function __construct(shape(
+    ?'path' => vec<int>,
+    ?'span' => vec<int>,
+    ?'leading_comments' => string,
+    ?'trailing_comments' => string,
+    ?'leading_detached_comments' => vec<string>,
+  ) $s = shape()) {
+    $this->path = $s['path'] ?? vec[];
+    $this->span = $s['span'] ?? vec[];
+    $this->leading_comments = $s['leading_comments'] ?? '';
+    $this->trailing_comments = $s['trailing_comments'] ?? '';
+    $this->leading_detached_comments = $s['leading_detached_comments'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2866,8 +3008,10 @@ class SourceCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\SourceCodeInfo_Location> $location;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->location = vec[];
+  public function __construct(shape(
+    ?'location' => vec<\google\protobuf\SourceCodeInfo_Location>,
+  ) $s = shape()) {
+    $this->location = $s['location'] ?? vec[];
     $this->XXX_skipped = '';
   }
 
@@ -2924,11 +3068,16 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
   public int $end;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->path = vec[];
-    $this->source_file = '';
-    $this->begin = 0;
-    $this->end = 0;
+  public function __construct(shape(
+    ?'path' => vec<int>,
+    ?'source_file' => string,
+    ?'begin' => int,
+    ?'end' => int,
+  ) $s = shape()) {
+    $this->path = $s['path'] ?? vec[];
+    $this->source_file = $s['source_file'] ?? '';
+    $this->begin = $s['begin'] ?? 0;
+    $this->end = $s['end'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -3018,8 +3167,10 @@ class GeneratedCodeInfo implements \Protobuf\Message {
   public vec<\google\protobuf\GeneratedCodeInfo_Annotation> $annotation;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->annotation = vec[];
+  public function __construct(shape(
+    ?'annotation' => vec<\google\protobuf\GeneratedCodeInfo_Annotation>,
+  ) $s = shape()) {
+    $this->annotation = $s['annotation'] ?? vec[];
     $this->XXX_skipped = '';
   }
 

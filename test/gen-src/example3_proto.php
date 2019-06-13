@@ -7,8 +7,10 @@ class Donkey implements \Protobuf\Message {
   public string $hi;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->hi = '';
+  public function __construct(shape(
+    ?'hi' => string,
+  ) $s = shape()) {
+    $this->hi = $s['hi'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -55,8 +57,10 @@ class Funky_Monkey implements \Protobuf\Message {
   public string $hi;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->hi = '';
+  public function __construct(shape(
+    ?'hi' => string,
+  ) $s = shape()) {
+    $this->hi = $s['hi'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -104,9 +108,12 @@ class Funky implements \Protobuf\Message {
   public ?\Donkey $dokey;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->monkey = null;
-    $this->dokey = null;
+  public function __construct(shape(
+    ?'monkey' => ?\Funky_Monkey,
+    ?'dokey' => ?\Donkey,
+  ) $s = shape()) {
+    $this->monkey = $s['monkey'] ?? null;
+    $this->dokey = $s['dokey'] ?? null;
     $this->XXX_skipped = '';
   }
 

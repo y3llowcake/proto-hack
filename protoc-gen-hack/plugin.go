@@ -1139,15 +1139,27 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	// Constructor.
-	w.p("public function __construct() {")
+	w.p("public function __construct(shape(")
+	w.i++
 	for _, f := range fields {
 		if f.isOneofMember() {
 			continue
 		}
-		w.p("$this->%s = %s;", f.varName(), f.defaultValue())
+		w.p("?'%s' => %s,", f.varName(), f.labeledType())
 	}
 	for _, oo := range oneofs {
-		w.p("$this->%s = new %s();", oo.name, oo.notsetClass)
+		w.p("?'%s' => %s,", oo.name, oo.interfaceName)
+	}
+	w.i--
+	w.p(") $s = shape()) {")
+	for _, f := range fields {
+		if f.isOneofMember() {
+			continue
+		}
+		w.p("$this->%s = $s['%s'] ?? %s;", f.varName(), f.varName(), f.defaultValue())
+	}
+	for _, oo := range oneofs {
+		w.p("$this->%s = $s['%s'] ?? new %s();", oo.name, oo.name, oo.notsetClass)
 	}
 	w.p("$this->%sskipped = '';", specialPrefix)
 	w.p("}")

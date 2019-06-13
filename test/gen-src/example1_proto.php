@@ -33,8 +33,10 @@ class example2 implements \Protobuf\Message {
   public int $aint32;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->aint32 = 0;
+  public function __construct(shape(
+    ?'aint32' => int,
+  ) $s = shape()) {
+    $this->aint32 = $s['aint32'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -159,8 +161,10 @@ class example1_example2 implements \Protobuf\Message {
   public string $astring;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->astring = '';
+  public function __construct(shape(
+    ?'astring' => string,
+  ) $s = shape()) {
+    $this->astring = $s['astring'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -208,9 +212,12 @@ class example1_AmapEntry implements \Protobuf\Message {
   public string $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->key = '';
-    $this->value = '';
+  public function __construct(shape(
+    ?'key' => string,
+    ?'value' => string,
+  ) $s = shape()) {
+    $this->key = $s['key'] ?? '';
+    $this->value = $s['value'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -269,9 +276,12 @@ class example1_Amap2Entry implements \Protobuf\Message {
   public ?\fiz\baz\example2 $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->key = '';
-    $this->value = null;
+  public function __construct(shape(
+    ?'key' => string,
+    ?'value' => ?\fiz\baz\example2,
+  ) $s = shape()) {
+    $this->key = $s['key'] ?? '';
+    $this->value = $s['value'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -361,35 +371,64 @@ class example1 implements \Protobuf\Message {
   public example1_aoneof $aoneof;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->adouble = 0.0;
-    $this->afloat = 0.0;
-    $this->aint32 = 0;
-    $this->aint64 = 0;
-    $this->auint32 = 0;
-    $this->auint64 = 0;
-    $this->asint32 = 0;
-    $this->asint64 = 0;
-    $this->afixed32 = 0;
-    $this->afixed64 = 0;
-    $this->asfixed32 = 0;
-    $this->asfixed64 = 0;
-    $this->abool = false;
-    $this->astring = '';
-    $this->abytes = '';
-    $this->aenum1 = \foo\bar\AEnum1::XXX_FromInt(0);
-    $this->aenum2 = \foo\bar\example1_AEnum2::XXX_FromInt(0);
-    $this->aenum22 = \fiz\baz\AEnum2::XXX_FromInt(0);
-    $this->manystring = vec[];
-    $this->manyint64 = vec[];
-    $this->aexample2 = null;
-    $this->aexample22 = null;
-    $this->aexample23 = null;
-    $this->amap = dict[];
-    $this->amap2 = dict[];
-    $this->outoforder = 0;
-    $this->anany = null;
-    $this->aoneof = new XXX_example1_aoneof_NOT_SET();
+  public function __construct(shape(
+    ?'adouble' => float,
+    ?'afloat' => float,
+    ?'aint32' => int,
+    ?'aint64' => int,
+    ?'auint32' => int,
+    ?'auint64' => int,
+    ?'asint32' => int,
+    ?'asint64' => int,
+    ?'afixed32' => int,
+    ?'afixed64' => int,
+    ?'asfixed32' => int,
+    ?'asfixed64' => int,
+    ?'abool' => bool,
+    ?'astring' => string,
+    ?'abytes' => string,
+    ?'aenum1' => \foo\bar\XXX_AEnum1_t,
+    ?'aenum2' => \foo\bar\XXX_example1_AEnum2_t,
+    ?'aenum22' => \fiz\baz\XXX_AEnum2_t,
+    ?'manystring' => vec<string>,
+    ?'manyint64' => vec<int>,
+    ?'aexample2' => ?\foo\bar\example1_example2,
+    ?'aexample22' => ?\foo\bar\example2,
+    ?'aexample23' => ?\fiz\baz\example2,
+    ?'amap' => dict<string, string>,
+    ?'amap2' => dict<string, \fiz\baz\example2>,
+    ?'outoforder' => int,
+    ?'anany' => ?\google\protobuf\Any,
+    ?'aoneof' => example1_aoneof,
+  ) $s = shape()) {
+    $this->adouble = $s['adouble'] ?? 0.0;
+    $this->afloat = $s['afloat'] ?? 0.0;
+    $this->aint32 = $s['aint32'] ?? 0;
+    $this->aint64 = $s['aint64'] ?? 0;
+    $this->auint32 = $s['auint32'] ?? 0;
+    $this->auint64 = $s['auint64'] ?? 0;
+    $this->asint32 = $s['asint32'] ?? 0;
+    $this->asint64 = $s['asint64'] ?? 0;
+    $this->afixed32 = $s['afixed32'] ?? 0;
+    $this->afixed64 = $s['afixed64'] ?? 0;
+    $this->asfixed32 = $s['asfixed32'] ?? 0;
+    $this->asfixed64 = $s['asfixed64'] ?? 0;
+    $this->abool = $s['abool'] ?? false;
+    $this->astring = $s['astring'] ?? '';
+    $this->abytes = $s['abytes'] ?? '';
+    $this->aenum1 = $s['aenum1'] ?? \foo\bar\AEnum1::XXX_FromInt(0);
+    $this->aenum2 = $s['aenum2'] ?? \foo\bar\example1_AEnum2::XXX_FromInt(0);
+    $this->aenum22 = $s['aenum22'] ?? \fiz\baz\AEnum2::XXX_FromInt(0);
+    $this->manystring = $s['manystring'] ?? vec[];
+    $this->manyint64 = $s['manyint64'] ?? vec[];
+    $this->aexample2 = $s['aexample2'] ?? null;
+    $this->aexample22 = $s['aexample22'] ?? null;
+    $this->aexample23 = $s['aexample23'] ?? null;
+    $this->amap = $s['amap'] ?? dict[];
+    $this->amap2 = $s['amap2'] ?? dict[];
+    $this->outoforder = $s['outoforder'] ?? 0;
+    $this->anany = $s['anany'] ?? null;
+    $this->aoneof = $s['aoneof'] ?? new XXX_example1_aoneof_NOT_SET();
     $this->XXX_skipped = '';
   }
 

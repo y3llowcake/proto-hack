@@ -9,9 +9,12 @@ class Duration implements \Protobuf\Message {
   public int $nanos;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->seconds = 0;
-    $this->nanos = 0;
+  public function __construct(shape(
+    ?'seconds' => int,
+    ?'nanos' => int,
+  ) $s = shape()) {
+    $this->seconds = $s['seconds'] ?? 0;
+    $this->nanos = $s['nanos'] ?? 0;
     $this->XXX_skipped = '';
   }
 

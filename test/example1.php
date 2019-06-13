@@ -88,8 +88,9 @@ function repackFloat(float $f): float {
 }
 
 function testExample1($got, $failmsg) {
-  $exp = new foo\bar\example1();
-  $exp->adouble = 13.37;
+	$exp = new foo\bar\example1(shape(
+  	'adouble' => 13.37,
+	));
   $exp->afloat = repackFloat(100.1);
   $exp->aint32 = 1;
   $exp->aint64 = 12;

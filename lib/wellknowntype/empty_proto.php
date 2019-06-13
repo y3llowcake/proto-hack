@@ -7,7 +7,8 @@ namespace google\protobuf;
 class pb_Empty implements \Protobuf\Message {
   private string $XXX_skipped;
 
-  public function __construct() {
+  public function __construct(shape(
+  ) $s = shape()) {
     $this->XXX_skipped = '';
   }
 

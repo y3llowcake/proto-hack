@@ -30,8 +30,10 @@ class example2 implements \Protobuf\Message {
   public int $zomg;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->zomg = 0;
+  public function __construct(shape(
+    ?'zomg' => int,
+  ) $s = shape()) {
+    $this->zomg = $s['zomg'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -78,8 +80,10 @@ class refexample3 implements \Protobuf\Message {
   public ?\Funky $funky;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->funky = null;
+  public function __construct(shape(
+    ?'funky' => ?\Funky,
+  ) $s = shape()) {
+    $this->funky = $s['funky'] ?? null;
     $this->XXX_skipped = '';
   }
 
