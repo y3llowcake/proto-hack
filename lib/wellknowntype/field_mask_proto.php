@@ -8,8 +8,10 @@ class FieldMask implements \Protobuf\Message {
   public vec<string> $paths;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->paths = vec[];
+  public function __construct(shape(
+    ?'paths' => vec<string>,
+  ) $s = shape()) {
+    $this->paths = $s['paths'] ?? vec[];
     $this->XXX_skipped = '';
   }
 

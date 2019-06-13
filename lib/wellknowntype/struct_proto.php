@@ -31,9 +31,12 @@ class Struct_FieldsEntry implements \Protobuf\Message {
   public ?\google\protobuf\Value $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->key = '';
-    $this->value = null;
+  public function __construct(shape(
+    ?'key' => string,
+    ?'value' => ?\google\protobuf\Value,
+  ) $s = shape()) {
+    $this->key = $s['key'] ?? '';
+    $this->value = $s['value'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -95,8 +98,10 @@ class Struct implements \Protobuf\Message {
   public dict<string, \google\protobuf\Value> $fields;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->fields = dict[];
+  public function __construct(shape(
+    ?'fields' => dict<string, \google\protobuf\Value>,
+  ) $s = shape()) {
+    $this->fields = $s['fields'] ?? dict[];
     $this->XXX_skipped = '';
   }
 
@@ -278,8 +283,10 @@ class Value implements \Protobuf\Message {
   public Value_kind $kind;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->kind = new XXX_Value_kind_NOT_SET();
+  public function __construct(shape(
+    ?'kind' => Value_kind,
+  ) $s = shape()) {
+    $this->kind = $s['kind'] ?? new XXX_Value_kind_NOT_SET();
     $this->XXX_skipped = '';
   }
 
@@ -373,8 +380,10 @@ class ListValue implements \Protobuf\Message {
   public vec<\google\protobuf\Value> $values;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->values = vec[];
+  public function __construct(shape(
+    ?'values' => vec<\google\protobuf\Value>,
+  ) $s = shape()) {
+    $this->values = $s['values'] ?? vec[];
     $this->XXX_skipped = '';
   }
 

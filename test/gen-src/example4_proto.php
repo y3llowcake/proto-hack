@@ -7,8 +7,10 @@ class pb_Class implements \Protobuf\Message {
   public string $name;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
+  public function __construct(shape(
+    ?'name' => string,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -55,8 +57,10 @@ class pb_Interface implements \Protobuf\Message {
   public ?\pb_Class $class;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->class = null;
+  public function __construct(shape(
+    ?'class' => ?\pb_Class,
+  ) $s = shape()) {
+    $this->class = $s['class'] ?? null;
     $this->XXX_skipped = '';
   }
 
@@ -108,8 +112,10 @@ class NotClass implements \Protobuf\Message {
   public string $name;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->name = '';
+  public function __construct(shape(
+    ?'name' => string,
+  ) $s = shape()) {
+    $this->name = $s['name'] ?? '';
     $this->XXX_skipped = '';
   }
 

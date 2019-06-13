@@ -8,8 +8,10 @@ class DoubleValue implements \Protobuf\Message {
   public float $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0.0;
+  public function __construct(shape(
+    ?'value' => float,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0.0;
     $this->XXX_skipped = '';
   }
 
@@ -46,8 +48,10 @@ class FloatValue implements \Protobuf\Message {
   public float $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0.0;
+  public function __construct(shape(
+    ?'value' => float,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0.0;
     $this->XXX_skipped = '';
   }
 
@@ -84,8 +88,10 @@ class Int64Value implements \Protobuf\Message {
   public int $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0;
+  public function __construct(shape(
+    ?'value' => int,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -122,8 +128,10 @@ class UInt64Value implements \Protobuf\Message {
   public int $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0;
+  public function __construct(shape(
+    ?'value' => int,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -160,8 +168,10 @@ class Int32Value implements \Protobuf\Message {
   public int $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0;
+  public function __construct(shape(
+    ?'value' => int,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -198,8 +208,10 @@ class UInt32Value implements \Protobuf\Message {
   public int $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = 0;
+  public function __construct(shape(
+    ?'value' => int,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? 0;
     $this->XXX_skipped = '';
   }
 
@@ -236,8 +248,10 @@ class BoolValue implements \Protobuf\Message {
   public bool $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = false;
+  public function __construct(shape(
+    ?'value' => bool,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? false;
     $this->XXX_skipped = '';
   }
 
@@ -274,8 +288,10 @@ class StringValue implements \Protobuf\Message {
   public string $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = '';
+  public function __construct(shape(
+    ?'value' => string,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? '';
     $this->XXX_skipped = '';
   }
 
@@ -312,8 +328,10 @@ class BytesValue implements \Protobuf\Message {
   public string $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->value = '';
+  public function __construct(shape(
+    ?'value' => string,
+  ) $s = shape()) {
+    $this->value = $s['value'] ?? '';
     $this->XXX_skipped = '';
   }
 

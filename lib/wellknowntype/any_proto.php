@@ -9,9 +9,12 @@ class Any implements \Protobuf\Message {
   public string $value;
   private string $XXX_skipped;
 
-  public function __construct() {
-    $this->type_url = '';
-    $this->value = '';
+  public function __construct(shape(
+    ?'type_url' => string,
+    ?'value' => string,
+  ) $s = shape()) {
+    $this->type_url = $s['type_url'] ?? '';
+    $this->value = $s['value'] ?? '';
     $this->XXX_skipped = '';
   }
 
