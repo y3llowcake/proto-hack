@@ -759,26 +759,26 @@ class ExtensionRangeOptions implements \Protobuf\Message {
   }
 }
 
-newtype XXX_FieldDescriptorProto_Type_t as int = int;
+newtype FieldDescriptorProto_Type_enum_t as int = int;
 abstract class FieldDescriptorProto_Type {
-  const XXX_FieldDescriptorProto_Type_t TYPE_DOUBLE = 1;
-  const XXX_FieldDescriptorProto_Type_t TYPE_FLOAT = 2;
-  const XXX_FieldDescriptorProto_Type_t TYPE_INT64 = 3;
-  const XXX_FieldDescriptorProto_Type_t TYPE_UINT64 = 4;
-  const XXX_FieldDescriptorProto_Type_t TYPE_INT32 = 5;
-  const XXX_FieldDescriptorProto_Type_t TYPE_FIXED64 = 6;
-  const XXX_FieldDescriptorProto_Type_t TYPE_FIXED32 = 7;
-  const XXX_FieldDescriptorProto_Type_t TYPE_BOOL = 8;
-  const XXX_FieldDescriptorProto_Type_t TYPE_STRING = 9;
-  const XXX_FieldDescriptorProto_Type_t TYPE_GROUP = 10;
-  const XXX_FieldDescriptorProto_Type_t TYPE_MESSAGE = 11;
-  const XXX_FieldDescriptorProto_Type_t TYPE_BYTES = 12;
-  const XXX_FieldDescriptorProto_Type_t TYPE_UINT32 = 13;
-  const XXX_FieldDescriptorProto_Type_t TYPE_ENUM = 14;
-  const XXX_FieldDescriptorProto_Type_t TYPE_SFIXED32 = 15;
-  const XXX_FieldDescriptorProto_Type_t TYPE_SFIXED64 = 16;
-  const XXX_FieldDescriptorProto_Type_t TYPE_SINT32 = 17;
-  const XXX_FieldDescriptorProto_Type_t TYPE_SINT64 = 18;
+  const FieldDescriptorProto_Type_enum_t TYPE_DOUBLE = 1;
+  const FieldDescriptorProto_Type_enum_t TYPE_FLOAT = 2;
+  const FieldDescriptorProto_Type_enum_t TYPE_INT64 = 3;
+  const FieldDescriptorProto_Type_enum_t TYPE_UINT64 = 4;
+  const FieldDescriptorProto_Type_enum_t TYPE_INT32 = 5;
+  const FieldDescriptorProto_Type_enum_t TYPE_FIXED64 = 6;
+  const FieldDescriptorProto_Type_enum_t TYPE_FIXED32 = 7;
+  const FieldDescriptorProto_Type_enum_t TYPE_BOOL = 8;
+  const FieldDescriptorProto_Type_enum_t TYPE_STRING = 9;
+  const FieldDescriptorProto_Type_enum_t TYPE_GROUP = 10;
+  const FieldDescriptorProto_Type_enum_t TYPE_MESSAGE = 11;
+  const FieldDescriptorProto_Type_enum_t TYPE_BYTES = 12;
+  const FieldDescriptorProto_Type_enum_t TYPE_UINT32 = 13;
+  const FieldDescriptorProto_Type_enum_t TYPE_ENUM = 14;
+  const FieldDescriptorProto_Type_enum_t TYPE_SFIXED32 = 15;
+  const FieldDescriptorProto_Type_enum_t TYPE_SFIXED64 = 16;
+  const FieldDescriptorProto_Type_enum_t TYPE_SINT32 = 17;
+  const FieldDescriptorProto_Type_enum_t TYPE_SINT64 = 18;
   private static dict<int, string> $XXX_itos = dict[
     1 => 'TYPE_DOUBLE',
     2 => 'TYPE_FLOAT',
@@ -822,21 +822,21 @@ abstract class FieldDescriptorProto_Type {
     'TYPE_SINT32' => 17,
     'TYPE_SINT64' => 18,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_FieldDescriptorProto_Type_t {
+  public static function XXX_FromMixed(mixed $m): FieldDescriptorProto_Type_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_FieldDescriptorProto_Type_t {
+  public static function XXX_FromInt(int $i): FieldDescriptorProto_Type_enum_t {
     return $i;
   }
 }
 
-newtype XXX_FieldDescriptorProto_Label_t as int = int;
+newtype FieldDescriptorProto_Label_enum_t as int = int;
 abstract class FieldDescriptorProto_Label {
-  const XXX_FieldDescriptorProto_Label_t LABEL_OPTIONAL = 1;
-  const XXX_FieldDescriptorProto_Label_t LABEL_REQUIRED = 2;
-  const XXX_FieldDescriptorProto_Label_t LABEL_REPEATED = 3;
+  const FieldDescriptorProto_Label_enum_t LABEL_OPTIONAL = 1;
+  const FieldDescriptorProto_Label_enum_t LABEL_REQUIRED = 2;
+  const FieldDescriptorProto_Label_enum_t LABEL_REPEATED = 3;
   private static dict<int, string> $XXX_itos = dict[
     1 => 'LABEL_OPTIONAL',
     2 => 'LABEL_REQUIRED',
@@ -850,12 +850,12 @@ abstract class FieldDescriptorProto_Label {
     'LABEL_REQUIRED' => 2,
     'LABEL_REPEATED' => 3,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_FieldDescriptorProto_Label_t {
+  public static function XXX_FromMixed(mixed $m): FieldDescriptorProto_Label_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_FieldDescriptorProto_Label_t {
+  public static function XXX_FromInt(int $i): FieldDescriptorProto_Label_enum_t {
     return $i;
   }
 }
@@ -863,8 +863,8 @@ abstract class FieldDescriptorProto_Label {
 class FieldDescriptorProto implements \Protobuf\Message {
   public string $name;
   public int $number;
-  public \google\protobuf\XXX_FieldDescriptorProto_Label_t $label;
-  public \google\protobuf\XXX_FieldDescriptorProto_Type_t $type;
+  public \google\protobuf\FieldDescriptorProto_Label_enum_t $label;
+  public \google\protobuf\FieldDescriptorProto_Type_enum_t $type;
   public string $type_name;
   public string $extendee;
   public string $default_value;
@@ -876,8 +876,8 @@ class FieldDescriptorProto implements \Protobuf\Message {
   public function __construct(shape(
     ?'name' => string,
     ?'number' => int,
-    ?'label' => \google\protobuf\XXX_FieldDescriptorProto_Label_t,
-    ?'type' => \google\protobuf\XXX_FieldDescriptorProto_Type_t,
+    ?'label' => \google\protobuf\FieldDescriptorProto_Label_enum_t,
+    ?'type' => \google\protobuf\FieldDescriptorProto_Type_enum_t,
     ?'type_name' => string,
     ?'extendee' => string,
     ?'default_value' => string,
@@ -1599,11 +1599,11 @@ class MethodDescriptorProto implements \Protobuf\Message {
   }
 }
 
-newtype XXX_FileOptions_OptimizeMode_t as int = int;
+newtype FileOptions_OptimizeMode_enum_t as int = int;
 abstract class FileOptions_OptimizeMode {
-  const XXX_FileOptions_OptimizeMode_t SPEED = 1;
-  const XXX_FileOptions_OptimizeMode_t CODE_SIZE = 2;
-  const XXX_FileOptions_OptimizeMode_t LITE_RUNTIME = 3;
+  const FileOptions_OptimizeMode_enum_t SPEED = 1;
+  const FileOptions_OptimizeMode_enum_t CODE_SIZE = 2;
+  const FileOptions_OptimizeMode_enum_t LITE_RUNTIME = 3;
   private static dict<int, string> $XXX_itos = dict[
     1 => 'SPEED',
     2 => 'CODE_SIZE',
@@ -1617,12 +1617,12 @@ abstract class FileOptions_OptimizeMode {
     'CODE_SIZE' => 2,
     'LITE_RUNTIME' => 3,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_FileOptions_OptimizeMode_t {
+  public static function XXX_FromMixed(mixed $m): FileOptions_OptimizeMode_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_FileOptions_OptimizeMode_t {
+  public static function XXX_FromInt(int $i): FileOptions_OptimizeMode_enum_t {
     return $i;
   }
 }
@@ -1633,7 +1633,7 @@ class FileOptions implements \Protobuf\Message {
   public bool $java_multiple_files;
   public bool $java_generate_equals_and_hash;
   public bool $java_string_check_utf8;
-  public \google\protobuf\XXX_FileOptions_OptimizeMode_t $optimize_for;
+  public \google\protobuf\FileOptions_OptimizeMode_enum_t $optimize_for;
   public string $go_package;
   public bool $cc_generic_services;
   public bool $java_generic_services;
@@ -1657,7 +1657,7 @@ class FileOptions implements \Protobuf\Message {
     ?'java_multiple_files' => bool,
     ?'java_generate_equals_and_hash' => bool,
     ?'java_string_check_utf8' => bool,
-    ?'optimize_for' => \google\protobuf\XXX_FileOptions_OptimizeMode_t,
+    ?'optimize_for' => \google\protobuf\FileOptions_OptimizeMode_enum_t,
     ?'go_package' => string,
     ?'cc_generic_services' => bool,
     ?'java_generic_services' => bool,
@@ -2077,11 +2077,11 @@ class MessageOptions implements \Protobuf\Message {
   }
 }
 
-newtype XXX_FieldOptions_CType_t as int = int;
+newtype FieldOptions_CType_enum_t as int = int;
 abstract class FieldOptions_CType {
-  const XXX_FieldOptions_CType_t STRING = 0;
-  const XXX_FieldOptions_CType_t CORD = 1;
-  const XXX_FieldOptions_CType_t STRING_PIECE = 2;
+  const FieldOptions_CType_enum_t STRING = 0;
+  const FieldOptions_CType_enum_t CORD = 1;
+  const FieldOptions_CType_enum_t STRING_PIECE = 2;
   private static dict<int, string> $XXX_itos = dict[
     0 => 'STRING',
     1 => 'CORD',
@@ -2095,21 +2095,21 @@ abstract class FieldOptions_CType {
     'CORD' => 1,
     'STRING_PIECE' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_FieldOptions_CType_t {
+  public static function XXX_FromMixed(mixed $m): FieldOptions_CType_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_FieldOptions_CType_t {
+  public static function XXX_FromInt(int $i): FieldOptions_CType_enum_t {
     return $i;
   }
 }
 
-newtype XXX_FieldOptions_JSType_t as int = int;
+newtype FieldOptions_JSType_enum_t as int = int;
 abstract class FieldOptions_JSType {
-  const XXX_FieldOptions_JSType_t JS_NORMAL = 0;
-  const XXX_FieldOptions_JSType_t JS_STRING = 1;
-  const XXX_FieldOptions_JSType_t JS_NUMBER = 2;
+  const FieldOptions_JSType_enum_t JS_NORMAL = 0;
+  const FieldOptions_JSType_enum_t JS_STRING = 1;
+  const FieldOptions_JSType_enum_t JS_NUMBER = 2;
   private static dict<int, string> $XXX_itos = dict[
     0 => 'JS_NORMAL',
     1 => 'JS_STRING',
@@ -2123,20 +2123,20 @@ abstract class FieldOptions_JSType {
     'JS_STRING' => 1,
     'JS_NUMBER' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_FieldOptions_JSType_t {
+  public static function XXX_FromMixed(mixed $m): FieldOptions_JSType_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_FieldOptions_JSType_t {
+  public static function XXX_FromInt(int $i): FieldOptions_JSType_enum_t {
     return $i;
   }
 }
 
 class FieldOptions implements \Protobuf\Message {
-  public \google\protobuf\XXX_FieldOptions_CType_t $ctype;
+  public \google\protobuf\FieldOptions_CType_enum_t $ctype;
   public bool $packed;
-  public \google\protobuf\XXX_FieldOptions_JSType_t $jstype;
+  public \google\protobuf\FieldOptions_JSType_enum_t $jstype;
   public bool $lazy;
   public bool $deprecated;
   public bool $weak;
@@ -2144,9 +2144,9 @@ class FieldOptions implements \Protobuf\Message {
   private string $XXX_skipped;
 
   public function __construct(shape(
-    ?'ctype' => \google\protobuf\XXX_FieldOptions_CType_t,
+    ?'ctype' => \google\protobuf\FieldOptions_CType_enum_t,
     ?'packed' => bool,
-    ?'jstype' => \google\protobuf\XXX_FieldOptions_JSType_t,
+    ?'jstype' => \google\protobuf\FieldOptions_JSType_enum_t,
     ?'lazy' => bool,
     ?'deprecated' => bool,
     ?'weak' => bool,
@@ -2558,11 +2558,11 @@ class ServiceOptions implements \Protobuf\Message {
   }
 }
 
-newtype XXX_MethodOptions_IdempotencyLevel_t as int = int;
+newtype MethodOptions_IdempotencyLevel_enum_t as int = int;
 abstract class MethodOptions_IdempotencyLevel {
-  const XXX_MethodOptions_IdempotencyLevel_t IDEMPOTENCY_UNKNOWN = 0;
-  const XXX_MethodOptions_IdempotencyLevel_t NO_SIDE_EFFECTS = 1;
-  const XXX_MethodOptions_IdempotencyLevel_t IDEMPOTENT = 2;
+  const MethodOptions_IdempotencyLevel_enum_t IDEMPOTENCY_UNKNOWN = 0;
+  const MethodOptions_IdempotencyLevel_enum_t NO_SIDE_EFFECTS = 1;
+  const MethodOptions_IdempotencyLevel_enum_t IDEMPOTENT = 2;
   private static dict<int, string> $XXX_itos = dict[
     0 => 'IDEMPOTENCY_UNKNOWN',
     1 => 'NO_SIDE_EFFECTS',
@@ -2576,25 +2576,25 @@ abstract class MethodOptions_IdempotencyLevel {
     'NO_SIDE_EFFECTS' => 1,
     'IDEMPOTENT' => 2,
   ];
-  public static function XXX_FromMixed(mixed $m): XXX_MethodOptions_IdempotencyLevel_t {
+  public static function XXX_FromMixed(mixed $m): MethodOptions_IdempotencyLevel_enum_t {
     if ($m is string) return idx(self::$XXX_stoi, $m, \is_numeric($m) ? ((int) $m) : 0);
     if ($m is int) return $m;
     return 0;
   }
-  public static function XXX_FromInt(int $i): XXX_MethodOptions_IdempotencyLevel_t {
+  public static function XXX_FromInt(int $i): MethodOptions_IdempotencyLevel_enum_t {
     return $i;
   }
 }
 
 class MethodOptions implements \Protobuf\Message {
   public bool $deprecated;
-  public \google\protobuf\XXX_MethodOptions_IdempotencyLevel_t $idempotency_level;
+  public \google\protobuf\MethodOptions_IdempotencyLevel_enum_t $idempotency_level;
   public vec<\google\protobuf\UninterpretedOption> $uninterpreted_option;
   private string $XXX_skipped;
 
   public function __construct(shape(
     ?'deprecated' => bool,
-    ?'idempotency_level' => \google\protobuf\XXX_MethodOptions_IdempotencyLevel_t,
+    ?'idempotency_level' => \google\protobuf\MethodOptions_IdempotencyLevel_enum_t,
     ?'uninterpreted_option' => vec<\google\protobuf\UninterpretedOption>,
   ) $s = shape()) {
     $this->deprecated = $s['deprecated'] ?? false;

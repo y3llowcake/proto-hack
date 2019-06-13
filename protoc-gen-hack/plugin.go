@@ -315,7 +315,7 @@ func (f field) phpType() string {
 		desc.FieldDescriptorProto_TYPE_GROUP:
 		return f.typePhpNs + "\\" + f.typePhpName
 	case desc.FieldDescriptorProto_TYPE_ENUM:
-		return f.typePhpNs + "\\" + specialPrefix + f.typePhpName + "_t"
+		return f.typePhpNs + "\\" + f.typePhpName + "_enum_t"
 	default:
 		panic(fmt.Errorf("unexpected proto type while converting to php type: %v", t))
 	}
@@ -940,7 +940,7 @@ func (f field) isOneofMember() bool {
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
 	name := strings.Join(append(prefixNames, *ed.Name), "_")
-	typename := specialPrefix + name + "_t"
+	typename := name + "_enum_t"
 	w.p("newtype %s as int = int;", typename)
 	w.p("abstract class %s {", name)
 	for _, v := range ed.Value {
