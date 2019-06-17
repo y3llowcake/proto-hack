@@ -55,11 +55,12 @@ class FieldMask implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FieldMask {
-    $c = new FieldMask();
-    $c->paths = $this->paths;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FieldMask)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->paths = $o->paths;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

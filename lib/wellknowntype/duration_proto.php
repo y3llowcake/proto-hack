@@ -57,12 +57,13 @@ class Duration implements \Protobuf\Message {
     $this->nanos = $parts[1];
   }
 
-  public function DeepCopy(): Duration {
-    $c = new Duration();
-    $c->seconds = $this->seconds;
-    $c->nanos = $this->nanos;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Duration)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->seconds = $o->seconds;
+    $this->nanos = $o->nanos;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

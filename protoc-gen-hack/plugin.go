@@ -638,26 +638,35 @@ func (f field) writeCopy(w *writer, c string) {
 	if f.isMap {
 		_, vv := f.mapFields()
 		if vv.isMessageOrGroup() {
-			w.p("foreach ($this->%s as $k => $v) {", f.varName())
-			w.p("%s->%s[$k] = $v->DeepCopy();", c, f.varName())
+			w.p("foreach (%s->%s as $k => $v) {", c, f.varName())
+			w.p("$nv = new %s();", vv.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$this->%s[$k] = $nv;", f.varName())
 			w.p("}")
 		} else {
-			w.p("%s->%s = $this->%s;", c, f.varName(), f.varName())
+			w.p("$this->%s = %s->%s;", f.varName(), c, f.varName())
 		}
 		return
 	}
 
 	if f.isRepeated() && f.isMessageOrGroup() {
-		w.p("foreach ($this->%s as $v) {", f.varName())
-		w.p("%s->%s []= $v->DeepCopy();", c, f.varName())
+		w.p("foreach (%s->%s as $v) {", c, f.varName())
+		w.p("$nv = new %s();", f.phpType())
+		w.p("$nv->CopyFrom($v);")
+		w.p("$this->%s []= $nv;", f.varName())
 		w.p("}")
 		return
 	}
 
 	if f.isMessageOrGroup() {
-		w.p("%s->%s = $this->%s?->DeepCopy();", c, f.varName(), f.varName())
+		w.p("$tmp = %s->%s;", c, f.varName())
+		w.p("if ($tmp !== null) {")
+		w.p("$nv = new %s();", f.phpType())
+		w.p("$nv->CopyFrom($tmp);")
+		w.p("$this->%s = $nv;", f.varName())
+		w.p("}")
 	} else {
-		w.p("%s->%s = $this->%s;", c, f.varName(), f.varName())
+		w.p("$this->%s = %s->%s;", f.varName(), c, f.varName())
 	}
 }
 
@@ -1036,7 +1045,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.p("public function WhichOneof(): %s;", oo.enumTypeName)
 	w.p("public function WriteTo(%s\\Encoder $e): void;", libNsInternal)
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void;", libNsInternal)
-	w.p("public function DeepCopy(): %s;", oo.interfaceName)
+	w.p("public function Copy(): %s;", oo.interfaceName)
 	w.p("}")
 
 	w.ln()
@@ -1052,7 +1061,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.ln()
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {}", libNsInternal)
 	w.ln()
-	w.p("public function DeepCopy(): %s { return $this; }", oo.interfaceName)
+	w.p("public function Copy(): %s { return $this; }", oo.interfaceName)
 
 	w.p("}")
 	w.ln()
@@ -1078,7 +1087,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 		w.p("}")
 		w.ln()
 
-		w.p("public function DeepCopy(): %s {", oo.interfaceName)
+		w.p("public function Copy(): %s {", oo.interfaceName)
 		writeOneofCopy(w, oo, f)
 		w.p("}")
 
@@ -1093,7 +1102,9 @@ func writeOneofCopy(w *writer, oo *oneof, f *field) {
 		if vv.isMessageOrGroup() {
 			w.p("$m = [];")
 			w.p("foreach($this->%s as $k => $v) {", f.varName())
-			w.p("$m[$k] = $v->DeepCopy();")
+			w.p("$nv = new %s();", vv.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$m[$k] = $nv;")
 			w.p("}")
 			w.p("return new %s($m);, oo.classNameForField(f)")
 		} else {
@@ -1105,12 +1116,16 @@ func writeOneofCopy(w *writer, oo *oneof, f *field) {
 		if f.isRepeated() {
 			w.p("$a = [];")
 			w.p("foreach($this->%s as $v) {", f.varName())
-			w.p("$a []= $v->DeepCopy();")
+			w.p("$nv = new %s();", f.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$a []= $nv;")
 			w.p("}")
 			w.p("return new %s($a);, oo.classNameForField(f)")
 
 		} else {
-			w.p("return new %s($this->%s->DeepCopy());", oo.classNameForField(f), f.varName())
+			w.p("$nv = new %s();", f.phpType())
+			w.p("$nv->CopyFrom($this->%s);", f.varName())
+			w.p("return new %s($nv);", oo.classNameForField(f))
 		}
 		return
 	}
@@ -1324,20 +1339,21 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("}")
 	w.ln()
 
-	// DeepCopy function
-	w.p("public function DeepCopy(): %s {", name)
-	w.p("$c = new %s();", name)
+	// CopyFrom function
+	w.p("public function CopyFrom(%s\\Message $o): void {", libNs)
+	w.p("if (!($o instanceof %s)) {", name)
+	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNs)
+	w.p("}")
 	for _, f := range fields {
 		if f.isOneofMember() {
 			continue
 		}
-		f.writeCopy(w, "$c")
+		f.writeCopy(w, "$o")
 	}
 	for _, oo := range oneofs {
-		w.p("$c->%s = $this->%s->DeepCopy();", oo.name, oo.name)
+		w.p("$this->%s = $o->%s->Copy();", oo.name, oo.name)
 	}
-	w.p("$c->%sunrecognized = $this->%sunrecognized;", specialPrefix, specialPrefix)
-	w.p("return $c;")
+	w.p("$this->%sunrecognized = $o->%sunrecognized;", specialPrefix, specialPrefix)
 	w.p("}")
 
 	w.p("}") // class

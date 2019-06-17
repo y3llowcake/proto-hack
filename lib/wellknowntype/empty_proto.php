@@ -39,10 +39,11 @@ class pb_Empty implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): pb_Empty {
-    $c = new pb_Empty();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof pb_Empty)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

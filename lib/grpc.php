@@ -222,6 +222,13 @@ namespace Grpc {
     }
   }
 
+  class CopyUnmarshaller implements Unmarshaller {
+    public function __construct(private Message $from) {}
+    public function Unmarshal(Message $into): void {
+      $into->CopyFrom($this->from);
+    }
+  }
+
   type MethodHandler = (function(Context, Unmarshaller): Message);
 
   class MethodDesc {

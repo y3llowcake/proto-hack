@@ -57,11 +57,17 @@ class AnyTest implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): AnyTest {
-    $c = new AnyTest();
-    $c->any = $this->any?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof AnyTest)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $tmp = $o->any;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\Any();
+      $nv->CopyFrom($tmp);
+      $this->any = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

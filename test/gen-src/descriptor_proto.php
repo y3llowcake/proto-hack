@@ -60,13 +60,16 @@ class FileDescriptorSet implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FileDescriptorSet {
-    $c = new FileDescriptorSet();
-    foreach ($this->file as $v) {
-      $c->file []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FileDescriptorSet)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->file as $v) {
+      $nv = new \google\protobuf\FileDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->file []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -331,30 +334,49 @@ class FileDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FileDescriptorProto {
-    $c = new FileDescriptorProto();
-    $c->name = $this->name;
-    $c->package = $this->package;
-    $c->dependency = $this->dependency;
-    foreach ($this->message_type as $v) {
-      $c->message_type []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FileDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    foreach ($this->enum_type as $v) {
-      $c->enum_type []= $v->DeepCopy();
+    $this->name = $o->name;
+    $this->package = $o->package;
+    $this->dependency = $o->dependency;
+    foreach ($o->message_type as $v) {
+      $nv = new \google\protobuf\DescriptorProto();
+      $nv->CopyFrom($v);
+      $this->message_type []= $nv;
     }
-    foreach ($this->service as $v) {
-      $c->service []= $v->DeepCopy();
+    foreach ($o->enum_type as $v) {
+      $nv = new \google\protobuf\EnumDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->enum_type []= $nv;
     }
-    foreach ($this->extension as $v) {
-      $c->extension []= $v->DeepCopy();
+    foreach ($o->service as $v) {
+      $nv = new \google\protobuf\ServiceDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->service []= $nv;
     }
-    $c->options = $this->options?->DeepCopy();
-    $c->source_code_info = $this->source_code_info?->DeepCopy();
-    $c->public_dependency = $this->public_dependency;
-    $c->weak_dependency = $this->weak_dependency;
-    $c->syntax = $this->syntax;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->extension as $v) {
+      $nv = new \google\protobuf\FieldDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->extension []= $nv;
+    }
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\FileOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $tmp = $o->source_code_info;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\SourceCodeInfo();
+      $nv->CopyFrom($tmp);
+      $this->source_code_info = $nv;
+    }
+    $this->public_dependency = $o->public_dependency;
+    $this->weak_dependency = $o->weak_dependency;
+    $this->syntax = $o->syntax;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -440,13 +462,19 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): DescriptorProto_ExtensionRange {
-    $c = new DescriptorProto_ExtensionRange();
-    $c->start = $this->start;
-    $c->end = $this->end;
-    $c->options = $this->options?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof DescriptorProto_ExtensionRange)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->start = $o->start;
+    $this->end = $o->end;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\ExtensionRangeOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -513,12 +541,13 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): DescriptorProto_ReservedRange {
-    $c = new DescriptorProto_ReservedRange();
-    $c->start = $this->start;
-    $c->end = $this->end;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof DescriptorProto_ReservedRange)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->start = $o->start;
+    $this->end = $o->end;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -753,34 +782,54 @@ class DescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): DescriptorProto {
-    $c = new DescriptorProto();
-    $c->name = $this->name;
-    foreach ($this->field as $v) {
-      $c->field []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof DescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    foreach ($this->nested_type as $v) {
-      $c->nested_type []= $v->DeepCopy();
+    $this->name = $o->name;
+    foreach ($o->field as $v) {
+      $nv = new \google\protobuf\FieldDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->field []= $nv;
     }
-    foreach ($this->enum_type as $v) {
-      $c->enum_type []= $v->DeepCopy();
+    foreach ($o->nested_type as $v) {
+      $nv = new \google\protobuf\DescriptorProto();
+      $nv->CopyFrom($v);
+      $this->nested_type []= $nv;
     }
-    foreach ($this->extension_range as $v) {
-      $c->extension_range []= $v->DeepCopy();
+    foreach ($o->enum_type as $v) {
+      $nv = new \google\protobuf\EnumDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->enum_type []= $nv;
     }
-    foreach ($this->extension as $v) {
-      $c->extension []= $v->DeepCopy();
+    foreach ($o->extension_range as $v) {
+      $nv = new \google\protobuf\DescriptorProto_ExtensionRange();
+      $nv->CopyFrom($v);
+      $this->extension_range []= $nv;
     }
-    $c->options = $this->options?->DeepCopy();
-    foreach ($this->oneof_decl as $v) {
-      $c->oneof_decl []= $v->DeepCopy();
+    foreach ($o->extension as $v) {
+      $nv = new \google\protobuf\FieldDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->extension []= $nv;
     }
-    foreach ($this->reserved_range as $v) {
-      $c->reserved_range []= $v->DeepCopy();
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\MessageOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
     }
-    $c->reserved_name = $this->reserved_name;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->oneof_decl as $v) {
+      $nv = new \google\protobuf\OneofDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->oneof_decl []= $nv;
+    }
+    foreach ($o->reserved_range as $v) {
+      $nv = new \google\protobuf\DescriptorProto_ReservedRange();
+      $nv->CopyFrom($v);
+      $this->reserved_range []= $nv;
+    }
+    $this->reserved_name = $o->reserved_name;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -840,13 +889,16 @@ class ExtensionRangeOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): ExtensionRangeOptions {
-    $c = new ExtensionRangeOptions();
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof ExtensionRangeOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1131,20 +1183,26 @@ class FieldDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FieldDescriptorProto {
-    $c = new FieldDescriptorProto();
-    $c->name = $this->name;
-    $c->extendee = $this->extendee;
-    $c->number = $this->number;
-    $c->label = $this->label;
-    $c->type = $this->type;
-    $c->type_name = $this->type_name;
-    $c->default_value = $this->default_value;
-    $c->options = $this->options?->DeepCopy();
-    $c->oneof_index = $this->oneof_index;
-    $c->json_name = $this->json_name;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FieldDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->name = $o->name;
+    $this->extendee = $o->extendee;
+    $this->number = $o->number;
+    $this->label = $o->label;
+    $this->type = $o->type;
+    $this->type_name = $o->type_name;
+    $this->default_value = $o->default_value;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\FieldOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->oneof_index = $o->oneof_index;
+    $this->json_name = $o->json_name;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1216,12 +1274,18 @@ class OneofDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): OneofDescriptorProto {
-    $c = new OneofDescriptorProto();
-    $c->name = $this->name;
-    $c->options = $this->options?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof OneofDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->name = $o->name;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\OneofOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1288,12 +1352,13 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): EnumDescriptorProto_EnumReservedRange {
-    $c = new EnumDescriptorProto_EnumReservedRange();
-    $c->start = $this->start;
-    $c->end = $this->end;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof EnumDescriptorProto_EnumReservedRange)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->start = $o->start;
+    $this->end = $o->end;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1423,19 +1488,29 @@ class EnumDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): EnumDescriptorProto {
-    $c = new EnumDescriptorProto();
-    $c->name = $this->name;
-    foreach ($this->value as $v) {
-      $c->value []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof EnumDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->options = $this->options?->DeepCopy();
-    foreach ($this->reserved_range as $v) {
-      $c->reserved_range []= $v->DeepCopy();
+    $this->name = $o->name;
+    foreach ($o->value as $v) {
+      $nv = new \google\protobuf\EnumValueDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->value []= $nv;
     }
-    $c->reserved_name = $this->reserved_name;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\EnumOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    foreach ($o->reserved_range as $v) {
+      $nv = new \google\protobuf\EnumDescriptorProto_EnumReservedRange();
+      $nv->CopyFrom($v);
+      $this->reserved_range []= $nv;
+    }
+    $this->reserved_name = $o->reserved_name;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1521,13 +1596,19 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): EnumValueDescriptorProto {
-    $c = new EnumValueDescriptorProto();
-    $c->name = $this->name;
-    $c->number = $this->number;
-    $c->options = $this->options?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof EnumValueDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->name = $o->name;
+    $this->number = $o->number;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\EnumValueOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1620,15 +1701,23 @@ class ServiceDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): ServiceDescriptorProto {
-    $c = new ServiceDescriptorProto();
-    $c->name = $this->name;
-    foreach ($this->method as $v) {
-      $c->method []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof ServiceDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->options = $this->options?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->name = $o->name;
+    foreach ($o->method as $v) {
+      $nv = new \google\protobuf\MethodDescriptorProto();
+      $nv->CopyFrom($v);
+      $this->method []= $nv;
+    }
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\ServiceOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -1756,16 +1845,22 @@ class MethodDescriptorProto implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): MethodDescriptorProto {
-    $c = new MethodDescriptorProto();
-    $c->name = $this->name;
-    $c->input_type = $this->input_type;
-    $c->output_type = $this->output_type;
-    $c->options = $this->options?->DeepCopy();
-    $c->client_streaming = $this->client_streaming;
-    $c->server_streaming = $this->server_streaming;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof MethodDescriptorProto)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->name = $o->name;
+    $this->input_type = $o->input_type;
+    $this->output_type = $o->output_type;
+    $tmp = $o->options;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\MethodOptions();
+      $nv->CopyFrom($tmp);
+      $this->options = $nv;
+    }
+    $this->client_streaming = $o->client_streaming;
+    $this->server_streaming = $o->server_streaming;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2133,33 +2228,36 @@ class FileOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FileOptions {
-    $c = new FileOptions();
-    $c->java_package = $this->java_package;
-    $c->java_outer_classname = $this->java_outer_classname;
-    $c->optimize_for = $this->optimize_for;
-    $c->java_multiple_files = $this->java_multiple_files;
-    $c->go_package = $this->go_package;
-    $c->cc_generic_services = $this->cc_generic_services;
-    $c->java_generic_services = $this->java_generic_services;
-    $c->py_generic_services = $this->py_generic_services;
-    $c->java_generate_equals_and_hash = $this->java_generate_equals_and_hash;
-    $c->deprecated = $this->deprecated;
-    $c->java_string_check_utf8 = $this->java_string_check_utf8;
-    $c->cc_enable_arenas = $this->cc_enable_arenas;
-    $c->objc_class_prefix = $this->objc_class_prefix;
-    $c->csharp_namespace = $this->csharp_namespace;
-    $c->swift_prefix = $this->swift_prefix;
-    $c->php_class_prefix = $this->php_class_prefix;
-    $c->php_namespace = $this->php_namespace;
-    $c->php_generic_services = $this->php_generic_services;
-    $c->php_metadata_namespace = $this->php_metadata_namespace;
-    $c->ruby_package = $this->ruby_package;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FileOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->java_package = $o->java_package;
+    $this->java_outer_classname = $o->java_outer_classname;
+    $this->optimize_for = $o->optimize_for;
+    $this->java_multiple_files = $o->java_multiple_files;
+    $this->go_package = $o->go_package;
+    $this->cc_generic_services = $o->cc_generic_services;
+    $this->java_generic_services = $o->java_generic_services;
+    $this->py_generic_services = $o->py_generic_services;
+    $this->java_generate_equals_and_hash = $o->java_generate_equals_and_hash;
+    $this->deprecated = $o->deprecated;
+    $this->java_string_check_utf8 = $o->java_string_check_utf8;
+    $this->cc_enable_arenas = $o->cc_enable_arenas;
+    $this->objc_class_prefix = $o->objc_class_prefix;
+    $this->csharp_namespace = $o->csharp_namespace;
+    $this->swift_prefix = $o->swift_prefix;
+    $this->php_class_prefix = $o->php_class_prefix;
+    $this->php_namespace = $o->php_namespace;
+    $this->php_generic_services = $o->php_generic_services;
+    $this->php_metadata_namespace = $o->php_metadata_namespace;
+    $this->ruby_package = $o->ruby_package;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2275,17 +2373,20 @@ class MessageOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): MessageOptions {
-    $c = new MessageOptions();
-    $c->message_set_wire_format = $this->message_set_wire_format;
-    $c->no_standard_descriptor_accessor = $this->no_standard_descriptor_accessor;
-    $c->deprecated = $this->deprecated;
-    $c->map_entry = $this->map_entry;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof MessageOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->message_set_wire_format = $o->message_set_wire_format;
+    $this->no_standard_descriptor_accessor = $o->no_standard_descriptor_accessor;
+    $this->deprecated = $o->deprecated;
+    $this->map_entry = $o->map_entry;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2485,19 +2586,22 @@ class FieldOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): FieldOptions {
-    $c = new FieldOptions();
-    $c->ctype = $this->ctype;
-    $c->packed = $this->packed;
-    $c->deprecated = $this->deprecated;
-    $c->lazy = $this->lazy;
-    $c->jstype = $this->jstype;
-    $c->weak = $this->weak;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FieldOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->ctype = $o->ctype;
+    $this->packed = $o->packed;
+    $this->deprecated = $o->deprecated;
+    $this->lazy = $o->lazy;
+    $this->jstype = $o->jstype;
+    $this->weak = $o->weak;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2557,13 +2661,16 @@ class OneofOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): OneofOptions {
-    $c = new OneofOptions();
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof OneofOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2651,15 +2758,18 @@ class EnumOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): EnumOptions {
-    $c = new EnumOptions();
-    $c->allow_alias = $this->allow_alias;
-    $c->deprecated = $this->deprecated;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof EnumOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->allow_alias = $o->allow_alias;
+    $this->deprecated = $o->deprecated;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2733,14 +2843,17 @@ class EnumValueOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): EnumValueOptions {
-    $c = new EnumValueOptions();
-    $c->deprecated = $this->deprecated;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof EnumValueOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->deprecated = $o->deprecated;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2814,14 +2927,17 @@ class ServiceOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): ServiceOptions {
-    $c = new ServiceOptions();
-    $c->deprecated = $this->deprecated;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof ServiceOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->deprecated = $o->deprecated;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -2937,15 +3053,18 @@ class MethodOptions implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): MethodOptions {
-    $c = new MethodOptions();
-    $c->deprecated = $this->deprecated;
-    $c->idempotency_level = $this->idempotency_level;
-    foreach ($this->uninterpreted_option as $v) {
-      $c->uninterpreted_option []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof MethodOptions)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    $this->deprecated = $o->deprecated;
+    $this->idempotency_level = $o->idempotency_level;
+    foreach ($o->uninterpreted_option as $v) {
+      $nv = new \google\protobuf\UninterpretedOption();
+      $nv->CopyFrom($v);
+      $this->uninterpreted_option []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3012,12 +3131,13 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): UninterpretedOption_NamePart {
-    $c = new UninterpretedOption_NamePart();
-    $c->name_part = $this->name_part;
-    $c->is_extension = $this->is_extension;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof UninterpretedOption_NamePart)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->name_part = $o->name_part;
+    $this->is_extension = $o->is_extension;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3161,19 +3281,22 @@ class UninterpretedOption implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): UninterpretedOption {
-    $c = new UninterpretedOption();
-    foreach ($this->name as $v) {
-      $c->name []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof UninterpretedOption)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->identifier_value = $this->identifier_value;
-    $c->positive_int_value = $this->positive_int_value;
-    $c->negative_int_value = $this->negative_int_value;
-    $c->double_value = $this->double_value;
-    $c->string_value = $this->string_value;
-    $c->aggregate_value = $this->aggregate_value;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->name as $v) {
+      $nv = new \google\protobuf\UninterpretedOption_NamePart();
+      $nv->CopyFrom($v);
+      $this->name []= $nv;
+    }
+    $this->identifier_value = $o->identifier_value;
+    $this->positive_int_value = $o->positive_int_value;
+    $this->negative_int_value = $o->negative_int_value;
+    $this->double_value = $o->double_value;
+    $this->string_value = $o->string_value;
+    $this->aggregate_value = $o->aggregate_value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3304,15 +3427,16 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): SourceCodeInfo_Location {
-    $c = new SourceCodeInfo_Location();
-    $c->path = $this->path;
-    $c->span = $this->span;
-    $c->leading_comments = $this->leading_comments;
-    $c->trailing_comments = $this->trailing_comments;
-    $c->leading_detached_comments = $this->leading_detached_comments;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof SourceCodeInfo_Location)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->path = $o->path;
+    $this->span = $o->span;
+    $this->leading_comments = $o->leading_comments;
+    $this->trailing_comments = $o->trailing_comments;
+    $this->leading_detached_comments = $o->leading_detached_comments;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3372,13 +3496,16 @@ class SourceCodeInfo implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): SourceCodeInfo {
-    $c = new SourceCodeInfo();
-    foreach ($this->location as $v) {
-      $c->location []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof SourceCodeInfo)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->location as $v) {
+      $nv = new \google\protobuf\SourceCodeInfo_Location();
+      $nv->CopyFrom($v);
+      $this->location []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3483,14 +3610,15 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): GeneratedCodeInfo_Annotation {
-    $c = new GeneratedCodeInfo_Annotation();
-    $c->path = $this->path;
-    $c->source_file = $this->source_file;
-    $c->begin = $this->begin;
-    $c->end = $this->end;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof GeneratedCodeInfo_Annotation)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->path = $o->path;
+    $this->source_file = $o->source_file;
+    $this->begin = $o->begin;
+    $this->end = $o->end;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -3550,13 +3678,16 @@ class GeneratedCodeInfo implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): GeneratedCodeInfo {
-    $c = new GeneratedCodeInfo();
-    foreach ($this->annotation as $v) {
-      $c->annotation []= $v->DeepCopy();
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof GeneratedCodeInfo)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+    foreach ($o->annotation as $v) {
+      $nv = new \google\protobuf\GeneratedCodeInfo_Annotation();
+      $nv->CopyFrom($v);
+      $this->annotation []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

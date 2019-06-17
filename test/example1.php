@@ -229,7 +229,9 @@ function test(): void {
   $got = new foo\bar\example1();
   Protobuf\Unmarshal($remarsh, $got);
 	testExample1($got, "test example1: remarshal");
-	testExample1($got->DeepCopy(), "test example1: deep copy");
+	$copy = new foo\bar\example1();
+	$copy->CopyFrom($got);
+	testExample1($copy, "test example1: deep copy");
 
   // JSON
   // TODO: hmmm, something weird happened and now this is throwing memory

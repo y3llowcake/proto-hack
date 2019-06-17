@@ -75,11 +75,12 @@ class example2 implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): example2 {
-    $c = new example2();
-    $c->zomg = $this->zomg;
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example2)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->zomg = $o->zomg;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -137,11 +138,17 @@ class refexample3 implements \Protobuf\Message {
     }
   }
 
-  public function DeepCopy(): refexample3 {
-    $c = new refexample3();
-    $c->funky = $this->funky?->DeepCopy();
-    $c->XXX_unrecognized = $this->XXX_unrecognized;
-    return $c;
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof refexample3)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $tmp = $o->funky;
+    if ($tmp !== null) {
+      $nv = new \Funky();
+      $nv->CopyFrom($tmp);
+      $this->funky = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
