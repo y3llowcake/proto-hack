@@ -204,6 +204,45 @@ namespace Grpc {
     }
   }
 
+  class LoopBackInvoker implements Invoker {
+    public function __construct(private ServiceDesc $sd) {}
+    public async function Invoke(
+      Context $ctx,
+      string $method,
+      Message $in,
+      Message $out,
+      CallOption ...$co
+    ): Awaitable<void> {
+      foreach ($this->sd->methods as $m) {
+        if ($m->name === $method) {
+          // TODO: ctx needs to be rebuilt correctly.
+          $handler = $m->handler;
+          try {
+            $ret = $handler($ctx, new CopyUnmarshaller($in));
+          } catch (\Exception $e) {
+            if ($e instanceof \Grpc\GrpcException) {
+              throw $e;
+            }
+            throw new \Grpc\GrpcException(
+              \Grpc\Codes::Internal,
+              \sprintf(
+                "loopback exception: '%s';\n%s",
+                $e->getMessage(),
+                $e->getTraceAsString(),
+              ),
+            );
+          }
+          $out->CopyFrom($ret);
+          return;
+        }
+      }
+      throw new \Grpc\GrpcException(
+        \Grpc\Codes::Unimplemented,
+        \sprintf("loopback method not implemented: '%s'", $method),
+      );
+    }
+  }
+
   interface Unmarshaller {
     public function Unmarshal(Message $into): void;
   }
