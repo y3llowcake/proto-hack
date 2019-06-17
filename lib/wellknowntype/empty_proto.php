@@ -38,6 +38,12 @@ class pb_Empty implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): pb_Empty {
+    $c = new pb_Empty();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

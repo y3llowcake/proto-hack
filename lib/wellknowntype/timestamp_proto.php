@@ -66,6 +66,14 @@ class Timestamp implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): Timestamp {
+    $c = new Timestamp();
+    $c->seconds = $this->seconds;
+    $c->nanos = $this->nanos;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

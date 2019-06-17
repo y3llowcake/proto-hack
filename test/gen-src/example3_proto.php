@@ -51,6 +51,13 @@ class Donkey implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): Donkey {
+    $c = new Donkey();
+    $c->hi = $this->hi;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class Funky_Monkey implements \Protobuf\Message {
@@ -100,6 +107,13 @@ class Funky_Monkey implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): Funky_Monkey {
+    $c = new Funky_Monkey();
+    $c->hi = $this->hi;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -174,6 +188,14 @@ class Funky implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): Funky {
+    $c = new Funky();
+    $c->monkey = $this->monkey?->DeepCopy();
+    $c->dokey = $this->dokey?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 

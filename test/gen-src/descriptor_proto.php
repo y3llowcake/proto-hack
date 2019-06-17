@@ -59,6 +59,15 @@ class FileDescriptorSet implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FileDescriptorSet {
+    $c = new FileDescriptorSet();
+    foreach ($this->file as $v) {
+      $c->file []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class FileDescriptorProto implements \Protobuf\Message {
@@ -321,6 +330,32 @@ class FileDescriptorProto implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FileDescriptorProto {
+    $c = new FileDescriptorProto();
+    $c->name = $this->name;
+    $c->package = $this->package;
+    $c->dependency = $this->dependency;
+    foreach ($this->message_type as $v) {
+      $c->message_type []= $v->DeepCopy();
+    }
+    foreach ($this->enum_type as $v) {
+      $c->enum_type []= $v->DeepCopy();
+    }
+    foreach ($this->service as $v) {
+      $c->service []= $v->DeepCopy();
+    }
+    foreach ($this->extension as $v) {
+      $c->extension []= $v->DeepCopy();
+    }
+    $c->options = $this->options?->DeepCopy();
+    $c->source_code_info = $this->source_code_info?->DeepCopy();
+    $c->public_dependency = $this->public_dependency;
+    $c->weak_dependency = $this->weak_dependency;
+    $c->syntax = $this->syntax;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class DescriptorProto_ExtensionRange implements \Protobuf\Message {
@@ -404,6 +439,15 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): DescriptorProto_ExtensionRange {
+    $c = new DescriptorProto_ExtensionRange();
+    $c->start = $this->start;
+    $c->end = $this->end;
+    $c->options = $this->options?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class DescriptorProto_ReservedRange implements \Protobuf\Message {
@@ -467,6 +511,14 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): DescriptorProto_ReservedRange {
+    $c = new DescriptorProto_ReservedRange();
+    $c->start = $this->start;
+    $c->end = $this->end;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -700,6 +752,36 @@ class DescriptorProto implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): DescriptorProto {
+    $c = new DescriptorProto();
+    $c->name = $this->name;
+    foreach ($this->field as $v) {
+      $c->field []= $v->DeepCopy();
+    }
+    foreach ($this->nested_type as $v) {
+      $c->nested_type []= $v->DeepCopy();
+    }
+    foreach ($this->enum_type as $v) {
+      $c->enum_type []= $v->DeepCopy();
+    }
+    foreach ($this->extension_range as $v) {
+      $c->extension_range []= $v->DeepCopy();
+    }
+    foreach ($this->extension as $v) {
+      $c->extension []= $v->DeepCopy();
+    }
+    $c->options = $this->options?->DeepCopy();
+    foreach ($this->oneof_decl as $v) {
+      $c->oneof_decl []= $v->DeepCopy();
+    }
+    foreach ($this->reserved_range as $v) {
+      $c->reserved_range []= $v->DeepCopy();
+    }
+    $c->reserved_name = $this->reserved_name;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class ExtensionRangeOptions implements \Protobuf\Message {
@@ -756,6 +838,15 @@ class ExtensionRangeOptions implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): ExtensionRangeOptions {
+    $c = new ExtensionRangeOptions();
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -1039,6 +1130,22 @@ class FieldDescriptorProto implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FieldDescriptorProto {
+    $c = new FieldDescriptorProto();
+    $c->name = $this->name;
+    $c->extendee = $this->extendee;
+    $c->number = $this->number;
+    $c->label = $this->label;
+    $c->type = $this->type;
+    $c->type_name = $this->type_name;
+    $c->default_value = $this->default_value;
+    $c->options = $this->options?->DeepCopy();
+    $c->oneof_index = $this->oneof_index;
+    $c->json_name = $this->json_name;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class OneofDescriptorProto implements \Protobuf\Message {
@@ -1108,6 +1215,14 @@ class OneofDescriptorProto implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): OneofDescriptorProto {
+    $c = new OneofDescriptorProto();
+    $c->name = $this->name;
+    $c->options = $this->options?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
@@ -1171,6 +1286,14 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): EnumDescriptorProto_EnumReservedRange {
+    $c = new EnumDescriptorProto_EnumReservedRange();
+    $c->start = $this->start;
+    $c->end = $this->end;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -1299,6 +1422,21 @@ class EnumDescriptorProto implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): EnumDescriptorProto {
+    $c = new EnumDescriptorProto();
+    $c->name = $this->name;
+    foreach ($this->value as $v) {
+      $c->value []= $v->DeepCopy();
+    }
+    $c->options = $this->options?->DeepCopy();
+    foreach ($this->reserved_range as $v) {
+      $c->reserved_range []= $v->DeepCopy();
+    }
+    $c->reserved_name = $this->reserved_name;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class EnumValueDescriptorProto implements \Protobuf\Message {
@@ -1381,6 +1519,15 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): EnumValueDescriptorProto {
+    $c = new EnumValueDescriptorProto();
+    $c->name = $this->name;
+    $c->number = $this->number;
+    $c->options = $this->options?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -1471,6 +1618,17 @@ class ServiceDescriptorProto implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): ServiceDescriptorProto {
+    $c = new ServiceDescriptorProto();
+    $c->name = $this->name;
+    foreach ($this->method as $v) {
+      $c->method []= $v->DeepCopy();
+    }
+    $c->options = $this->options?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -1596,6 +1754,18 @@ class MethodDescriptorProto implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): MethodDescriptorProto {
+    $c = new MethodDescriptorProto();
+    $c->name = $this->name;
+    $c->input_type = $this->input_type;
+    $c->output_type = $this->output_type;
+    $c->options = $this->options?->DeepCopy();
+    $c->client_streaming = $this->client_streaming;
+    $c->server_streaming = $this->server_streaming;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -1962,6 +2132,35 @@ class FileOptions implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FileOptions {
+    $c = new FileOptions();
+    $c->java_package = $this->java_package;
+    $c->java_outer_classname = $this->java_outer_classname;
+    $c->optimize_for = $this->optimize_for;
+    $c->java_multiple_files = $this->java_multiple_files;
+    $c->go_package = $this->go_package;
+    $c->cc_generic_services = $this->cc_generic_services;
+    $c->java_generic_services = $this->java_generic_services;
+    $c->py_generic_services = $this->py_generic_services;
+    $c->java_generate_equals_and_hash = $this->java_generate_equals_and_hash;
+    $c->deprecated = $this->deprecated;
+    $c->java_string_check_utf8 = $this->java_string_check_utf8;
+    $c->cc_enable_arenas = $this->cc_enable_arenas;
+    $c->objc_class_prefix = $this->objc_class_prefix;
+    $c->csharp_namespace = $this->csharp_namespace;
+    $c->swift_prefix = $this->swift_prefix;
+    $c->php_class_prefix = $this->php_class_prefix;
+    $c->php_namespace = $this->php_namespace;
+    $c->php_generic_services = $this->php_generic_services;
+    $c->php_metadata_namespace = $this->php_metadata_namespace;
+    $c->ruby_package = $this->ruby_package;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class MessageOptions implements \Protobuf\Message {
@@ -2074,6 +2273,19 @@ class MessageOptions implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): MessageOptions {
+    $c = new MessageOptions();
+    $c->message_set_wire_format = $this->message_set_wire_format;
+    $c->no_standard_descriptor_accessor = $this->no_standard_descriptor_accessor;
+    $c->deprecated = $this->deprecated;
+    $c->map_entry = $this->map_entry;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -2272,6 +2484,21 @@ class FieldOptions implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FieldOptions {
+    $c = new FieldOptions();
+    $c->ctype = $this->ctype;
+    $c->packed = $this->packed;
+    $c->deprecated = $this->deprecated;
+    $c->lazy = $this->lazy;
+    $c->jstype = $this->jstype;
+    $c->weak = $this->weak;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class OneofOptions implements \Protobuf\Message {
@@ -2328,6 +2555,15 @@ class OneofOptions implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): OneofOptions {
+    $c = new OneofOptions();
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -2414,6 +2650,17 @@ class EnumOptions implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): EnumOptions {
+    $c = new EnumOptions();
+    $c->allow_alias = $this->allow_alias;
+    $c->deprecated = $this->deprecated;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class EnumValueOptions implements \Protobuf\Message {
@@ -2485,6 +2732,16 @@ class EnumValueOptions implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): EnumValueOptions {
+    $c = new EnumValueOptions();
+    $c->deprecated = $this->deprecated;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class ServiceOptions implements \Protobuf\Message {
@@ -2555,6 +2812,16 @@ class ServiceOptions implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): ServiceOptions {
+    $c = new ServiceOptions();
+    $c->deprecated = $this->deprecated;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -2669,6 +2936,17 @@ class MethodOptions implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): MethodOptions {
+    $c = new MethodOptions();
+    $c->deprecated = $this->deprecated;
+    $c->idempotency_level = $this->idempotency_level;
+    foreach ($this->uninterpreted_option as $v) {
+      $c->uninterpreted_option []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class UninterpretedOption_NamePart implements \Protobuf\Message {
@@ -2732,6 +3010,14 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): UninterpretedOption_NamePart {
+    $c = new UninterpretedOption_NamePart();
+    $c->name_part = $this->name_part;
+    $c->is_extension = $this->is_extension;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -2874,6 +3160,21 @@ class UninterpretedOption implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): UninterpretedOption {
+    $c = new UninterpretedOption();
+    foreach ($this->name as $v) {
+      $c->name []= $v->DeepCopy();
+    }
+    $c->identifier_value = $this->identifier_value;
+    $c->positive_int_value = $this->positive_int_value;
+    $c->negative_int_value = $this->negative_int_value;
+    $c->double_value = $this->double_value;
+    $c->string_value = $this->string_value;
+    $c->aggregate_value = $this->aggregate_value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class SourceCodeInfo_Location implements \Protobuf\Message {
@@ -3002,6 +3303,17 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): SourceCodeInfo_Location {
+    $c = new SourceCodeInfo_Location();
+    $c->path = $this->path;
+    $c->span = $this->span;
+    $c->leading_comments = $this->leading_comments;
+    $c->trailing_comments = $this->trailing_comments;
+    $c->leading_detached_comments = $this->leading_detached_comments;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class SourceCodeInfo implements \Protobuf\Message {
@@ -3058,6 +3370,15 @@ class SourceCodeInfo implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): SourceCodeInfo {
+    $c = new SourceCodeInfo();
+    foreach ($this->location as $v) {
+      $c->location []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -3161,6 +3482,16 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): GeneratedCodeInfo_Annotation {
+    $c = new GeneratedCodeInfo_Annotation();
+    $c->path = $this->path;
+    $c->source_file = $this->source_file;
+    $c->begin = $this->begin;
+    $c->end = $this->end;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class GeneratedCodeInfo implements \Protobuf\Message {
@@ -3217,6 +3548,15 @@ class GeneratedCodeInfo implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): GeneratedCodeInfo {
+    $c = new GeneratedCodeInfo();
+    foreach ($this->annotation as $v) {
+      $c->annotation []= $v->DeepCopy();
+    }
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 

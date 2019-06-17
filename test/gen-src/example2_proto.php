@@ -74,6 +74,13 @@ class example2 implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): example2 {
+    $c = new example2();
+    $c->zomg = $this->zomg;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class refexample3 implements \Protobuf\Message {
@@ -128,6 +135,13 @@ class refexample3 implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): refexample3 {
+    $c = new refexample3();
+    $c->funky = $this->funky?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 

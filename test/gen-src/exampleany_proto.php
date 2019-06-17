@@ -56,6 +56,13 @@ class AnyTest implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): AnyTest {
+    $c = new AnyTest();
+    $c->any = $this->any?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

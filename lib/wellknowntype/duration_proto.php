@@ -56,6 +56,14 @@ class Duration implements \Protobuf\Message {
     $this->seconds = $parts[0];
     $this->nanos = $parts[1];
   }
+
+  public function DeepCopy(): Duration {
+    $c = new Duration();
+    $c->seconds = $this->seconds;
+    $c->nanos = $this->nanos;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

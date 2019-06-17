@@ -66,6 +66,14 @@ class Any implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): Any {
+    $c = new Any();
+    $c->type_url = $this->type_url;
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

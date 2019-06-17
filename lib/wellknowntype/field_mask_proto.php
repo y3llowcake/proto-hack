@@ -54,6 +54,13 @@ class FieldMask implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): FieldMask {
+    $c = new FieldMask();
+    $c->paths = $this->paths;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 

@@ -42,6 +42,13 @@ class DoubleValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
   }
+
+  public function DeepCopy(): DoubleValue {
+    $c = new DoubleValue();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class FloatValue implements \Protobuf\Message {
@@ -81,6 +88,13 @@ class FloatValue implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
+  }
+
+  public function DeepCopy(): FloatValue {
+    $c = new FloatValue();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -122,6 +136,13 @@ class Int64Value implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Signed($m);
   }
+
+  public function DeepCopy(): Int64Value {
+    $c = new Int64Value();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class UInt64Value implements \Protobuf\Message {
@@ -161,6 +182,13 @@ class UInt64Value implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Unsigned($m);
+  }
+
+  public function DeepCopy(): UInt64Value {
+    $c = new UInt64Value();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -202,6 +230,13 @@ class Int32Value implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Signed($m);
   }
+
+  public function DeepCopy(): Int32Value {
+    $c = new Int32Value();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class UInt32Value implements \Protobuf\Message {
@@ -241,6 +276,13 @@ class UInt32Value implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($m);
+  }
+
+  public function DeepCopy(): UInt32Value {
+    $c = new UInt32Value();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
@@ -282,6 +324,13 @@ class BoolValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readBool($m);
   }
+
+  public function DeepCopy(): BoolValue {
+    $c = new BoolValue();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class StringValue implements \Protobuf\Message {
@@ -322,6 +371,13 @@ class StringValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readString($m);
   }
+
+  public function DeepCopy(): StringValue {
+    $c = new StringValue();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class BytesValue implements \Protobuf\Message {
@@ -361,6 +417,13 @@ class BytesValue implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readBytes($m);
+  }
+
+  public function DeepCopy(): BytesValue {
+    $c = new BytesValue();
+    $c->value = $this->value;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 

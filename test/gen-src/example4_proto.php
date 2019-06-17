@@ -51,6 +51,13 @@ class pb_Class implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): pb_Class {
+    $c = new pb_Class();
+    $c->name = $this->name;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class pb_Interface implements \Protobuf\Message {
@@ -106,6 +113,13 @@ class pb_Interface implements \Protobuf\Message {
       }
     }
   }
+
+  public function DeepCopy(): pb_Interface {
+    $c = new pb_Interface();
+    $c->class = $this->class?->DeepCopy();
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
+  }
 }
 
 class NotClass implements \Protobuf\Message {
@@ -155,6 +169,13 @@ class NotClass implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function DeepCopy(): NotClass {
+    $c = new NotClass();
+    $c->name = $this->name;
+    $c->XXX_unrecognized = $this->XXX_unrecognized;
+    return $c;
   }
 }
 
