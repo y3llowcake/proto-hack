@@ -1027,7 +1027,7 @@ type oneof struct {
 	// v2
 }
 
-const notsetEnum = specialPrefix + "NOT_SET"
+const notsetEnum = "ONEOF_NOT_SET"
 
 func (o *oneof) classNameForField(f *field) string {
 	return o.classPrefix + f.fd.GetName()
@@ -1185,9 +1185,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			name:          od.GetName(),
 			fields:        oneofFields[int32(i)],
 			interfaceName: oneofName,
-			enumTypeName:  specialPrefix + oneofName + "_enum_t",
+			enumTypeName:  oneofName + "_enum_t",
 			classPrefix:   strings.Join(nextNames, "_") + "_",
-			notsetClass:   specialPrefix + oneofName + "_" + "NOT_SET",
+			notsetClass:   oneofName + "_" + "ONEOF_NOT_SET",
 		}
 		oneofs = append(oneofs, oo)
 		writeOneofTypes(w, oo)

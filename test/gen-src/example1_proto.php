@@ -112,20 +112,20 @@ abstract class example1_AEnum2 {
   }
 }
 
-newtype XXX_example1_aoneof_enum_t = int;
+newtype example1_aoneof_enum_t = int;
 interface example1_aoneof {
-  const XXX_example1_aoneof_enum_t XXX_NOT_SET = 0;
-  const XXX_example1_aoneof_enum_t oostring = 60;
-  const XXX_example1_aoneof_enum_t ooint = 61;
-  public function WhichOneof(): XXX_example1_aoneof_enum_t;
+  const example1_aoneof_enum_t ONEOF_NOT_SET = 0;
+  const example1_aoneof_enum_t oostring = 60;
+  const example1_aoneof_enum_t ooint = 61;
+  public function WhichOneof(): example1_aoneof_enum_t;
   public function WriteTo(\Protobuf\Internal\Encoder $e): void;
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
   public function Copy(): example1_aoneof;
 }
 
-class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
-  public function WhichOneof(): XXX_example1_aoneof_enum_t {
-    return self::XXX_NOT_SET;
+class example1_aoneof_ONEOF_NOT_SET implements example1_aoneof {
+  public function WhichOneof(): example1_aoneof_enum_t {
+    return self::ONEOF_NOT_SET;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
@@ -138,7 +138,7 @@ class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
 class example1_oostring implements example1_aoneof {
   public function __construct(public string $oostring) {}
 
-  public function WhichOneof(): XXX_example1_aoneof_enum_t {
+  public function WhichOneof(): example1_aoneof_enum_t {
     return self::oostring;
   }
 
@@ -159,7 +159,7 @@ class example1_oostring implements example1_aoneof {
 class example1_ooint implements example1_aoneof {
   public function __construct(public int $ooint) {}
 
-  public function WhichOneof(): XXX_example1_aoneof_enum_t {
+  public function WhichOneof(): example1_aoneof_enum_t {
     return self::ooint;
   }
 
@@ -479,7 +479,7 @@ class example1 implements \Protobuf\Message {
     $this->amap2 = $s['amap2'] ?? dict[];
     $this->outoforder = $s['outoforder'] ?? 0;
     $this->anany = $s['anany'] ?? null;
-    $this->aoneof = $s['aoneof'] ?? new XXX_example1_aoneof_NOT_SET();
+    $this->aoneof = $s['aoneof'] ?? new example1_aoneof_ONEOF_NOT_SET();
     $this->XXX_unrecognized = '';
   }
 
