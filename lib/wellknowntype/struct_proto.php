@@ -92,6 +92,20 @@ class Struct_FieldsEntry implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Struct_FieldsEntry)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->key = $o->key;
+    $tmp = $o->value;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\Value();
+      $nv->CopyFrom($tmp);
+      $this->value = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class Struct implements \Protobuf\Message {
@@ -150,6 +164,18 @@ class Struct implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Struct)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    foreach ($o->fields as $k => $v) {
+      $nv = new \google\protobuf\Value();
+      $nv->CopyFrom($v);
+      $this->fields[$k] = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 newtype XXX_Value_kind_enum_t = int;
@@ -164,6 +190,7 @@ interface Value_kind {
   public function WhichOneof(): XXX_Value_kind_enum_t;
   public function WriteTo(\Protobuf\Internal\Encoder $e): void;
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
+  public function Copy(): Value_kind;
 }
 
 class XXX_Value_kind_NOT_SET implements Value_kind {
@@ -174,7 +201,10 @@ class XXX_Value_kind_NOT_SET implements Value_kind {
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {}
+
+  public function Copy(): Value_kind { return $this; }
 }
+
 class Value_null_value implements Value_kind {
   public function __construct(public \google\protobuf\NullValue_enum_t $null_value) {}
 
@@ -189,6 +219,10 @@ class Value_null_value implements Value_kind {
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeEnum('null_value', 'nullValue', \google\protobuf\NullValue::ToStringDict(), $this->null_value, true);
+  }
+
+  public function Copy(): Value_kind {
+    return new Value_null_value($this->null_value);
   }
 }
 
@@ -207,6 +241,10 @@ class Value_number_value implements Value_kind {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeFloat('number_value', 'numberValue', $this->number_value, true);
   }
+
+  public function Copy(): Value_kind {
+    return new Value_number_value($this->number_value);
+  }
 }
 
 class Value_string_value implements Value_kind {
@@ -224,6 +262,10 @@ class Value_string_value implements Value_kind {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('string_value', 'stringValue', $this->string_value, true);
   }
+
+  public function Copy(): Value_kind {
+    return new Value_string_value($this->string_value);
+  }
 }
 
 class Value_bool_value implements Value_kind {
@@ -240,6 +282,10 @@ class Value_bool_value implements Value_kind {
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeBool('bool_value', 'boolValue', $this->bool_value, true);
+  }
+
+  public function Copy(): Value_kind {
+    return new Value_bool_value($this->bool_value);
   }
 }
 
@@ -259,6 +305,12 @@ class Value_struct_value implements Value_kind {
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeMessage('struct_value', 'structValue', $this->struct_value, true);
   }
+
+  public function Copy(): Value_kind {
+    $nv = new \google\protobuf\Struct();
+    $nv->CopyFrom($this->struct_value);
+    return new Value_struct_value($nv);
+  }
 }
 
 class Value_list_value implements Value_kind {
@@ -276,6 +328,12 @@ class Value_list_value implements Value_kind {
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeMessage('list_value', 'listValue', $this->list_value, true);
+  }
+
+  public function Copy(): Value_kind {
+    $nv = new \google\protobuf\ListValue();
+    $nv->CopyFrom($this->list_value);
+    return new Value_list_value($nv);
   }
 }
 
@@ -374,6 +432,14 @@ class Value implements \Protobuf\Message {
       $this->kind = new \google\protobuf\Value_struct_value($struct);
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Value)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->kind = $o->kind->Copy();
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class ListValue implements \Protobuf\Message {
@@ -428,6 +494,18 @@ class ListValue implements \Protobuf\Message {
         $this->values []= $val;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof ListValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    foreach ($o->values as $v) {
+      $nv = new \google\protobuf\Value();
+      $nv->CopyFrom($v);
+      $this->values []= $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

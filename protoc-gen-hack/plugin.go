@@ -353,6 +353,10 @@ func (f field) isRepeated() bool {
 	return f.fd.GetLabel() == desc.FieldDescriptorProto_LABEL_REPEATED
 }
 
+func (f field) isMessageOrGroup() bool {
+	return f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP
+}
+
 func (f field) labeledType() string {
 	if f.isMap {
 		k, v := f.mapFields()
@@ -365,7 +369,7 @@ func (f field) labeledType() string {
 	if f.isRepeated() {
 		return "vec<" + f.phpType() + ">"
 	}
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+	if f.isMessageOrGroup() {
 		return "?" + f.phpType()
 	}
 	return f.phpType()
@@ -423,14 +427,14 @@ func (f *field) writeDecoder(w *writer, dec, wt string) {
 			k = fmt.Sprintf("%s\\BoolMapKey::FromBool($obj->key)", libNs)
 		}
 		_, vv := f.mapFields()
-		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+		if vv.isMessageOrGroup() {
 			w.p("$this->%s[%s] = $obj->value ?? new %s();", f.varName(), k, vv.phpType())
 		} else {
 			w.p("$this->%s[%s] = $obj->value;", f.varName(), k)
 		}
 		return
 	}
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+	if f.isMessageOrGroup() {
 		// This is different enough we handle it on it's own.
 		if f.isRepeated() {
 			w.p("$obj = new %s();", f.phpType())
@@ -552,7 +556,7 @@ func (f field) primitiveWriters(enc string) (string, string) {
 // Oneofs are a subset of all field types, and they serialize their default
 // value to the wire.
 func (f field) writeEncoderForOneof(w *writer, enc string) {
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+	if f.isMessageOrGroup() {
 		w.p("$nested = new %s\\Encoder();", libNsInternal)
 		w.p("$this->%s->WriteTo($nested);", f.fd.GetName())
 		w.p("%s->writeEncoder($nested, %d);", enc, f.fd.GetNumber())
@@ -581,7 +585,7 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 		return
 	}
 
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+	if f.isMessageOrGroup() {
 		// This is different enough we handle it on it's own.
 		// TODO we could optimize to not to string copies.
 		if f.isRepeated() {
@@ -627,6 +631,42 @@ func (f field) writeEncoder(w *writer, enc string, alwaysEmitDefaultValue bool) 
 		w.p(tagWriter)
 		w.p("%s;", repeatWriter)
 		w.p("}")
+	}
+}
+
+func (f field) writeCopy(w *writer, c string) {
+	if f.isMap {
+		_, vv := f.mapFields()
+		if vv.isMessageOrGroup() {
+			w.p("foreach (%s->%s as $k => $v) {", c, f.varName())
+			w.p("$nv = new %s();", vv.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$this->%s[$k] = $nv;", f.varName())
+			w.p("}")
+		} else {
+			w.p("$this->%s = %s->%s;", f.varName(), c, f.varName())
+		}
+		return
+	}
+
+	if f.isRepeated() && f.isMessageOrGroup() {
+		w.p("foreach (%s->%s as $v) {", c, f.varName())
+		w.p("$nv = new %s();", f.phpType())
+		w.p("$nv->CopyFrom($v);")
+		w.p("$this->%s []= $nv;", f.varName())
+		w.p("}")
+		return
+	}
+
+	if f.isMessageOrGroup() {
+		w.p("$tmp = %s->%s;", c, f.varName())
+		w.p("if ($tmp !== null) {")
+		w.p("$nv = new %s();", f.phpType())
+		w.p("$nv->CopyFrom($tmp);")
+		w.p("$this->%s = $nv;", f.varName())
+		w.p("}")
+	} else {
+		w.p("$this->%s = %s->%s;", f.varName(), c, f.varName())
 	}
 }
 
@@ -812,7 +852,7 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 			kjr = fmt.Sprintf("%s\\JsonDecoder::readBoolMapKey(%s)", libNsInternal, "$k")
 		}
 
-		if vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || vv.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+		if vv.isMessageOrGroup() {
 			w.p("$obj = new %s();", vv.phpType())
 			w.p("$obj->MergeJsonFrom(%s);", v)
 			w.p("$this->%s[%s] = $obj;", f.fd.GetName(), kjr)
@@ -824,7 +864,7 @@ func (f *field) writeJsonDecoder(w *writer, v string) {
 		return
 	}
 
-	if f.fd.GetType() == desc.FieldDescriptorProto_TYPE_MESSAGE || f.fd.GetType() == desc.FieldDescriptorProto_TYPE_GROUP {
+	if f.isMessageOrGroup() {
 		if f.isRepeated() {
 			w.p("foreach(%s\\JsonDecoder::readList(%s) as $vv) {", libNsInternal, v)
 			w.p("$obj = new %s();", f.phpType())
@@ -1005,6 +1045,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 	w.p("public function WhichOneof(): %s;", oo.enumTypeName)
 	w.p("public function WriteTo(%s\\Encoder $e): void;", libNsInternal)
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void;", libNsInternal)
+	w.p("public function Copy(): %s;", oo.interfaceName)
 	w.p("}")
 
 	w.ln()
@@ -1018,10 +1059,12 @@ func writeOneofTypes(w *writer, oo *oneof) {
 
 	w.p("public function WriteTo(%s\\Encoder $e): void {}", libNsInternal)
 	w.ln()
-
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {}", libNsInternal)
-	// todo!
+	w.ln()
+	w.p("public function Copy(): %s { return $this; }", oo.interfaceName)
+
 	w.p("}")
+	w.ln()
 
 	// An implementation per field.
 	for _, f := range oo.fields {
@@ -1042,10 +1085,51 @@ func writeOneofTypes(w *writer, oo *oneof) {
 		w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void {", libNsInternal)
 		f.writeJsonEncoder(w, "$e", true)
 		w.p("}")
+		w.ln()
+
+		w.p("public function Copy(): %s {", oo.interfaceName)
+		writeOneofCopy(w, oo, f)
+		w.p("}")
 
 		w.p("}")
 		w.ln()
 	}
+}
+
+func writeOneofCopy(w *writer, oo *oneof, f *field) {
+	if f.isMap {
+		_, vv := f.mapFields()
+		if vv.isMessageOrGroup() {
+			w.p("$m = [];")
+			w.p("foreach($this->%s as $k => $v) {", f.varName())
+			w.p("$nv = new %s();", vv.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$m[$k] = $nv;")
+			w.p("}")
+			w.p("return new %s($m);, oo.classNameForField(f)")
+		} else {
+			w.p("return new %s($this->%s);", oo.classNameForField(f), f.varName())
+		}
+		return
+	}
+	if f.isMessageOrGroup() {
+		if f.isRepeated() {
+			w.p("$a = [];")
+			w.p("foreach($this->%s as $v) {", f.varName())
+			w.p("$nv = new %s();", f.phpType())
+			w.p("$nv->CopyFrom($v);")
+			w.p("$a []= $nv;")
+			w.p("}")
+			w.p("return new %s($a);, oo.classNameForField(f)")
+
+		} else {
+			w.p("$nv = new %s();", f.phpType())
+			w.p("$nv->CopyFrom($this->%s);", f.varName())
+			w.p("return new %s($nv);", oo.classNameForField(f))
+		}
+		return
+	}
+	w.p("return new %s($this->%s);", oo.classNameForField(f), f.varName())
 }
 
 func isWrapperType(fqn string) bool {
@@ -1252,6 +1336,24 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("}")
 		w.p("}")
 	}
+	w.p("}")
+	w.ln()
+
+	// CopyFrom function
+	w.p("public function CopyFrom(%s\\Message $o): void {", libNs)
+	w.p("if (!($o instanceof %s)) {", name)
+	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNs)
+	w.p("}")
+	for _, f := range fields {
+		if f.isOneofMember() {
+			continue
+		}
+		f.writeCopy(w, "$o")
+	}
+	for _, oo := range oneofs {
+		w.p("$this->%s = $o->%s->Copy();", oo.name, oo.name)
+	}
+	w.p("$this->%sunrecognized = $o->%sunrecognized;", specialPrefix, specialPrefix)
 	w.p("}")
 
 	w.p("}") // class

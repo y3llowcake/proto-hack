@@ -42,6 +42,14 @@ class DoubleValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof DoubleValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class FloatValue implements \Protobuf\Message {
@@ -81,6 +89,14 @@ class FloatValue implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FloatValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -122,6 +138,14 @@ class Int64Value implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Signed($m);
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Int64Value)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class UInt64Value implements \Protobuf\Message {
@@ -161,6 +185,14 @@ class UInt64Value implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Unsigned($m);
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof UInt64Value)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -202,6 +234,14 @@ class Int32Value implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Signed($m);
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Int32Value)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class UInt32Value implements \Protobuf\Message {
@@ -241,6 +281,14 @@ class UInt32Value implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($m);
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof UInt32Value)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -282,6 +330,14 @@ class BoolValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readBool($m);
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof BoolValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class StringValue implements \Protobuf\Message {
@@ -322,6 +378,14 @@ class StringValue implements \Protobuf\Message {
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readString($m);
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof StringValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class BytesValue implements \Protobuf\Message {
@@ -361,6 +425,14 @@ class BytesValue implements \Protobuf\Message {
 
   public function MergeJsonFrom(mixed $m): void {
     $this->value = \Protobuf\Internal\JsonDecoder::readBytes($m);
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof BytesValue)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

@@ -54,6 +54,14 @@ class FieldMask implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof FieldMask)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->paths = $o->paths;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 

@@ -66,6 +66,15 @@ class Timestamp implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Timestamp)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->seconds = $o->seconds;
+    $this->nanos = $o->nanos;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 

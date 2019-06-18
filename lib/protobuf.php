@@ -9,6 +9,7 @@ namespace Protobuf {
     public function MergeJsonFrom(mixed $m): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
+    public function CopyFrom(Message $m): void;
   }
 
   function Unmarshal(string $data, Message $message): void {

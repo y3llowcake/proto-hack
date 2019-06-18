@@ -74,6 +74,14 @@ class example2 implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example2)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->zomg = $o->zomg;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class refexample3 implements \Protobuf\Message {
@@ -128,6 +136,19 @@ class refexample3 implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof refexample3)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $tmp = $o->funky;
+    if ($tmp !== null) {
+      $nv = new \Funky();
+      $nv->CopyFrom($tmp);
+      $this->funky = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

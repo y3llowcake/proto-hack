@@ -51,6 +51,14 @@ class Donkey implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Donkey)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->hi = $o->hi;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 class Funky_Monkey implements \Protobuf\Message {
@@ -100,6 +108,14 @@ class Funky_Monkey implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Funky_Monkey)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->hi = $o->hi;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -174,6 +190,25 @@ class Funky implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof Funky)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $tmp = $o->monkey;
+    if ($tmp !== null) {
+      $nv = new \Funky_Monkey();
+      $nv->CopyFrom($tmp);
+      $this->monkey = $nv;
+    }
+    $tmp = $o->dokey;
+    if ($tmp !== null) {
+      $nv = new \Donkey();
+      $nv->CopyFrom($tmp);
+      $this->dokey = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 

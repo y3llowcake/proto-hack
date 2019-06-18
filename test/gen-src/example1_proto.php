@@ -77,6 +77,14 @@ class example2 implements \Protobuf\Message {
       }
     }
   }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example2)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->aint32 = $o->aint32;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
+  }
 }
 
 newtype example1_AEnum2_enum_t as int = int;
@@ -112,6 +120,7 @@ interface example1_aoneof {
   public function WhichOneof(): XXX_example1_aoneof_enum_t;
   public function WriteTo(\Protobuf\Internal\Encoder $e): void;
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
+  public function Copy(): example1_aoneof;
 }
 
 class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
@@ -122,7 +131,10 @@ class XXX_example1_aoneof_NOT_SET implements example1_aoneof {
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {}
+
+  public function Copy(): example1_aoneof { return $this; }
 }
+
 class example1_oostring implements example1_aoneof {
   public function __construct(public string $oostring) {}
 
@@ -137,6 +149,10 @@ class example1_oostring implements example1_aoneof {
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeString('oostring', 'oostring', $this->oostring, true);
+  }
+
+  public function Copy(): example1_aoneof {
+    return new example1_oostring($this->oostring);
   }
 }
 
@@ -154,6 +170,10 @@ class example1_ooint implements example1_aoneof {
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
     $e->writeInt32('ooint', 'ooint', $this->ooint, true);
+  }
+
+  public function Copy(): example1_aoneof {
+    return new example1_ooint($this->ooint);
   }
 }
 
@@ -204,6 +224,14 @@ class example1_example2 implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example1_example2)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->astring = $o->astring;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -268,6 +296,15 @@ class example1_AmapEntry implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example1_AmapEntry)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->key = $o->key;
+    $this->value = $o->value;
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -337,6 +374,20 @@ class example1_Amap2Entry implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example1_Amap2Entry)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->key = $o->key;
+    $tmp = $o->value;
+    if ($tmp !== null) {
+      $nv = new \fiz\baz\example2();
+      $nv->CopyFrom($tmp);
+      $this->value = $nv;
+    }
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
@@ -822,6 +873,65 @@ class example1 implements \Protobuf\Message {
           break;
       }
     }
+  }
+
+  public function CopyFrom(\Protobuf\Message $o): void {
+    if (!($o instanceof example1)) {
+      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+    }
+    $this->adouble = $o->adouble;
+    $this->afloat = $o->afloat;
+    $this->aint32 = $o->aint32;
+    $this->aint64 = $o->aint64;
+    $this->auint32 = $o->auint32;
+    $this->auint64 = $o->auint64;
+    $this->asint32 = $o->asint32;
+    $this->asint64 = $o->asint64;
+    $this->afixed32 = $o->afixed32;
+    $this->afixed64 = $o->afixed64;
+    $this->asfixed32 = $o->asfixed32;
+    $this->asfixed64 = $o->asfixed64;
+    $this->abool = $o->abool;
+    $this->astring = $o->astring;
+    $this->abytes = $o->abytes;
+    $this->aenum1 = $o->aenum1;
+    $this->aenum2 = $o->aenum2;
+    $this->aenum22 = $o->aenum22;
+    $this->manystring = $o->manystring;
+    $this->manyint64 = $o->manyint64;
+    $tmp = $o->aexample2;
+    if ($tmp !== null) {
+      $nv = new \foo\bar\example1_example2();
+      $nv->CopyFrom($tmp);
+      $this->aexample2 = $nv;
+    }
+    $tmp = $o->aexample22;
+    if ($tmp !== null) {
+      $nv = new \foo\bar\example2();
+      $nv->CopyFrom($tmp);
+      $this->aexample22 = $nv;
+    }
+    $tmp = $o->aexample23;
+    if ($tmp !== null) {
+      $nv = new \fiz\baz\example2();
+      $nv->CopyFrom($tmp);
+      $this->aexample23 = $nv;
+    }
+    $this->outoforder = $o->outoforder;
+    $this->amap = $o->amap;
+    foreach ($o->amap2 as $k => $v) {
+      $nv = new \fiz\baz\example2();
+      $nv->CopyFrom($v);
+      $this->amap2[$k] = $nv;
+    }
+    $tmp = $o->anany;
+    if ($tmp !== null) {
+      $nv = new \google\protobuf\Any();
+      $nv->CopyFrom($tmp);
+      $this->anany = $nv;
+    }
+    $this->aoneof = $o->aoneof->Copy();
+    $this->XXX_unrecognized = $o->XXX_unrecognized;
   }
 }
 
