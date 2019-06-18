@@ -112,20 +112,22 @@ abstract class example1_AEnum2 {
   }
 }
 
-newtype example1_aoneof_enum_t = int;
+enum example1_aoneof_oneof_t: int {
+  NOT_SET = 0;
+  oostring = 60;
+  ooint = 61;
+}
+
 interface example1_aoneof {
-  const example1_aoneof_enum_t ONEOF_NOT_SET = 0;
-  const example1_aoneof_enum_t oostring = 60;
-  const example1_aoneof_enum_t ooint = 61;
-  public function WhichOneof(): example1_aoneof_enum_t;
+  public function WhichOneof(): example1_aoneof_oneof_t;
   public function WriteTo(\Protobuf\Internal\Encoder $e): void;
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
   public function Copy(): example1_aoneof;
 }
 
-class example1_aoneof_ONEOF_NOT_SET implements example1_aoneof {
-  public function WhichOneof(): example1_aoneof_enum_t {
-    return self::ONEOF_NOT_SET;
+class example1_aoneof_NOT_SET implements example1_aoneof {
+  public function WhichOneof(): example1_aoneof_oneof_t {
+    return example1_aoneof_oneof_t::NOT_SET;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
@@ -138,8 +140,8 @@ class example1_aoneof_ONEOF_NOT_SET implements example1_aoneof {
 class example1_oostring implements example1_aoneof {
   public function __construct(public string $oostring) {}
 
-  public function WhichOneof(): example1_aoneof_enum_t {
-    return self::oostring;
+  public function WhichOneof(): example1_aoneof_oneof_t {
+    return example1_aoneof_oneof_t::oostring;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -159,8 +161,8 @@ class example1_oostring implements example1_aoneof {
 class example1_ooint implements example1_aoneof {
   public function __construct(public int $ooint) {}
 
-  public function WhichOneof(): example1_aoneof_enum_t {
-    return self::ooint;
+  public function WhichOneof(): example1_aoneof_oneof_t {
+    return example1_aoneof_oneof_t::ooint;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -479,7 +481,7 @@ class example1 implements \Protobuf\Message {
     $this->amap2 = $s['amap2'] ?? dict[];
     $this->outoforder = $s['outoforder'] ?? 0;
     $this->anany = $s['anany'] ?? null;
-    $this->aoneof = $s['aoneof'] ?? new example1_aoneof_ONEOF_NOT_SET();
+    $this->aoneof = $s['aoneof'] ?? new example1_aoneof_NOT_SET();
     $this->XXX_unrecognized = '';
   }
 

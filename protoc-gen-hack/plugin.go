@@ -1027,33 +1027,36 @@ type oneof struct {
 	// v2
 }
 
-const notsetEnum = "ONEOF_NOT_SET"
+const notsetEnum = "NOT_SET"
 
 func (o *oneof) classNameForField(f *field) string {
 	return o.classPrefix + f.fd.GetName()
 }
 
 func writeOneofTypes(w *writer, oo *oneof) {
-	// The interface.
-	w.p("newtype %s = int;", oo.enumTypeName)
-	w.p("interface %s {", oo.interfaceName)
-	w.p("const %s %s = 0;", oo.enumTypeName, notsetEnum)
+	// An enum for switching, if hacklang ever supports a type switch, this
+	// becomes irrelevant and should be removed.
+	w.p("enum %s: int {", oo.enumTypeName)
+	w.p("%s = 0;", notsetEnum)
 	for _, field := range oo.fields {
-		w.p("const %s %s = %d;", oo.enumTypeName, field.fd.GetName(), field.fd.GetNumber())
+		w.p("%s = %d;", field.fd.GetName(), field.fd.GetNumber())
 	}
+	w.p("}")
+	w.ln()
 
+	// The interface.
+	w.p("interface %s {", oo.interfaceName)
 	w.p("public function WhichOneof(): %s;", oo.enumTypeName)
 	w.p("public function WriteTo(%s\\Encoder $e): void;", libNsInternal)
 	w.p("public function WriteJsonTo(%s\\JsonEncoder $e): void;", libNsInternal)
 	w.p("public function Copy(): %s;", oo.interfaceName)
 	w.p("}")
-
 	w.ln()
+
 	// Notset case:
 	w.p("class %s implements %s {", oo.notsetClass, oo.interfaceName)
-
 	w.p("public function WhichOneof(): %s {", oo.enumTypeName)
-	w.p("return self::%s;", notsetEnum)
+	w.p("return %s::%s;", oo.enumTypeName, notsetEnum)
 	w.p("}")
 	w.ln()
 
@@ -1073,7 +1076,7 @@ func writeOneofTypes(w *writer, oo *oneof) {
 		w.ln()
 
 		w.p("public function WhichOneof(): %s {", oo.enumTypeName)
-		w.p("return self::%s;", f.fd.GetName())
+		w.p("return %s::%s;", oo.enumTypeName, f.fd.GetName())
 		w.p("}")
 		w.ln()
 
@@ -1185,9 +1188,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			name:          od.GetName(),
 			fields:        oneofFields[int32(i)],
 			interfaceName: oneofName,
-			enumTypeName:  oneofName + "_enum_t",
+			enumTypeName:  oneofName + "_oneof_t",
 			classPrefix:   strings.Join(nextNames, "_") + "_",
-			notsetClass:   oneofName + "_" + "ONEOF_NOT_SET",
+			notsetClass:   oneofName + "_" + "NOT_SET",
 		}
 		oneofs = append(oneofs, oo)
 		writeOneofTypes(w, oo)

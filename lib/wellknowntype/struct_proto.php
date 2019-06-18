@@ -178,24 +178,26 @@ class Struct implements \Protobuf\Message {
   }
 }
 
-newtype Value_kind_enum_t = int;
+enum Value_kind_oneof_t: int {
+  NOT_SET = 0;
+  null_value = 1;
+  number_value = 2;
+  string_value = 3;
+  bool_value = 4;
+  struct_value = 5;
+  list_value = 6;
+}
+
 interface Value_kind {
-  const Value_kind_enum_t ONEOF_NOT_SET = 0;
-  const Value_kind_enum_t null_value = 1;
-  const Value_kind_enum_t number_value = 2;
-  const Value_kind_enum_t string_value = 3;
-  const Value_kind_enum_t bool_value = 4;
-  const Value_kind_enum_t struct_value = 5;
-  const Value_kind_enum_t list_value = 6;
-  public function WhichOneof(): Value_kind_enum_t;
+  public function WhichOneof(): Value_kind_oneof_t;
   public function WriteTo(\Protobuf\Internal\Encoder $e): void;
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void;
   public function Copy(): Value_kind;
 }
 
-class Value_kind_ONEOF_NOT_SET implements Value_kind {
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::ONEOF_NOT_SET;
+class Value_kind_NOT_SET implements Value_kind {
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::NOT_SET;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {}
@@ -208,8 +210,8 @@ class Value_kind_ONEOF_NOT_SET implements Value_kind {
 class Value_null_value implements Value_kind {
   public function __construct(public \google\protobuf\NullValue_enum_t $null_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::null_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::null_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -229,8 +231,8 @@ class Value_null_value implements Value_kind {
 class Value_number_value implements Value_kind {
   public function __construct(public float $number_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::number_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::number_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -250,8 +252,8 @@ class Value_number_value implements Value_kind {
 class Value_string_value implements Value_kind {
   public function __construct(public string $string_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::string_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::string_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -271,8 +273,8 @@ class Value_string_value implements Value_kind {
 class Value_bool_value implements Value_kind {
   public function __construct(public bool $bool_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::bool_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::bool_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -292,8 +294,8 @@ class Value_bool_value implements Value_kind {
 class Value_struct_value implements Value_kind {
   public function __construct(public \google\protobuf\Struct $struct_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::struct_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::struct_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -316,8 +318,8 @@ class Value_struct_value implements Value_kind {
 class Value_list_value implements Value_kind {
   public function __construct(public \google\protobuf\ListValue $list_value) {}
 
-  public function WhichOneof(): Value_kind_enum_t {
-    return self::list_value;
+  public function WhichOneof(): Value_kind_oneof_t {
+    return Value_kind_oneof_t::list_value;
   }
 
   public function WriteTo(\Protobuf\Internal\Encoder $e): void {
@@ -344,7 +346,7 @@ class Value implements \Protobuf\Message {
   public function __construct(shape(
     ?'kind' => Value_kind,
   ) $s = shape()) {
-    $this->kind = $s['kind'] ?? new Value_kind_ONEOF_NOT_SET();
+    $this->kind = $s['kind'] ?? new Value_kind_NOT_SET();
     $this->XXX_unrecognized = '';
   }
 
