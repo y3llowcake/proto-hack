@@ -218,6 +218,42 @@ function testAny(): void {
   assert($e2->astring === "Hello World!");
 }
 
+class ServerImpl implements foo\bar\ExampleServiceServer {
+	public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \foo\bar\example2 {
+		if ($in->astring !== "hello") {
+			throw new Exception('fail!');
+		}
+		return new \foo\bar\example2(shape(
+			'aint32' => 1337,
+		));
+	}
+}
+
+class Context implements \Grpc\Context {
+	public function IncomingMetadata(): \Grpc\Metadata {
+		return \Grpc\Metadata::Empty();
+	}
+	public function WithTimeoutMicros(int $to): \Grpc\Context {
+		return $this;
+	}
+	public function WithOutgoingMetadata(\Grpc\Metadata $m): \Grpc\Context {
+		return $this;
+	}
+}
+
+function testLoopbackService(): void {
+	$cli = new \foo\bar\ExampleServiceClient(new Grpc\LoopbackInvoker(
+		\foo\bar\ExampleServiceServiceDescriptor(new ServerImpl())
+	));
+	$in = new \foo\bar\example1(shape(
+		'astring' => 'hello',
+	));
+	$out = HH\Asio\join($cli->OneToTwo(new Context(), $in));
+	if ($out->aint32 !== 1337) {
+		throw new Exception('loopback service test failed');
+	}
+}
+
 function test(): void {
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
@@ -256,7 +292,10 @@ function test(): void {
   testReservedClassNames();
 
   // Any
-  testAny();
+	testAny();
+
+	// Service
+	testLoopbackService();
 }
 
 set_time_limit(5);

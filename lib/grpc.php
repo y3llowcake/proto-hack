@@ -141,17 +141,6 @@ namespace Grpc {
     }
 
     private function copy(): Metadata {
-      /*
-      $out = dict[];
-      foreach ($this->m as $k => $vs) {
-        $nvs = vec[];
-        foreach ($vs as $v) {
-          $nvs[] = $v;
-        }
-        $out[$k] = $nvs;
-      }
-      return new Metadata($out);
-      			 */
       return new Metadata($this->m);
     }
   }
@@ -201,45 +190,6 @@ namespace Grpc {
     ): Awaitable<void> {
       return $this->intercept
         ->ClientIntercept($ctx, $method, $in, $out, $this->invoke, ...$co);
-    }
-  }
-
-  class LoopBackInvoker implements Invoker {
-    public function __construct(private ServiceDesc $sd) {}
-    public async function Invoke(
-      Context $ctx,
-      string $method,
-      Message $in,
-      Message $out,
-      CallOption ...$co
-    ): Awaitable<void> {
-      foreach ($this->sd->methods as $m) {
-        if ($m->name === $method) {
-          // TODO: ctx needs to be rebuilt correctly.
-          $handler = $m->handler;
-          try {
-            $ret = $handler($ctx, new CopyUnmarshaller($in));
-          } catch (\Exception $e) {
-            if ($e instanceof \Grpc\GrpcException) {
-              throw $e;
-            }
-            throw new \Grpc\GrpcException(
-              \Grpc\Codes::Internal,
-              \sprintf(
-                "loopback exception: '%s';\n%s",
-                $e->getMessage(),
-                $e->getTraceAsString(),
-              ),
-            );
-          }
-          $out->CopyFrom($ret);
-          return;
-        }
-      }
-      throw new \Grpc\GrpcException(
-        \Grpc\Codes::Unimplemented,
-        \sprintf("loopback method not implemented: '%s'", $method),
-      );
     }
   }
 
@@ -297,6 +247,19 @@ namespace Grpc {
     ): Message;
   }
 
+  function SplitFQMethod(string $fq): (string, string) {
+    // Strip leading slash, if any.
+    $fq = \ltrim($fq, '/');
+    $parts = \explode('/', $fq, 2);
+    if (\count($parts) < 2) {
+      throw new \Grpc\GrpcException(
+        \Grpc\Codes::InvalidArgument,
+        \sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
+      );
+    }
+    return tuple($parts[0], $parts[1]);
+  }
+
   class Server {
     // A map from service names, to method names, to method handlers.
     protected dict<string, dict<string, MethodHandler>> $services;
@@ -324,25 +287,12 @@ namespace Grpc {
       $this->services[$sd->name] = $methods;
     }
 
-    private static function SplitFQMethod(string $fq): (string, string) {
-      // Strip leading slash, if any.
-      $fq = \ltrim($fq, '/');
-      $parts = \explode('/', $fq, 2);
-      if (\count($parts) < 2) {
-        throw new \Grpc\GrpcException(
-          \Grpc\Codes::InvalidArgument,
-          \sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
-        );
-      }
-      return tuple($parts[0], $parts[1]);
-    }
-
     public function Dispatch(
       Context $ctx,
       string $fqmethod,
       Unmarshaller $unm,
     ): Message {
-      list($service_name, $method_name) = Server::SplitFQMethod($fqmethod);
+      list($service_name, $method_name) = SplitFQMethod($fqmethod);
       if (!\array_key_exists($service_name, $this->services)) {
         throw new \Grpc\GrpcException(
           \Grpc\Codes::Unimplemented,
@@ -370,6 +320,52 @@ namespace Grpc {
           ->ServerIntercept($ctx, $service_name, $method_name, $unm, $handler);
       }
       return $handler($ctx, $unm);
+    }
+  }
+
+  class LoopbackInvoker implements Invoker {
+    public function __construct(private ServiceDesc $sd) {}
+    public async function Invoke(
+      Context $ctx,
+      string $method,
+      Message $in,
+      Message $out,
+      CallOption ...$co
+    ): Awaitable<void> {
+      list($service_name, $method_name) = SplitFQMethod($method);
+      if ($service_name !== $this->sd->name) {
+        throw new \Grpc\GrpcException(
+          \Grpc\Codes::Unimplemented,
+          \sprintf("loopback service not implemented: '%s'", $service_name),
+        );
+      }
+      foreach ($this->sd->methods as $m) {
+        if ($m->name === $method_name) {
+          // TODO: ctx needs to be rebuilt correctly.
+          $handler = $m->handler;
+          try {
+            $ret = $handler($ctx, new CopyUnmarshaller($in));
+          } catch (\Exception $e) {
+            if ($e instanceof \Grpc\GrpcException) {
+              throw $e;
+            }
+            throw new \Grpc\GrpcException(
+              \Grpc\Codes::Internal,
+              \sprintf(
+                "loopback exception: '%s';\n%s",
+                $e->getMessage(),
+                $e->getTraceAsString(),
+              ),
+            );
+          }
+          $out->CopyFrom($ret);
+          return;
+        }
+      }
+      throw new \Grpc\GrpcException(
+        \Grpc\Codes::Unimplemented,
+        \sprintf("loopback method not implemented: '%s'", $method_name),
+      );
     }
   }
 }
