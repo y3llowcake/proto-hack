@@ -258,7 +258,10 @@ function testLoopbackService(): void {
 }
 
 <<__EntryPoint>>
-function test(): void {
+function main(): void {
+  //set_time_limit(5);
+  //ini_set('memory_limit', '20M');
+
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
   $got = new foo\bar\example1();
@@ -301,7 +304,3 @@ function test(): void {
   // Service
   testLoopbackService();
 }
-
-//set_time_limit(5);
-//ini_set('memory_limit', '20M');
-//test();
