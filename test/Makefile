@@ -1,7 +1,7 @@
 all: test
 
 test: gen
-	hhvm example1.php
+	hhvm test.php
 	echo "\033[1mINTEGRATION TEST PASSED\033[0m"
 
 gen:
