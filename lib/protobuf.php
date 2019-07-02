@@ -23,13 +23,13 @@ namespace Protobuf {
   function Marshal(Message $message): string {
     $e = new Internal\Encoder();
     $message->WriteTo($e);
-    return (string)$e;
+    return $e->buffer();
   }
 
   function MarshalJson(Message $message, int $opt = 0): string {
     $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
     $message->WriteJsonTo($e);
-    return (string)$e;
+    return $e->buffer();
   }
 
   class JsonEncode {
@@ -230,7 +230,7 @@ namespace Protobuf\Internal {
     }
 
     public function skippedRaw(): string {
-      return (string)$this->skipped;
+      return $this->skipped->buffer();
     }
   }
 
@@ -307,14 +307,14 @@ namespace Protobuf\Internal {
 
     public function writeEncoder(Encoder $e, int $fn): void {
       $this->writeTag($fn, 2);
-      $this->writeString((string)$e);
+      $this->writeString($e->buf);
     }
 
     public function isEmpty(): bool {
       return \strlen($this->buf) == 0;
     }
 
-    public function __toString(): string {
+    public function buffer(): string {
       return $this->buf;
     }
   }
@@ -725,7 +725,7 @@ namespace Protobuf\Internal {
       return $ret.'s';
     }
 
-    public function __toString(): string {
+    public function buffer(): string {
       $opt = \JSON_PARTIAL_OUTPUT_ON_ERROR;
       if ($this->o->pretty_print) {
         $opt |= \JSON_PRETTY_PRINT;
