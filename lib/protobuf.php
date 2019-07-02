@@ -85,6 +85,7 @@ namespace Protobuf\Internal {
       return new Decoder($buf, 0, \strlen($buf), new Encoder());
     }
 
+    // TODO(perf) unroll the while loop?
     public function readVarint(): int {
       $val = 0;
       $shift = 0;
