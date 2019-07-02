@@ -259,34 +259,35 @@ function testLoopbackService(): void {
 
 function bench(): void {
   $raw = file_get_contents('./gen-data/example1.pb.bin');
-	$got = new foo\bar\example1();
-	$iter = 1000000;
-	while (true) {
-		$duration = clock_gettime_ns(CLOCK_REALTIME);
-		for ($i = 0; $i < $iter; $i++) {
-			Protobuf\Marshal($got);
-		}
-		$duration = (clock_gettime_ns(CLOCK_REALTIME) - $duration) / 1000000000;
-		echo "$iter iterations in ${duration}s\n";
-	}
+  $got = new foo\bar\example1();
+  $iter = 1000000;
+  while (true) {
+    $duration = clock_gettime_ns(CLOCK_REALTIME);
+    for ($i = 0; $i < $iter; $i++) {
+      Protobuf\Marshal($got);
+    }
+    $duration = (clock_gettime_ns(CLOCK_REALTIME) - $duration) / 1000000000;
+    echo "$iter iterations in ${duration}s\n";
+  }
 }
 
 <<__EntryPoint>>
 function main(): void {
   //set_time_limit(5);
-	//ini_set('memory_limit', '20M');
+  //ini_set('memory_limit', '20M');
 
-	$argv = $_SERVER['argv'];
-	if (count($argv) > 1 && $argv[1] == 'bench') {
-		bench();
-		exit(1);
-	}
+  /* HH_FIXME[2050] */
+  $argv = $_SERVER['argv'];
+  if (count($argv) > 1 && $argv[1] == 'bench') {
+    bench();
+    exit(1);
+  }
 
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
   $got = new foo\bar\example1();
   Protobuf\Unmarshal($raw, $got);
-	testExample1($got, "test example1: file");
+  testExample1($got, "test example1: file");
 
   $remarsh = Protobuf\Marshal($got);
   araw($remarsh, $raw, "hack marshal does not match protoc marshal");
