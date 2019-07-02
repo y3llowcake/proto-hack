@@ -4,6 +4,9 @@ test: gen
 	hhvm test.php
 	echo "\033[1mINTEGRATION TEST PASSED\033[0m"
 
+bench: gen
+	hhvm -d hhvm.perf_pid_map=1 test.php bench
+
 gen:
 	mkdir -p gen-src
 	mkdir -p gen-data
