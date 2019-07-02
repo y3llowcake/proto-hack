@@ -259,12 +259,13 @@ function testLoopbackService(): void {
 
 function bench(): void {
   $raw = file_get_contents('./gen-data/example1.pb.bin');
-  $got = new foo\bar\example1();
-  $iter = 1000000;
+  $iter = 100000;
   while (true) {
     $duration = clock_gettime_ns(CLOCK_REALTIME);
     for ($i = 0; $i < $iter; $i++) {
-      Protobuf\Marshal($got);
+      $message = new foo\bar\example1();
+      Protobuf\Unmarshal($raw, $message);
+      Protobuf\Marshal($message);
     }
     $duration = (clock_gettime_ns(CLOCK_REALTIME) - $duration) / 1000000000;
     echo "$iter iterations in ${duration}s\n";
