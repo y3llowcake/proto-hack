@@ -1,4 +1,4 @@
-<?hh // partial
+<?hh // strict
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
 include "../lib/wellknowntype.php";
@@ -87,7 +87,7 @@ function repackFloat(float $f): float {
   return unpack("f", pack("f", $f))[1];
 }
 
-function testExample1($got, $failmsg) {
+function testExample1(foo\bar\example1 $got, string $failmsg): void {
   $exp = new foo\bar\example1(shape(
     'adouble' => 13.37,
   ));
@@ -158,7 +158,7 @@ function testDescriptorReflection(): void {
     // print_r($dp);
     $names[$fd->Name()] = $raw;
   }
-  if (!$names['example1.proto']) {
+  if ($names['example1.proto'] == '') {
     throw new \Exception('missing file descriptor for example1');
   }
   $dp = new google\protobuf\FileDescriptorProto();
@@ -257,7 +257,11 @@ function testLoopbackService(): void {
   }
 }
 
-function test(): void {
+<<__EntryPoint>>
+function main(): void {
+  //set_time_limit(5);
+  //ini_set('memory_limit', '20M');
+
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
   $got = new foo\bar\example1();
@@ -300,7 +304,3 @@ function test(): void {
   // Service
   testLoopbackService();
 }
-
-set_time_limit(5);
-ini_set('memory_limit', '20M');
-test();
