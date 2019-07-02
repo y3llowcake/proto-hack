@@ -27,7 +27,7 @@ function testVarint(int $dec, string $enc): void {
   a($d->readVarint(), $dec, "read varint");
   $e = new Encoder();
   $e->writeVarint($dec);
-  a((string)$e, $enc, "write varint");
+  a($e->buffer(), $enc, "write varint");
 }
 
 function testVarintZigZag32(int $dec, string $enc): void {
@@ -35,7 +35,7 @@ function testVarintZigZag32(int $dec, string $enc): void {
   a($d->readVarintZigZag32(), $dec, "read varint zigzag 32");
   $e = new Encoder();
   $e->writeVarintZigZag32($dec);
-  a((string)$e, $enc, "write varint zigzag 32");
+  a($e->buffer(), $enc, "write varint zigzag 32");
 }
 
 function testVarintZigZag64(int $dec, string $enc): void {
@@ -43,7 +43,7 @@ function testVarintZigZag64(int $dec, string $enc): void {
   a($d->readVarintZigZag64(), $dec, "read varint zigzag 64");
   $e = new Encoder();
   $e->writeVarintZigZag64($dec);
-  a((string)$e, $enc, "write varint zigzag 64");
+  a($e->buffer(), $enc, "write varint zigzag 64");
 }
 
 function testLittleEndianInt32Signed(int $dec, string $enc): void {
@@ -51,7 +51,7 @@ function testLittleEndianInt32Signed(int $dec, string $enc): void {
   a($d->readLittleEndianInt32Signed(), $dec, "read le int32");
   $e = new Encoder();
   $e->writeLittleEndianInt32Signed($dec);
-  a((string)$e, $enc, "write le int32");
+  a($e->buffer(), $enc, "write le int32");
 }
 
 function testLittleEndianInt64(int $dec, string $enc): void {
@@ -59,7 +59,7 @@ function testLittleEndianInt64(int $dec, string $enc): void {
   a($d->readLittleEndianInt64(), $dec, "read le int64");
   $e = new Encoder();
   $e->writeLittleEndianInt64($dec);
-  a((string)$e, $enc, "write le int64");
+  a($e->buffer(), $enc, "write le int64");
 }
 
 <<__EntryPoint>>
