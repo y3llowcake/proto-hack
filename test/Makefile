@@ -4,6 +4,13 @@ test: gen
 	hhvm test.php
 	echo "\033[1mINTEGRATION TEST PASSED\033[0m"
 
+bench: gen
+	hhvm -d hhvm.perf_pid_map=1 test.php bench
+
+bench-repo: gen
+	hhvm --hphp -t hhbc -v AllVolatile=true --input-dir ./ --output-dir ./repo
+	hhvm -d hhvm.repo.authoritative=true -d hhvm.repo.central.path=./repo/hhvm.hhbc test.php bench
+
 gen:
 	mkdir -p gen-src
 	mkdir -p gen-data

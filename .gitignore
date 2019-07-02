@@ -3,3 +3,5 @@ bazel-*
 NOTES
 conformance/*_tests.txt
 third_party/gen-src
+test/perf.data*
+test/repo
