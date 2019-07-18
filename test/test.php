@@ -232,15 +232,9 @@ class ServerImpl implements foo\bar\ExampleServiceServer {
   }
 }
 
-class Context implements \Grpc\Context {
-  public function IncomingMetadata(): \Grpc\Metadata {
-    return \Grpc\Metadata::Empty();
-  }
-  public function WithTimeoutMicros(int $to): \Grpc\Context {
-    return $this;
-  }
-  public function WithOutgoingMetadata(\Grpc\Metadata $m): \Grpc\Context {
-    return $this;
+class Clock implements \Grpc\Clock {
+  public function Microtime(): int {
+    return 0;
   }
 }
 
@@ -251,7 +245,17 @@ function testLoopbackService(): void {
   $in = new \foo\bar\example1(shape(
     'astring' => 'hello',
   ));
-  $out = HH\Asio\join($cli->OneToTwo(new Context(), $in));
+  $out = HH\Asio\join(
+    $cli->OneToTwo(
+      new \Grpc\Context(
+        0,
+        \Grpc\Metadata::Empty(),
+        \Grpc\Metadata::Empty(),
+        new Clock(),
+      ),
+      $in,
+    ),
+  );
   if ($out->aint32 !== 1337) {
     throw new Exception('loopback service test failed');
   }

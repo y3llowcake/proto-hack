@@ -145,10 +145,72 @@ namespace Grpc {
     }
   }
 
-  interface Context { // Copy-on-write immutable.
-    public function IncomingMetadata(): Metadata;
-    public function WithTimeoutMicros(int $to): Context;
-    public function WithOutgoingMetadata(Metadata $m): Context;
+  interface Clock {
+    public function Microtime(): int;
+  }
+
+  class Context { // Copy-on-write immutable.
+    public function __construct(
+      private int $deadline_micros,
+      private Metadata $incoming_metadata,
+      private Metadata $outgoing_metadata,
+      private Clock $clock,
+    ) {}
+
+    private function copy(): Context {
+      return new Context(
+        $this->deadline_micros,
+        $this->outgoing_metadata, // already cow.
+        $this->incoming_metadata, // already cow.
+        $this->clock,
+      );
+    }
+
+    public function IncomingMetadata(): Metadata {
+      return $this->incoming_metadata;
+    }
+
+    public function OutgoingMetadata(): Metadata {
+      return $this->outgoing_metadata;
+    }
+
+    public function DeadlineMicros(): int {
+      return $this->deadline_micros;
+    }
+
+    public function TimeToDeadlineMicros(): ?int {
+      if ($this->deadline_micros == 0) {
+        return null;
+      }
+      return $this->deadline_micros - $this->clock->Microtime();
+    }
+
+    public function IsPastDeadline(): bool {
+      if ($this->deadline_micros == 0) {
+        return false;
+      }
+      return $this->deadline_micros > $this->clock->Microtime();
+    }
+
+    public function WithOutgoingMetadata(Metadata $m): Context {
+      $c = $this->copy();
+      $c->outgoing_metadata = \Grpc\Metadata::Merge($c->outgoing_metadata, $m);
+      return $c;
+    }
+
+    public function WithTimeoutMicros(int $t): Context {
+      return $this->WithDeadlineMicros($this->clock->Microtime() + $t);
+    }
+
+    public function WithDeadlineMicros(int $d): Context {
+      if ($this->deadline_micros > 0 && $this->deadline_micros <= $d) {
+        # The existing context has a tighter deadline, just use that.
+        return $this;
+      }
+      $c = $this->copy();
+      $c->deadline_micros = $d;
+      return $c;
+    }
   }
 
   interface CallOption {}
