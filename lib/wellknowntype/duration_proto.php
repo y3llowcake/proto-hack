@@ -58,7 +58,7 @@ class Duration implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof Duration)) {
+    if (!($o is Duration)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->seconds = $o->seconds;

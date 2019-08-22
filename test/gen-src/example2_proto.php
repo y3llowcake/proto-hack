@@ -76,7 +76,7 @@ class example2 implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof example2)) {
+    if (!($o is example2)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->zomg = $o->zomg;
@@ -139,7 +139,7 @@ class refexample3 implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof refexample3)) {
+    if (!($o is refexample3)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $tmp = $o->funky;

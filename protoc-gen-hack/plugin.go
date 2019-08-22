@@ -676,27 +676,27 @@ func customWriteJson(w *writer, fqn, v string) bool {
 	switch fqn {
 	// Structs
 	case ".google.protobuf.Value":
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_null_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_null_value) {")
 		w.p("%s->setCustomEncoding(null);", v)
 		w.p("return;")
 		w.p("}")
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_number_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_number_value) {")
 		w.p("%s->setCustomEncoding($this->kind->number_value);", v)
 		w.p("return;")
 		w.p("}")
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_string_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_string_value) {")
 		w.p("%s->setCustomEncoding($this->kind->string_value);", v)
 		w.p("return;")
 		w.p("}")
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_bool_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_bool_value) {")
 		w.p("%s->setCustomEncoding($this->kind->bool_value);", v)
 		w.p("return;")
 		w.p("}")
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_list_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_list_value) {")
 		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->list_value));", v, v)
 		w.p("return;")
 		w.p("}")
-		w.p("if ($this->kind instanceof \\google\\protobuf\\Value_struct_value) {")
+		w.p("if ($this->kind is \\google\\protobuf\\Value_struct_value) {")
 		w.p("%s->setCustomEncoding(%s->encodeMessage($this->kind->struct_value));", v, v)
 		w.p("return;")
 		w.p("}")
@@ -1344,7 +1344,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 
 	// CopyFrom function
 	w.p("public function CopyFrom(%s\\Message $o): void {", libNs)
-	w.p("if (!($o instanceof %s)) {", name)
+	w.p("if (!($o is %s)) {", name)
 	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNs)
 	w.p("}")
 	for _, f := range fields {

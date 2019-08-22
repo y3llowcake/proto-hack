@@ -58,7 +58,7 @@ class AnyTest implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof AnyTest)) {
+    if (!($o is AnyTest)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $tmp = $o->any;

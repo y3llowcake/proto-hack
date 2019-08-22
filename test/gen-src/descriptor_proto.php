@@ -61,7 +61,7 @@ class FileDescriptorSet implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof FileDescriptorSet)) {
+    if (!($o is FileDescriptorSet)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->file as $v) {
@@ -335,7 +335,7 @@ class FileDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof FileDescriptorProto)) {
+    if (!($o is FileDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -463,7 +463,7 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof DescriptorProto_ExtensionRange)) {
+    if (!($o is DescriptorProto_ExtensionRange)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->start = $o->start;
@@ -542,7 +542,7 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof DescriptorProto_ReservedRange)) {
+    if (!($o is DescriptorProto_ReservedRange)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->start = $o->start;
@@ -783,7 +783,7 @@ class DescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof DescriptorProto)) {
+    if (!($o is DescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -890,7 +890,7 @@ class ExtensionRangeOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof ExtensionRangeOptions)) {
+    if (!($o is ExtensionRangeOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->uninterpreted_option as $v) {
@@ -1184,7 +1184,7 @@ class FieldDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof FieldDescriptorProto)) {
+    if (!($o is FieldDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -1275,7 +1275,7 @@ class OneofDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof OneofDescriptorProto)) {
+    if (!($o is OneofDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -1353,7 +1353,7 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof EnumDescriptorProto_EnumReservedRange)) {
+    if (!($o is EnumDescriptorProto_EnumReservedRange)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->start = $o->start;
@@ -1489,7 +1489,7 @@ class EnumDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof EnumDescriptorProto)) {
+    if (!($o is EnumDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -1597,7 +1597,7 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof EnumValueDescriptorProto)) {
+    if (!($o is EnumValueDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -1702,7 +1702,7 @@ class ServiceDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof ServiceDescriptorProto)) {
+    if (!($o is ServiceDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -1846,7 +1846,7 @@ class MethodDescriptorProto implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof MethodDescriptorProto)) {
+    if (!($o is MethodDescriptorProto)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
@@ -2229,7 +2229,7 @@ class FileOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof FileOptions)) {
+    if (!($o is FileOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->java_package = $o->java_package;
@@ -2374,7 +2374,7 @@ class MessageOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof MessageOptions)) {
+    if (!($o is MessageOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->message_set_wire_format = $o->message_set_wire_format;
@@ -2587,7 +2587,7 @@ class FieldOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof FieldOptions)) {
+    if (!($o is FieldOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->ctype = $o->ctype;
@@ -2662,7 +2662,7 @@ class OneofOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof OneofOptions)) {
+    if (!($o is OneofOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->uninterpreted_option as $v) {
@@ -2759,7 +2759,7 @@ class EnumOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof EnumOptions)) {
+    if (!($o is EnumOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->allow_alias = $o->allow_alias;
@@ -2844,7 +2844,7 @@ class EnumValueOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof EnumValueOptions)) {
+    if (!($o is EnumValueOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->deprecated = $o->deprecated;
@@ -2928,7 +2928,7 @@ class ServiceOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof ServiceOptions)) {
+    if (!($o is ServiceOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->deprecated = $o->deprecated;
@@ -3054,7 +3054,7 @@ class MethodOptions implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof MethodOptions)) {
+    if (!($o is MethodOptions)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->deprecated = $o->deprecated;
@@ -3132,7 +3132,7 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof UninterpretedOption_NamePart)) {
+    if (!($o is UninterpretedOption_NamePart)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name_part = $o->name_part;
@@ -3282,7 +3282,7 @@ class UninterpretedOption implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof UninterpretedOption)) {
+    if (!($o is UninterpretedOption)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->name as $v) {
@@ -3428,7 +3428,7 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof SourceCodeInfo_Location)) {
+    if (!($o is SourceCodeInfo_Location)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->path = $o->path;
@@ -3497,7 +3497,7 @@ class SourceCodeInfo implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof SourceCodeInfo)) {
+    if (!($o is SourceCodeInfo)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->location as $v) {
@@ -3611,7 +3611,7 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof GeneratedCodeInfo_Annotation)) {
+    if (!($o is GeneratedCodeInfo_Annotation)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->path = $o->path;
@@ -3679,7 +3679,7 @@ class GeneratedCodeInfo implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof GeneratedCodeInfo)) {
+    if (!($o is GeneratedCodeInfo)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->annotation as $v) {
