@@ -268,7 +268,7 @@ function bench(): void {
       Protobuf\Marshal($message);
     }
     $duration = (clock_gettime_ns(CLOCK_REALTIME) - $duration) / 1000000000;
-    echo "$iter iterations in ${duration}s\n";
+    echo "$iter iterations in $duration (s)\n";
   }
 }
 

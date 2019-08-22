@@ -68,7 +68,7 @@ class Timestamp implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof Timestamp)) {
+    if (!($o is Timestamp)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->seconds = $o->seconds;

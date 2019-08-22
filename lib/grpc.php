@@ -346,7 +346,7 @@ namespace Grpc {
           try {
             $ret = $handler($ctx, new CopyUnmarshaller($in));
           } catch (\Exception $e) {
-            if ($e instanceof \Grpc\GrpcException) {
+            if ($e is \Grpc\GrpcException) {
               throw $e;
             }
             throw new \Grpc\GrpcException(

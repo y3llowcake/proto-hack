@@ -94,7 +94,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof Struct_FieldsEntry)) {
+    if (!($o is Struct_FieldsEntry)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->key = $o->key;
@@ -166,7 +166,7 @@ class Struct implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof Struct)) {
+    if (!($o is Struct)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->fields as $k => $v) {
@@ -389,27 +389,27 @@ class Value implements \Protobuf\Message {
   }
 
   public function WriteJsonTo(\Protobuf\Internal\JsonEncoder $e): void {
-    if ($this->kind instanceof \google\protobuf\Value_null_value) {
+    if ($this->kind is \google\protobuf\Value_null_value) {
       $e->setCustomEncoding(null);
       return;
     }
-    if ($this->kind instanceof \google\protobuf\Value_number_value) {
+    if ($this->kind is \google\protobuf\Value_number_value) {
       $e->setCustomEncoding($this->kind->number_value);
       return;
     }
-    if ($this->kind instanceof \google\protobuf\Value_string_value) {
+    if ($this->kind is \google\protobuf\Value_string_value) {
       $e->setCustomEncoding($this->kind->string_value);
       return;
     }
-    if ($this->kind instanceof \google\protobuf\Value_bool_value) {
+    if ($this->kind is \google\protobuf\Value_bool_value) {
       $e->setCustomEncoding($this->kind->bool_value);
       return;
     }
-    if ($this->kind instanceof \google\protobuf\Value_list_value) {
+    if ($this->kind is \google\protobuf\Value_list_value) {
       $e->setCustomEncoding($e->encodeMessage($this->kind->list_value));
       return;
     }
-    if ($this->kind instanceof \google\protobuf\Value_struct_value) {
+    if ($this->kind is \google\protobuf\Value_struct_value) {
       $e->setCustomEncoding($e->encodeMessage($this->kind->struct_value));
       return;
     }
@@ -436,7 +436,7 @@ class Value implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof Value)) {
+    if (!($o is Value)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->kind = $o->kind->Copy();
@@ -499,7 +499,7 @@ class ListValue implements \Protobuf\Message {
   }
 
   public function CopyFrom(\Protobuf\Message $o): void {
-    if (!($o instanceof ListValue)) {
+    if (!($o is ListValue)) {
       throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->values as $v) {
