@@ -204,7 +204,7 @@ interface AndServer {
 
 function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
-  $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
+  $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \pb_Class();
     $u->Unmarshal($in);
     return $service->throw($ctx, $in);
