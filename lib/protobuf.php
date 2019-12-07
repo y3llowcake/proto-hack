@@ -843,10 +843,8 @@ namespace Protobuf\Internal {
             if (((int)\gmp_cmp($m, '9223372036854775807')) > 0) {
               if (((int)\gmp_cmp($m, '18446744073709551615')) > 0) {
                 throw new \Protobuf\ProtobufException('uint64 out of bounds');
-							}
-							# TODO: Switch to inout once slack hhvm catches up.
-							# \gmp_clrbit(inout $mgmp, 63);
-              \gmp_clrbit(&$mgmp, 63);
+              }
+              \gmp_clrbit(inout $mgmp, 63);
               return \gmp_intval($mgmp) | 0x8000000000000000;
             }
           }
