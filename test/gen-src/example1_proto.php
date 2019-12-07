@@ -954,7 +954,7 @@ interface ExampleServiceServer {
 
 function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
-  $handler = function(\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message use ($service) {
+  $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \foo\bar\example1();
     $u->Unmarshal($in);
     return $service->OneToTwo($ctx, $in);

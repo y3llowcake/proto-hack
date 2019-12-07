@@ -1431,7 +1431,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		if m.isStreaming() && !isReflectionApi {
 			continue
 		}
-		w.p("$handler = function(\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): %s\\Message use ($service) {", libNs)
+		w.p("$handler = (\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): %s\\Message ==> {", libNs)
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("$u->Unmarshal($in);")
 		w.p("return $service->%s($ctx, $in);", m.PhpName)
