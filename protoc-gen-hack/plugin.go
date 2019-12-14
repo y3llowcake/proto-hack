@@ -28,8 +28,8 @@ const (
 var (
 	version          = "undefined" // go build -ldflags "-X main.version=1"
 	fversion         = flag.Bool("version", false, "print version and exit")
-	reservedKeywords = [...]string{"eval", "isset", "unset", "empty", "const", "new", "and", "or",
-		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static"}
+	reservedKeywords = []string{"eval", "isset", "unset", "empty", "const", "new", "and", "or",
+		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static", "self"}
 )
 
 func main() {
