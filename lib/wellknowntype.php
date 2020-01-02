@@ -2,11 +2,8 @@
 
 namespace Protobuf {
 
-  function AnyUnmarshal<T as Message>(
-    \google\protobuf\Any $any,
-    T $message,
-  ): void {
-    Unmarshal($any->value, $message);
+  function AnyUnmarshal(\google\protobuf\Any $any, Message $message): ?Error {
+    return Unmarshal($any->value, $message);
   }
 
   function AnyMarshal<T as Message>(

@@ -41,7 +41,7 @@ class pb_Empty implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is pb_Empty)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
   }

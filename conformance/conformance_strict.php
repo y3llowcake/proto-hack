@@ -48,29 +48,31 @@ function main(array<string> $argv): void {
         die("unsupported message type $mt");
     }
 
+    $wfi = WireFormat::PROTOBUF;
+    $wfo = WireFormat::PROTOBUF;
     switch ($mode) {
       case 'proto:proto':
-        $result =
-          remarshal($tm, $in, WireFormat::PROTOBUF, WireFormat::PROTOBUF);
-        $result = \addcslashes($result, $result);
-        echo "output: \"$result\"\n";
         break;
       case 'proto:json':
-        $result = remarshal($tm, $in, WireFormat::PROTOBUF, WireFormat::JSON);
-        echo "output: '$result'\n";
+        $wfo = WireFormat::JSON;
         break;
       case 'json:proto':
-        $result = remarshal($tm, $in, WireFormat::JSON, WireFormat::PROTOBUF);
-        $result = \addcslashes($result, $result);
-        echo "output: \"$result\"\n";
+        $wfi = WireFormat::JSON;
         break;
       case 'json:json':
-        $result = remarshal($tm, $in, WireFormat::JSON, WireFormat::JSON);
-        echo "output: '$result'\n";
+        $wfo = $wfi = WireFormat::JSON;
         break;
       default:
         die("unsupported mode $mode");
     }
+    list($result, $err) = remarshal($tm, $in, $wfi, $wfo);
+    if ($err !== null) {
+      throw new \Exception($err->Error());
+    }
+    if ($wfo === WireFormat::PROTOBUF) {
+      $result = \addcslashes($result, $result);
+    }
+    echo "output: \"$result\"\n";
     \exit();
   } else {
     conformancePipe();
@@ -101,7 +103,10 @@ function conformancePipe(): void {
 
 function conformanceRaw(string $raw): string {
   $creq = new ConformanceRequest();
-  \Protobuf\Unmarshal($raw, $creq);
+  $err = \Protobuf\Unmarshal($raw, $creq);
+  if ($err != null) {
+    throw new \Exception($err->Error());
+  }
   return \Protobuf\Marshal(conformance($creq));
 }
 
@@ -122,7 +127,6 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
       );
       return $cresp;
   }
-
   $payload = "";
   $wfi = -1;
   if ($creq->payload is ConformanceRequest_protobuf_payload) {
@@ -131,31 +135,28 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   } else if ($creq->payload is ConformanceRequest_json_payload) {
     $payload = $creq->payload->json_payload;
     $wfi = WireFormat::JSON;
-	} else {
-  	$cresp->result =
-    	new ConformanceResponse_skipped("unsupported input type");
-		return $cresp;
-	}
+  } else {
+    $cresp->result = new ConformanceResponse_skipped("unsupported input type");
+    return $cresp;
+  }
   $wfo = $creq->requested_output_format;
-  try {
-    switch ($wfo) {
-      case WireFormat::PROTOBUF:
-        $cresp->result = new ConformanceResponse_protobuf_payload(
-          remarshal($tm, $payload, $wfi, $wfo),
-        );
-        break;
-      case WireFormat::JSON:
-        $cresp->result = new ConformanceResponse_json_payload(
-          remarshal($tm, $payload, $wfi, $wfo),
-        );
-				break;
-      default:
-        $cresp->result =
-          new ConformanceResponse_skipped("unsupported output type");
-    }
-  } catch (\Exception $e) {
-    p('parse error: '.$e->getMessage());
-    $cresp->result = new ConformanceResponse_parse_error($e->getMessage());
+  if ($wfo != WireFormat::PROTOBUF && $wfo != WireFormat::JSON) {
+    $cresp->result = new ConformanceResponse_skipped("unsupported output type");
+    return $cresp;
+  }
+  list($result, $err) = remarshal($tm, $payload, $wfi, $wfo);
+  if ($err != null) {
+    p('parse error: '.$err->Error());
+    $cresp->result = new ConformanceResponse_parse_error($err->Error());
+    return $cresp;
+  }
+  switch ($wfo) {
+    case WireFormat::PROTOBUF:
+      $cresp->result = new ConformanceResponse_protobuf_payload($result);
+      break;
+    case WireFormat::JSON:
+      $cresp->result = new ConformanceResponse_json_payload($result);
+      break;
   }
   p("response: ".\print_r($cresp, true));
   return $cresp;
@@ -166,23 +167,27 @@ function remarshal(
   string $in,
   int $wfi,
   int $wfo,
-): string {
+): (string, ?\Protobuf\Error) {
+  $err = null;
   switch ($wfi) {
     case WireFormat::PROTOBUF:
-      \Protobuf\Unmarshal($in, $tm);
+      $err = \Protobuf\Unmarshal($in, $tm);
       break;
     case WireFormat::JSON:
-      \Protobuf\UnmarshalJson($in, $tm);
+      $err = \Protobuf\UnmarshalJson($in, $tm);
       break;
     default:
       throw new \Exception('unexpected wire format');
   }
+  if ($err !== null) {
+    return tuple("", $err);
+  }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
     case WireFormat::PROTOBUF:
-      return \Protobuf\Marshal($tm);
+      return tuple(\Protobuf\Marshal($tm), null);
     case WireFormat::JSON:
-      return \Protobuf\MarshalJson($tm);
+      return tuple(\Protobuf\MarshalJson($tm), null);
   }
   throw new \Exception("invalid output wire format: $wfo");
 }

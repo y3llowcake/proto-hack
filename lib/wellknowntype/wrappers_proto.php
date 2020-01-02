@@ -45,7 +45,7 @@ class DoubleValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is DoubleValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -93,7 +93,7 @@ class FloatValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is FloatValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -141,7 +141,7 @@ class Int64Value implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Int64Value)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -189,7 +189,7 @@ class UInt64Value implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is UInt64Value)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -237,7 +237,7 @@ class Int32Value implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Int32Value)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -285,7 +285,7 @@ class UInt32Value implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is UInt32Value)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -333,7 +333,7 @@ class BoolValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is BoolValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -381,7 +381,7 @@ class StringValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is StringValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -429,7 +429,7 @@ class BytesValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is BytesValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;

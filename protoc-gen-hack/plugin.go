@@ -1345,7 +1345,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	// CopyFrom function
 	w.p("public function CopyFrom(%s\\Message $o): void {", libNs)
 	w.p("if (!($o is %s)) {", name)
-	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNs)
+	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNsInternal)
 	w.p("}")
 	for _, f := range fields {
 		if f.isOneofMember() {

@@ -80,7 +80,7 @@ class example2 implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is example2)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->aint32 = $o->aint32;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -230,7 +230,7 @@ class example1_example2 implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is example1_example2)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->astring = $o->astring;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -302,7 +302,7 @@ class example1_AmapEntry implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is example1_AmapEntry)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->key = $o->key;
     $this->value = $o->value;
@@ -380,7 +380,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is example1_Amap2Entry)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->key = $o->key;
     $tmp = $o->value;
@@ -879,7 +879,7 @@ class example1 implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is example1)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->adouble = $o->adouble;
     $this->afloat = $o->afloat;

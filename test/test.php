@@ -9,6 +9,12 @@ include "./gen-src/example4_proto.php";
 include "./gen-src/exampleany_proto.php";
 include "./gen-src/descriptor_proto.php";
 
+function check(?Protobuf\Error $err): void {
+  if ($err !== null) {
+    throw new Exception($err->Error());
+  }
+}
+
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got != $exp) {
     throw new Exception(
@@ -154,7 +160,7 @@ function testDescriptorReflection(): void {
       throw new \Exception('descriptor decode failed');
     }
     $dp = new google\protobuf\FileDescriptorProto();
-    Protobuf\Unmarshal($raw, $dp);
+    check(Protobuf\Unmarshal($raw, $dp));
     // print_r($dp);
     $names[$fd->Name()] = $raw;
   }
@@ -162,7 +168,7 @@ function testDescriptorReflection(): void {
     throw new \Exception('missing file descriptor for example1');
   }
   $dp = new google\protobuf\FileDescriptorProto();
-  Protobuf\Unmarshal($names['example1.proto'], $dp);
+  check(Protobuf\Unmarshal($names['example1.proto'], $dp));
   if ($dp->package != 'foo.bar') {
     throw new \Exception(
       'descriptor proto for example1.proto has unexpected package: '.
@@ -201,7 +207,7 @@ function testAny(): void {
   // Test serde.
   $str = Protobuf\Marshal($t1);
   $t2 = new AnyTest();
-  Protobuf\Unmarshal($str, $t2);
+  check(Protobuf\Unmarshal($str, $t2));
   $any2 = $t2->any;
   invariant($any2 != null, "");
   assert($any2->type_url === $any->type_url);
@@ -214,7 +220,7 @@ function testAny(): void {
 
   // Test unmarshaling
   $e2 = new foo\bar\example1();
-  Protobuf\AnyUnmarshal($any2, $e2);
+  check(Protobuf\AnyUnmarshal($any2, $e2));
   assert($e2->astring === "Hello World!");
 }
 
@@ -264,7 +270,7 @@ function bench(): void {
     $duration = clock_gettime_ns(CLOCK_REALTIME);
     for ($i = 0; $i < $iter; $i++) {
       $message = new foo\bar\example1();
-      Protobuf\Unmarshal($raw, $message);
+      check(Protobuf\Unmarshal($raw, $message));
       Protobuf\Marshal($message);
     }
     $duration = (clock_gettime_ns(CLOCK_REALTIME) - $duration) / 1000000000;
@@ -287,13 +293,13 @@ function main(): void {
   // PROTO
   $raw = file_get_contents('./gen-data/example1.pb.bin');
   $got = new foo\bar\example1();
-  Protobuf\Unmarshal($raw, $got);
+  check(Protobuf\Unmarshal($raw, $got));
   testExample1($got, "test example1: file");
 
   $remarsh = Protobuf\Marshal($got);
   araw($remarsh, $raw, "hack marshal does not match protoc marshal");
   $got = new foo\bar\example1();
-  Protobuf\Unmarshal($remarsh, $got);
+  check(Protobuf\Unmarshal($remarsh, $got));
   testExample1($got, "test example1: remarshal");
   $copy = new foo\bar\example1();
   $copy->CopyFrom($got);
@@ -305,7 +311,7 @@ function main(): void {
   /*$jraw = Protobuf\MarshalJson($got, Protobuf\JsonEncode::PRETTY_PRINT);
   file_put_contents('./gen-data/example1.pb.json', $jraw);
   $got = new foo\bar\example1();
-  Protobuf\UnmarshalJson($jraw, $got);
+  check(Protobuf\UnmarshalJson($jraw, $got));
   	testExample1($got, "test example1: json unmarshal");*/
 
   // Reflection

@@ -54,7 +54,7 @@ class Donkey implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Donkey)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->hi = $o->hi;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -112,7 +112,7 @@ class Funky_Monkey implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Funky_Monkey)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->hi = $o->hi;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -194,7 +194,7 @@ class Funky implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Funky)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $tmp = $o->monkey;
     if ($tmp !== null) {

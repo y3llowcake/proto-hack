@@ -54,7 +54,7 @@ class pb_Class implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is pb_Class)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -117,7 +117,7 @@ class pb_Interface implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is pb_Interface)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $tmp = $o->class;
     if ($tmp !== null) {
@@ -180,7 +180,7 @@ class NotClass implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is NotClass)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->name = $o->name;
     $this->XXX_unrecognized = $o->XXX_unrecognized;

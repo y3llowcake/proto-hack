@@ -95,7 +95,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Struct_FieldsEntry)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->key = $o->key;
     $tmp = $o->value;
@@ -167,7 +167,7 @@ class Struct implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Struct)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->fields as $k => $v) {
       $nv = new \google\protobuf\Value();
@@ -437,7 +437,7 @@ class Value implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is Value)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     $this->kind = $o->kind->Copy();
     $this->XXX_unrecognized = $o->XXX_unrecognized;
@@ -500,7 +500,7 @@ class ListValue implements \Protobuf\Message {
 
   public function CopyFrom(\Protobuf\Message $o): void {
     if (!($o is ListValue)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
     }
     foreach ($o->values as $v) {
       $nv = new \google\protobuf\Value();
