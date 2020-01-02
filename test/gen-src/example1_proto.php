@@ -976,7 +976,10 @@ function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\S
   $methods = vec[];
   $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \foo\bar\example1();
-    $u->Unmarshal($in);
+    $err = $u->Unmarshal($in);
+    if ($err !== null) {
+      throw new \Grpc\GrpcException(\Grpc\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());
+    }
     return $service->OneToTwo($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
