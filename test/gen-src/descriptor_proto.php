@@ -15,6 +15,10 @@ class FileDescriptorSet implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.FileDescriptorSet";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -115,6 +119,10 @@ class FileDescriptorProto implements \Protobuf\Message {
     $this->source_code_info = $s['source_code_info'] ?? null;
     $this->syntax = $s['syntax'] ?? '';
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.FileDescriptorProto";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -397,6 +405,10 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.DescriptorProto.ExtensionRange";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -490,6 +502,10 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
     $this->start = $s['start'] ?? 0;
     $this->end = $s['end'] ?? 0;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.DescriptorProto.ReservedRange";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -587,6 +603,10 @@ class DescriptorProto implements \Protobuf\Message {
     $this->reserved_range = $s['reserved_range'] ?? vec[];
     $this->reserved_name = $s['reserved_name'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.DescriptorProto";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -844,6 +864,10 @@ class ExtensionRangeOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.ExtensionRangeOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -1041,6 +1065,10 @@ class FieldDescriptorProto implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.FieldDescriptorProto";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -1220,6 +1248,10 @@ class OneofDescriptorProto implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.OneofDescriptorProto";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -1303,6 +1335,10 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.EnumDescriptorProto.EnumReservedRange";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -1383,6 +1419,10 @@ class EnumDescriptorProto implements \Protobuf\Message {
     $this->reserved_range = $s['reserved_range'] ?? vec[];
     $this->reserved_name = $s['reserved_name'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.EnumDescriptorProto";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1531,6 +1571,10 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.EnumValueDescriptorProto";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -1627,6 +1671,10 @@ class ServiceDescriptorProto implements \Protobuf\Message {
     $this->method = $s['method'] ?? vec[];
     $this->options = $s['options'] ?? null;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.ServiceDescriptorProto";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1745,6 +1793,10 @@ class MethodDescriptorProto implements \Protobuf\Message {
     $this->client_streaming = $s['client_streaming'] ?? false;
     $this->server_streaming = $s['server_streaming'] ?? false;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.MethodDescriptorProto";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -1961,6 +2013,10 @@ class FileOptions implements \Protobuf\Message {
     $this->ruby_package = $s['ruby_package'] ?? '';
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.FileOptions";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2284,6 +2340,10 @@ class MessageOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.MessageOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -2475,6 +2535,10 @@ class FieldOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.FieldOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -2616,6 +2680,10 @@ class OneofOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.OneofOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -2689,6 +2757,10 @@ class EnumOptions implements \Protobuf\Message {
     $this->deprecated = $s['deprecated'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.EnumOptions";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2787,6 +2859,10 @@ class EnumValueOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.EnumValueOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -2869,6 +2945,10 @@ class ServiceOptions implements \Protobuf\Message {
     $this->deprecated = $s['deprecated'] ?? false;
     $this->uninterpreted_option = $s['uninterpreted_option'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.ServiceOptions";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -2986,6 +3066,10 @@ class MethodOptions implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.MethodOptions";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -3082,6 +3166,10 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.UninterpretedOption.NamePart";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -3168,6 +3256,10 @@ class UninterpretedOption implements \Protobuf\Message {
     $this->string_value = $s['string_value'] ?? '';
     $this->aggregate_value = $s['aggregate_value'] ?? '';
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.UninterpretedOption";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -3323,6 +3415,10 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.SourceCodeInfo.Location";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -3451,6 +3547,10 @@ class SourceCodeInfo implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.SourceCodeInfo";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -3527,6 +3627,10 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
     $this->begin = $s['begin'] ?? 0;
     $this->end = $s['end'] ?? 0;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.GeneratedCodeInfo.Annotation";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -3631,6 +3735,10 @@ class GeneratedCodeInfo implements \Protobuf\Message {
   ) $s = shape()) {
     $this->annotation = $s['annotation'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.GeneratedCodeInfo";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {

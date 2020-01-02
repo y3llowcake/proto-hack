@@ -12,6 +12,7 @@ namespace Protobuf {
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
     public function CopyFrom(Message $m): void;
+    public function MessageName(): string;
   }
 
   function Unmarshal(string $data, Message $message): ?Error {
@@ -41,6 +42,16 @@ namespace Protobuf {
     return null;
   }
 
+  function UnmarshalAny(\google\protobuf\Any $any, Message $m): ?Error {
+    $exp = 'type.googleapis.com/'.$m->MessageName();
+    $got = $any->type_url;
+    if ($exp !== $got) {
+      return new Internal\ProtobufException(
+        "invalid Any.type_url, expected '$exp' got '$got'",
+      );
+    }
+    return Unmarshal($any->value, $m);
+  }
 
   function Marshal(Message $message): string {
     $e = new Internal\Encoder();
@@ -52,6 +63,13 @@ namespace Protobuf {
     $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
     $message->WriteJsonTo($e);
     return $e->buffer();
+  }
+
+  function MarshalAny(Message $m): \google\protobuf\Any {
+    $any = new \google\protobuf\Any();
+    $any->type_url = 'type.googleapis.com/'.$m->MessageName();
+    $any->value = Marshal($m);
+    return $any;
   }
 
   class JsonEncode {

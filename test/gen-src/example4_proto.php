@@ -14,6 +14,10 @@ class pb_Class implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "Class";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -70,6 +74,10 @@ class pb_Interface implements \Protobuf\Message {
   ) $s = shape()) {
     $this->class = $s['class'] ?? null;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "Interface";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -138,6 +146,10 @@ class NotClass implements \Protobuf\Message {
   ) $s = shape()) {
     $this->name = $s['name'] ?? '';
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "NotClass";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {

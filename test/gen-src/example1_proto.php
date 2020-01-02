@@ -40,6 +40,10 @@ class example2 implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "foo.bar.example2";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -190,6 +194,10 @@ class example1_example2 implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "foo.bar.example1.example2";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -249,6 +257,10 @@ class example1_AmapEntry implements \Protobuf\Message {
     $this->key = $s['key'] ?? '';
     $this->value = $s['value'] ?? '';
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "foo.bar.example1.AmapEntry";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -322,6 +334,10 @@ class example1_Amap2Entry implements \Protobuf\Message {
     $this->key = $s['key'] ?? '';
     $this->value = $s['value'] ?? null;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "foo.bar.example1.Amap2Entry";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -483,6 +499,10 @@ class example1 implements \Protobuf\Message {
     $this->anany = $s['anany'] ?? null;
     $this->aoneof = $s['aoneof'] ?? new example1_aoneof_NOT_SET();
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "foo.bar.example1";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {

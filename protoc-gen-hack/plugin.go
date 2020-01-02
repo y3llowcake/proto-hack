@@ -1252,6 +1252,18 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("}")
 	w.ln()
 
+	fqProtoType := ns.Fqn
+	//if fqProtoType != "." {
+	//	fqProtoType += "."
+	//}
+	fqProtoType += strings.Join(append(prefixNames, dp.GetName()), ".")
+
+	// MessageName().
+	w.p("public function MessageName(): string {")
+	w.p(`return "%s";`, strings.TrimPrefix(fqProtoType, "."))
+	w.p("}")
+	w.ln()
+
 	// Now sort the fields by number.
 	sort.Slice(fields, func(i, j int) bool {
 		return fields[i].fd.GetNumber() < fields[j].fd.GetNumber()
@@ -1281,8 +1293,6 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.p("$this->%sunrecognized = $d->skippedRaw();", specialPrefix)
 	w.p("}") // function MergeFrom
 	w.ln()
-
-	fqProtoType := ns.Fqn + dp.GetName()
 
 	// WriteTo function
 	w.p("public function WriteTo(%s\\Encoder $e): void {", libNsInternal)

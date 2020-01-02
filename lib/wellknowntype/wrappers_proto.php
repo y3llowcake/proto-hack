@@ -15,6 +15,10 @@ class DoubleValue implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.DoubleValue";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -61,6 +65,10 @@ class FloatValue implements \Protobuf\Message {
   ) $s = shape()) {
     $this->value = $s['value'] ?? 0.0;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.FloatValue";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -111,6 +119,10 @@ class Int64Value implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.Int64Value";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -157,6 +169,10 @@ class UInt64Value implements \Protobuf\Message {
   ) $s = shape()) {
     $this->value = $s['value'] ?? 0;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.UInt64Value";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -207,6 +223,10 @@ class Int32Value implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.Int32Value";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -253,6 +273,10 @@ class UInt32Value implements \Protobuf\Message {
   ) $s = shape()) {
     $this->value = $s['value'] ?? 0;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.UInt32Value";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -303,6 +327,10 @@ class BoolValue implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.BoolValue";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -351,6 +379,10 @@ class StringValue implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.StringValue";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -397,6 +429,10 @@ class BytesValue implements \Protobuf\Message {
   ) $s = shape()) {
     $this->value = $s['value'] ?? '';
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.BytesValue";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
