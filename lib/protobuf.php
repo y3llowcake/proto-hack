@@ -10,6 +10,7 @@ namespace Protobuf {
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
     public function CopyFrom(Message $m): void;
+    public function MessageName(): string;
   }
 
   function Unmarshal(string $data, Message $message): void {
@@ -18,6 +19,17 @@ namespace Protobuf {
 
   function UnmarshalJson(string $data, Message $message): void {
     $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
+  }
+
+  function UnmarshalAny(\google\protobuf\Any $any, Message $m): void {
+    $exp = 'type.googleapis.com/'.$m->MessageName();
+    $got = $any->type_url;
+    if ($exp !== $got) {
+      throw new ProtobufException(
+        "invalid Any.type_url, expected '$exp' got '$got'",
+      );
+    }
+    Unmarshal($any->value, $m);
   }
 
   function Marshal(Message $message): string {
@@ -30,6 +42,13 @@ namespace Protobuf {
     $e = new Internal\JsonEncoder(new Internal\JsonEncodeOpt($opt));
     $message->WriteJsonTo($e);
     return $e->buffer();
+  }
+
+  function MarshalAny(Message $m): \google\protobuf\Any {
+    $any = new \google\protobuf\Any();
+    $any->type_url = 'type.googleapis.com/'.$m->MessageName();
+    $any->value = Marshal($m);
+    return $any;
   }
 
   class JsonEncode {
