@@ -1253,9 +1253,6 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	fqProtoType := ns.Fqn
-	//if fqProtoType != "." {
-	//	fqProtoType += "."
-	//}
 	fqProtoType += strings.Join(append(prefixNames, dp.GetName()), ".")
 
 	// MessageName().
