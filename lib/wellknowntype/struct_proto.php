@@ -40,6 +40,10 @@ class Struct_FieldsEntry implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.Struct.FieldsEntry";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -117,6 +121,10 @@ class Struct implements \Protobuf\Message {
   ) $s = shape()) {
     $this->fields = $s['fields'] ?? dict[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.Struct";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
@@ -350,6 +358,10 @@ class Value implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "google.protobuf.Value";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -453,6 +465,10 @@ class ListValue implements \Protobuf\Message {
   ) $s = shape()) {
     $this->values = $s['values'] ?? vec[];
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "google.protobuf.ListValue";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {

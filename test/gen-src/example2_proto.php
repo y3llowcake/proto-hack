@@ -37,6 +37,10 @@ class example2 implements \Protobuf\Message {
     $this->XXX_unrecognized = '';
   }
 
+  public function MessageName(): string {
+    return "fiz.baz.example2";
+  }
+
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
     while (!$d->isEOF()){
       list($fn, $wt) = $d->readTag();
@@ -93,6 +97,10 @@ class refexample3 implements \Protobuf\Message {
   ) $s = shape()) {
     $this->funky = $s['funky'] ?? null;
     $this->XXX_unrecognized = '';
+  }
+
+  public function MessageName(): string {
+    return "fiz.baz.refexample3";
   }
 
   public function MergeFrom(\Protobuf\Internal\Decoder $d): void {
