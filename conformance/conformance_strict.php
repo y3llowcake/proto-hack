@@ -60,7 +60,8 @@ function main(array<string> $argv): void {
         $wfi = WireFormat::JSON;
         break;
       case 'json:json':
-        $wfo = $wfi = WireFormat::JSON;
+        $wfo = WireFormat::JSON;
+        $wfi = WireFormat::JSON;
         break;
       default:
         die("unsupported mode $mode");
