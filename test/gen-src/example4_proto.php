@@ -219,7 +219,7 @@ function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
   $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \pb_Class();
     $err = $u->Unmarshal($in);
-    if ($err !== null) {
+    if (!$err->Ok()) {
       throw new \Grpc\GrpcException(\Grpc\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());
     }
     return $service->throw($ctx, $in);

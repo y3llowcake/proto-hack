@@ -977,7 +977,7 @@ function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\S
   $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \foo\bar\example1();
     $err = $u->Unmarshal($in);
-    if ($err !== null) {
+    if (!$err->Ok()) {
       throw new \Grpc\GrpcException(\Grpc\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());
     }
     return $service->OneToTwo($ctx, $in);

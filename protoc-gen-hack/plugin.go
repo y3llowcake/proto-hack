@@ -1441,7 +1441,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("$handler = (\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): %s\\Message ==> {", libNs)
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("$err = $u->Unmarshal($in);")
-		w.p("if ($err !== null) {")
+		w.p("if (!$err->Ok()) {")
 		w.p("throw new \\Grpc\\GrpcException(\\Grpc\\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());")
 		w.p("}")
 		w.p("return $service->%s($ctx, $in);", m.PhpName)
