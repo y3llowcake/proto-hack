@@ -194,26 +194,26 @@ namespace Grpc {
   }
 
   interface Unmarshaller {
-    public function Unmarshal(Message $into): ?\Protobuf\Error;
+    public function Unmarshal(Message $into): \Result\Error;
   }
 
   class BinaryUnmarshaller implements Unmarshaller {
     public function __construct(private string $raw) {}
-    public function Unmarshal(Message $into): ?\Protobuf\Error {
+    public function Unmarshal(Message $into): \Result\Error {
       return \Protobuf\Unmarshal($this->raw, $into);
     }
   }
 
   class JsonUnmarshaller implements Unmarshaller {
     public function __construct(private string $raw) {}
-    public function Unmarshal(Message $into): ?\Protobuf\Error {
+    public function Unmarshal(Message $into): \Result\Error {
       return \Protobuf\UnmarshalJson($this->raw, $into);
     }
   }
 
   class CopyUnmarshaller implements Unmarshaller {
     public function __construct(private Message $from) {}
-    public function Unmarshal(Message $into): ?\Protobuf\Error {
+    public function Unmarshal(Message $into): \Result\Error {
       return \Protobuf\UnmarshalCopy($this->from, $into);
     }
   }

@@ -1,6 +1,7 @@
 <?hh // strict
 namespace conformance;
 
+include '../lib/result.php';
 include '../lib/protobuf.php';
 include '../lib/wellknowntype/any_proto.php';
 include '../lib/wellknowntype/duration_proto.php';
@@ -66,10 +67,7 @@ function main(array<string> $argv): void {
       default:
         die("unsupported mode $mode");
     }
-    list($result, $err) = remarshal($tm, $in, $wfi, $wfo);
-    if ($err !== null) {
-      throw new \Exception($err->Error());
-    }
+    $result = remarshal($tm, $in, $wfi, $wfo)->MustValue();
     if ($wfo === WireFormat::PROTOBUF) {
       $result = \addcslashes($result, $result);
     }
@@ -105,7 +103,7 @@ function conformancePipe(): void {
 function conformanceRaw(string $raw): string {
   $creq = new ConformanceRequest();
   $err = \Protobuf\Unmarshal($raw, $creq);
-  if ($err != null) {
+  if (!$err->Ok()) {
     throw new \Exception($err->Error());
   }
   return \Protobuf\Marshal(conformance($creq));
@@ -145,12 +143,13 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     $cresp->result = new ConformanceResponse_skipped("unsupported output type");
     return $cresp;
   }
-  list($result, $err) = remarshal($tm, $payload, $wfi, $wfo);
-  if ($err != null) {
-    p('parse error: '.$err->Error());
-    $cresp->result = new ConformanceResponse_parse_error($err->Error());
+  $r = remarshal($tm, $payload, $wfi, $wfo);
+  if (!$r->Ok()) {
+    p('parse error: '.$r->Error());
+    $cresp->result = new ConformanceResponse_parse_error($r->Error());
     return $cresp;
   }
+  $result = $r->MustValue();
   switch ($wfo) {
     case WireFormat::PROTOBUF:
       $cresp->result = new ConformanceResponse_protobuf_payload($result);
@@ -168,7 +167,7 @@ function remarshal(
   string $in,
   int $wfi,
   int $wfo,
-): (string, ?\Protobuf\Error) {
+): \Result\Result<string> {
   $err = null;
   switch ($wfi) {
     case WireFormat::PROTOBUF:
@@ -180,15 +179,15 @@ function remarshal(
     default:
       throw new \Exception('unexpected wire format');
   }
-  if ($err !== null) {
-    return tuple("", $err);
+  if (!$err->Ok()) {
+    return \Result\Error($err->Error());
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
     case WireFormat::PROTOBUF:
-      return tuple(\Protobuf\Marshal($tm), null);
+      return \Result\Value(\Protobuf\Marshal($tm));
     case WireFormat::JSON:
-      return tuple(\Protobuf\MarshalJson($tm), null);
+      return \Result\Value(\Protobuf\MarshalJson($tm));
   }
   throw new \Exception("invalid output wire format: $wfo");
 }

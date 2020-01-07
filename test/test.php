@@ -9,8 +9,8 @@ include "./gen-src/example4_proto.php";
 include "./gen-src/exampleany_proto.php";
 include "./gen-src/descriptor_proto.php";
 
-function check(?Protobuf\Error $err): void {
-  if ($err !== null) {
+function check(\Result\Error $err): void {
+  if (!$err->Ok()) {
     throw new Exception($err->Error());
   }
 }

@@ -2,9 +2,8 @@
 
 namespace Protobuf {
 
-  interface Error {
-    public function Error(): string;
-  }
+  use type \Result\Error;
+  use function \Result\{Ok};
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
@@ -15,40 +14,38 @@ namespace Protobuf {
     public function MessageName(): string;
   }
 
-  function Unmarshal(string $data, Message $message): ?Error {
+  function Unmarshal(string $data, Message $message): Error {
     try {
       $message->MergeFrom(Internal\Decoder::FromString($data));
     } catch (Internal\ProtobufException $e) {
-      return $e;
+      return $e->Error();
     }
-    return null;
+    return Ok();
   }
 
-  function UnmarshalJson(string $data, Message $message): ?Error {
+  function UnmarshalJson(string $data, Message $message): Error {
     try {
       $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
     } catch (Internal\ProtobufException $e) {
-      return $e;
+      return $e->Error();
     }
-    return null;
+    return Ok();
   }
 
-  function UnmarshalCopy(Message $from, Message $to): ?Error {
+  function UnmarshalCopy(Message $from, Message $to): Error {
     try {
       $to->CopyFrom($from);
     } catch (Internal\ProtobufException $e) {
-      return $e;
+      return $e->Error();
     }
-    return null;
+    return Ok();
   }
 
-  function UnmarshalAny(\google\protobuf\Any $any, Message $m): ?Error {
+  function UnmarshalAny(\google\protobuf\Any $any, Message $m): Error {
     $exp = 'type.googleapis.com/'.$m->MessageName();
     $got = $any->type_url;
     if ($exp !== $got) {
-      return new Internal\ProtobufException(
-        "invalid Any.type_url, expected '$exp' got '$got'",
-      );
+      return \Result\Error("invalid Any.type_url, expected '$exp' got '$got'");
     }
     return Unmarshal($any->value, $m);
   }
@@ -95,9 +92,9 @@ namespace Protobuf {
 
 namespace Protobuf\Internal {
 
-  class ProtobufException extends \Exception implements \Protobuf\Error {
-    public function Error(): string {
-      return $this->getMessage();
+  class ProtobufException extends \Exception {
+    public function Error(): \Result\Error {
+      return \Result\Error($this->getMessage());
     }
   }
 
