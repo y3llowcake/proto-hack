@@ -2,7 +2,6 @@
 include "../lib/result.php";
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
-include "../lib/wellknowntype.php";
 include "../lib/wellknowntype/any_proto.php";
 include "./gen-src/example1_proto.php";
 include "./gen-src/example2_proto.php";
