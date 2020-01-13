@@ -6,47 +6,71 @@ namespace Result {
     public function Error(
     ): string; // Maybe remove this if stringish_cast is no longer nessecary.
   }
-  interface GenericResult<Tv, Te as Error> extends Error {
-    public function Value(): ?Tv;
-    public function MustValue(): Tv;
-  }
-  type Result<Tv> = GenericResult<Tv, Error>;
+
   <<__Memoize>>
-  function Ok(): Result<void> {
-    return new BaseResult<void, Error>(null, null);
+  function Ok(): Error {
+    return new \Ok();
   }
 
-  function Error<Tv>(string $s): Result<Tv> {
-    return new BaseResult(null, $s);
+  function Error(string $s): Error {
+    return new \Err($s);
   }
-  function Errorf<Tv>(
-    \HH\FormatString<\PlainSprintf> $f,
-    mixed ...$v
-  ): Result<Tv> {
+
+  function Errorf(\HH\FormatString<\PlainSprintf> $f, mixed ...$v): Error {
     /* HH_IGNORE_ERROR[4027] */
-    return Error<Tv>(\sprintf($f, ...$v));
-  }
-  function Value<Tv>(Tv $v): Result<Tv> {
-    return new BaseResult($v, null);
+    return Error(\sprintf($f, ...$v));
   }
 
-  class BaseResult<Tv, Te as Error> implements GenericResult<Tv, Te> {
-    public function __construct(private ?Tv $v, private ?string $e) {}
-    final public function Ok(): bool {
-      return $this->e === null;
+  final class Result<Tv> {
+    private function __construct(public ?Tv $value, public Error $error) {}
+    public function MustValue(): Tv {
+      invariant(
+        $this->value !== null,
+        "result is null; error: '%s'",
+        $this->error,
+      );
+      return $this->value;
     }
-    final public function __toString(): string {
-      return $this->Error();
+    public static function Value<Tvv>(Tvv $v): Result<Tvv> {
+      return new Result<Tvv>($v, Ok());
     }
-    final public function Error(): string {
-      return $this->e === null ? "OK" : $this->e;
+    public static function Error<Tvv>(string $s): Result<Tvv> {
+      return new Result<Tvv>(null, Error($s));
     }
-    final public function Value(): ?Tv {
-      return $this->v;
+    public static function Errorf<Tvv>(
+      \HH\FormatString<\PlainSprintf> $f,
+      mixed ...$v
+    ): Result<Tvv> {
+      /* HH_IGNORE_ERROR[4027] */
+      return self::Error<Tvv>(\sprintf($f, ...$v));
     }
-    final public function MustValue(): Tv {
-      invariant($this->v !== null, "result is null; error: '%s'", $this);
-      return $this->v;
+  }
+}
+
+namespace {
+  class Ok implements \Result\Error {
+    public function __construct() {}
+    public function Ok(): bool {
+      return true;
+    }
+    public function Error(): string {
+      return "OK";
+    }
+    public function __toString(): string {
+      return "OK";
+    }
+  }
+
+  class Err implements \Result\Error {
+    public function __construct(private string $err) {}
+    public function Ok(): bool {
+      return false;
+    }
+    public function Error(): string {
+      return $this->err;
+    }
+    public function __toString(): string {
+      return $this->err;
     }
   }
 }
