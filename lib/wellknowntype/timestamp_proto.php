@@ -71,13 +71,14 @@ class Timestamp implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is Timestamp)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->seconds = $o->seconds;
     $this->nanos = $o->nanos;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 

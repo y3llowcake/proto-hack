@@ -47,12 +47,13 @@ class DoubleValue implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is DoubleValue)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -99,12 +100,13 @@ class FloatValue implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readFloat($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is FloatValue)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -151,12 +153,13 @@ class Int64Value implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Signed($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is Int64Value)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -203,12 +206,13 @@ class UInt64Value implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt64Unsigned($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is UInt64Value)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -255,12 +259,13 @@ class Int32Value implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Signed($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is Int32Value)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -307,12 +312,13 @@ class UInt32Value implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readInt32Unsigned($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is UInt32Value)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -359,12 +365,13 @@ class BoolValue implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readBool($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is BoolValue)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -411,12 +418,13 @@ class StringValue implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readString($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is StringValue)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -463,12 +471,13 @@ class BytesValue implements \Protobuf\Message {
     $this->value = \Protobuf\Internal\JsonDecoder::readBytes($m);
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is BytesValue)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 

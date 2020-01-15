@@ -56,12 +56,13 @@ class pb_Class implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is pb_Class)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->name = $o->name;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -123,9 +124,9 @@ class pb_Interface implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is pb_Interface)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $tmp = $o->class;
     if ($tmp !== null) {
@@ -134,6 +135,7 @@ class pb_Interface implements \Protobuf\Message {
       $this->class = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 
@@ -190,12 +192,13 @@ class NotClass implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is NotClass)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->name = $o->name;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 

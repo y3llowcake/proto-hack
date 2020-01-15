@@ -71,13 +71,14 @@ class Any implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
     if (!($o is Any)) {
-      throw new \Protobuf\Internal\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->type_url = $o->type_url;
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Result\Ok();
   }
 }
 

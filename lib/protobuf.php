@@ -10,7 +10,7 @@ namespace Protobuf {
     public function MergeJsonFrom(mixed $m): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
-    public function CopyFrom(Message $m): void;
+    public function CopyFrom(Message $m): Error;
     public function MessageName(): string;
   }
 
@@ -33,12 +33,7 @@ namespace Protobuf {
   }
 
   function UnmarshalCopy(Message $from, Message $to): Error {
-    try {
-      $to->CopyFrom($from);
-    } catch (Internal\ProtobufException $e) {
-      return $e->Error();
-    }
-    return Ok();
+    return $to->CopyFrom($from);
   }
 
   function UnmarshalAny(\google\protobuf\Any $any, Message $m): Error {
