@@ -1,5 +1,5 @@
 <?hh // strict
-include "../lib/result.php";
+include "../lib/errors.php";
 include "../lib/protobuf.php";
 include "../lib/grpc.php";
 include "../lib/wellknowntype/any_proto.php";

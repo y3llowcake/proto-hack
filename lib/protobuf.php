@@ -1,9 +1,8 @@
 <?hh // strict
 
 namespace Protobuf {
-
   use type \Errors\Error;
-  use function \Errors\{Ok};
+  use function \Errors\Ok;
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;

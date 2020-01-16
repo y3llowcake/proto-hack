@@ -20,22 +20,22 @@ namespace Errors {
     return Error(\sprintf($f, ...$v));
   }
 
-  namespace Result {
-    interface Result<Tv> {
-      public function Ok(): bool;
-      public function Val(): ?Tv;
-      public function MustVal(): Tv;
-      public function Err(): \Errors\Error;
+  interface Result<Tv> {
+    public function Ok(): bool;
+    public function Val(): ?Tv;
+    public function MustVal(): Tv;
+    public function Err(): \Errors\Error;
 
-      // TODO Consider abandoning this in favor of type constraints on generics?
-      public function As<Tvv super Tv>(): Result<Tvv>;
-    }
-    function Val<Tvv>(Tvv $v): Result<Tvv> {
-      return new \Result<Tvv>($v, \Errors\Ok());
-    }
-    function Err<Tvv>(\Errors\Error $e): Result<Tvv> {
-      return new \Result<Tvv>(null, $e);
-    }
+    // TODO Consider abandoning this in favor of type constraints on generics?
+    public function As<Tvv super Tv>(): Result<Tvv>;
+  }
+
+  function Val<Tvv>(Tvv $v): Result<Tvv> {
+    return new \Result<Tvv>($v, Ok());
+  }
+
+  function Err<Tvv>(\Errors\Error $e): Result<Tvv> {
+    return new \Result<Tvv>(null, $e);
   }
 }
 
@@ -66,7 +66,7 @@ namespace {
     }
   }
 
-  class Result<Tv> implements Errors\Result\Result<Tv> {
+  class Result<Tv> implements Errors\Result<Tv> {
     public function __construct(
       private ?Tv $value,
       private Errors\Error $error,

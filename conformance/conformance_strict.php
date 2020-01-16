@@ -1,7 +1,7 @@
 <?hh // strict
 namespace conformance;
 
-include '../lib/result.php';
+include '../lib/errors.php';
 include '../lib/protobuf.php';
 include '../lib/wellknowntype/any_proto.php';
 include '../lib/wellknowntype/duration_proto.php';
@@ -163,8 +163,8 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
-use \Errors\Result\Result;
-use function \Errors\Result\{Val, Err};
+use \Errors\Result;
+use function \Errors\{Val, Err, Ok};
 
 function remarshal(
   \Protobuf\Message $tm,
