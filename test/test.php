@@ -218,13 +218,13 @@ class ServerImpl implements foo\bar\ExampleServiceServer {
   public function OneToTwo(
     \Grpc\Context $ctx,
     \foo\bar\example1 $in,
-  ): \foo\bar\example2 {
+  ): \Errors\Result<\foo\bar\example2> {
     if ($in->astring !== "hello") {
       throw new Exception('fail!');
     }
-    return new \foo\bar\example2(shape(
+    return Errors\ResultV(new \foo\bar\example2(shape(
       'aint32' => 1337,
-    ));
+    )));
   }
 }
 

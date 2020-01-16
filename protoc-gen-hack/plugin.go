@@ -1428,7 +1428,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		if m.isStreaming() && !isReflectionApi {
 			continue
 		}
-		w.p("public function %s(\\Grpc\\Context $ctx, %s $in): %s;", m.PhpName, m.InputPhpName, m.OutputPhpName)
+		w.p("public function %s(\\Grpc\\Context $ctx, %s $in): \\Errors\\Result<%s>;", m.PhpName, m.InputPhpName, m.OutputPhpName)
 	}
 	w.p("}")
 	w.ln()
@@ -1439,13 +1439,13 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		if m.isStreaming() && !isReflectionApi {
 			continue
 		}
-		w.p("$handler = (\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): %s\\Message ==> {", libNs)
+		w.p("$handler = (\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): \\Errors\\Result<%s\\Message> ==> {", libNs)
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("$err = $u->Unmarshal($in);")
 		w.p("if (!$err->Ok()) {")
-		w.p("throw new \\Grpc\\GrpcException(\\Grpc\\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());")
+		w.p("return \\Errors\\ResultE(\\Errors\\Errorf('proto unmarshal: %s', $err));", "%s")
 		w.p("}")
-		w.p("return $service->%s($ctx, $in);", m.PhpName)
+		w.p("return $service->%s($ctx, $in)->As<%s\\Message>();", m.PhpName, libNs)
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
 	}

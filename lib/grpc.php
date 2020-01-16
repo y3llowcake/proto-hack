@@ -1,6 +1,12 @@
 <?hh // strict
 
 namespace Grpc {
+  use type \Errors\{Error, Result};
+  use function \Errors\{Errorf, Ok, ResultE, ResultV};
+
+  use \Protobuf\Message;
+
+
   newtype Code as int = int;
   abstract class Codes {
     const Code OK = 0;
@@ -67,21 +73,32 @@ namespace Grpc {
     }
   }
 
-  class GrpcException extends \Exception {
-    public Code $grpc_code;
-    public string $grpc_message;
-    public function __construct(Code $code, string $message) {
-      parent::__construct(
-        \sprintf(
-          "grpc exception: %s (%d); %s",
-          Codes::Name($code),
-          $code,
-          $message,
-        ),
-        $code,
-      );
-      $this->grpc_code = $code;
-      $this->grpc_message = $message;
+  namespace Status {
+    interface Status extends \Errors\Error {
+      public function Code(): \Grpc\Code;
+      public function Message(): string;
+    }
+
+    <<__Memoize>>
+    function Ok(): Status {
+      return new \GrpcStatus(\Grpc\Codes::OK, "OK");
+    }
+
+    function Error(\Grpc\Code $code, \Stringish $s): Status {
+      if ($s is string) {
+        return new \GrpcStatus($code, $s);
+      }
+      /* HH_IGNORE_ERROR[4128] */
+      return new \GrpcStatus($code, $s->__toString());
+    }
+
+    function Errorf(
+      \Grpc\Code $code,
+      \HH\FormatString<\PlainSprintf> $f,
+      mixed ...$v
+    ): Status {
+      /* HH_IGNORE_ERROR[4027] */
+      return Error($code, \sprintf($f, ...$v));
     }
   }
 
@@ -153,8 +170,6 @@ namespace Grpc {
 
   interface CallOption {}
 
-  use \Protobuf\Message;
-
   interface ClientInterceptor {
     public function ClientIntercept(
       Context $ctx,
@@ -163,7 +178,7 @@ namespace Grpc {
       Message $out,
       Invoker $invoker,
       CallOption ...$co
-    ): Awaitable<void>;
+    ): Awaitable<Error>;
   }
 
   interface Invoker {
@@ -173,7 +188,7 @@ namespace Grpc {
       Message $in,
       Message $out,
       CallOption ...$co
-    ): Awaitable<void>;
+    ): Awaitable<Error>;
   }
 
   class ChainedClientInterceptor implements Invoker {
@@ -187,13 +202,11 @@ namespace Grpc {
       Message $in,
       Message $out,
       CallOption ...$co
-    ): Awaitable<void> {
+    ): Awaitable<Error> {
       return $this->intercept
         ->ClientIntercept($ctx, $method, $in, $out, $this->invoke, ...$co);
     }
   }
-
-  use Errors\Error;
 
   interface Unmarshaller {
     public function Unmarshal(Message $into): Error;
@@ -220,7 +233,7 @@ namespace Grpc {
     }
   }
 
-  type MethodHandler = (function(Context, Unmarshaller): Message);
+  type MethodHandler = (function(Context, Unmarshaller): Result<Message>);
 
   class MethodDesc {
     public function __construct(
@@ -246,20 +259,18 @@ namespace Grpc {
       string $method_name,
       Unmarshaller $unmarshaller,
       MethodHandler $handler,
-    ): Message;
+    ): Result<Message>;
   }
 
-  function SplitFQMethod(string $fq): (string, string) {
+  function SplitFQMethod(string $fq): Result<(string, string)> {
     // Strip leading slash, if any.
     $fq = \ltrim($fq, '/');
     $parts = \explode('/', $fq, 2);
     if (\count($parts) < 2) {
-      throw new \Grpc\GrpcException(
-        \Grpc\Codes::InvalidArgument,
-        \sprintf("invalid fully qualified gRPC method name: '%s'", $fq),
-      );
+      return
+        ResultE(Errorf("invalid fully qualified gRPC method name '%s'", $fq));
     }
-    return tuple($parts[0], $parts[1]);
+    return ResultV(tuple($parts[0], $parts[1]));
   }
 
   class Server {
@@ -276,45 +287,45 @@ namespace Grpc {
       $this->interceptor = $i;
     }
 
-    public function RegisterService(ServiceDesc $sd): void {
+    public function RegisterService(ServiceDesc $sd): Error {
       if (\array_key_exists($sd->name, $this->services)) {
-        throw new \Exception(
-          \sprintf("duplicate gRPC service entry for: %s", $sd->name),
-        );
+        return Errorf("duplicate gRPC service entry: %s", $sd->name);
       }
       $methods = dict[];
       foreach ($sd->methods as $m) {
         $methods[$m->name] = $m->handler;
       }
       $this->services[$sd->name] = $methods;
+      return Ok();
     }
 
     public function Dispatch(
       Context $ctx,
       string $fqmethod,
       Unmarshaller $unm,
-    ): Message {
-      list($service_name, $method_name) = SplitFQMethod($fqmethod);
+    ): Result<Message> {
+      $sm = SplitFQMethod($fqmethod);
+      if (!$sm->Ok()) {
+        return ResultE(Status\Error(Codes::InvalidArgument, $sm->Error()));
+      }
+      list($service_name, $method_name) = $sm->MustValue();
+
       if (!\array_key_exists($service_name, $this->services)) {
-        throw new \Grpc\GrpcException(
-          \Grpc\Codes::Unimplemented,
-          \sprintf(
-            "service not implemented: '%s' for '%s'",
-            $service_name,
-            $fqmethod,
-          ),
-        );
+        return ResultE(Status\Errorf(
+          Codes::Unimplemented,
+          "service not implemented: '%s' for '%s'",
+          $service_name,
+          $fqmethod,
+        ));
       }
       $service = $this->services[$service_name];
       if (!\array_key_exists($method_name, $service)) {
-        throw new \Grpc\GrpcException(
-          \Grpc\Codes::Unimplemented,
-          \sprintf(
-            "method not implemented: '%s' for '%s'",
-            $method_name,
-            $fqmethod,
-          ),
-        );
+        return ResultE(Status\Errorf(
+          Codes::Unimplemented,
+          "method not implemented: '%s' for '%s'",
+          $method_name,
+          $fqmethod,
+        ));
       }
       $handler = $service[$method_name];
       if ($this->interceptor !== null) {
@@ -329,16 +340,21 @@ namespace Grpc {
     public function __construct(private ServiceDesc $sd) {}
     public async function Invoke(
       Context $ctx,
-      string $method,
+      string $fqmethod,
       Message $in,
       Message $out,
       CallOption ...$co
-    ): Awaitable<void> {
-      list($service_name, $method_name) = SplitFQMethod($method);
+    ): Awaitable<Error> {
+      $sm = SplitFQMethod($fqmethod);
+      if (!$sm->Ok()) {
+        return $sm->Error();
+      }
+      list($service_name, $method_name) = $sm->MustValue();
       if ($service_name !== $this->sd->name) {
-        throw new \Grpc\GrpcException(
-          \Grpc\Codes::Unimplemented,
-          \sprintf("loopback service not implemented: '%s'", $service_name),
+        return Status\Errorf(
+          Codes::Unimplemented,
+          "loopback service not implemented: '%s'",
+          $service_name,
         );
       }
       foreach ($this->sd->methods as $m) {
@@ -347,28 +363,50 @@ namespace Grpc {
           $handler = $m->handler;
           try {
             $ret = $handler($ctx, new CopyUnmarshaller($in));
-          } catch (\Exception $e) {
-            if ($e is \Grpc\GrpcException) {
-              throw $e;
+            if (!$ret->Ok()) {
+              return $ret->Error();
             }
-            throw new \Grpc\GrpcException(
-              \Grpc\Codes::Internal,
-              \sprintf(
-                "loopback exception: '%s';\n%s",
-                $e->getMessage(),
-                $e->getTraceAsString(),
-              ),
+          } catch (\Throwable $t) {
+            return Status\Errorf(
+              Codes::Internal,
+              "loopback invocation threw: '%s';\n%s",
+              $t->getMessage(),
+              $t->getTraceAsString(),
             );
           }
-          $out->CopyFrom($ret);
-          return;
+          return $out->CopyFrom($ret->MustValue());
         }
       }
-      throw new \Grpc\GrpcException(
-        \Grpc\Codes::Unimplemented,
-        \sprintf("loopback method not implemented: '%s'", $method_name),
-      );
+      return Errorf("loopback method not implemented: '%s'", $method_name);
     }
   }
 }
 // namespace Grpc
+
+namespace {
+  class GrpcStatus implements \Grpc\Status\Status {
+    public function __construct(private \Grpc\Code $code, private string $msg) {
+    }
+    public function Ok(): bool {
+      return $this->code == \Grpc\Codes::OK;
+    }
+    public function Error(): string {
+      return \sprintf(
+        "%s(%d): %s",
+        \Grpc\Codes::Name($this->code),
+        $this->code,
+        $this->msg,
+      );
+    }
+    public function __toString(): string {
+      return $this->Error();
+    }
+    public function Message(): string {
+      return $this->msg;
+    }
+    public function Code(): \Grpc\Code {
+      return $this->code;
+    }
+  }
+
+}
