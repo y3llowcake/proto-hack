@@ -67,7 +67,7 @@ function main(array<string> $argv): void {
       default:
         die("unsupported mode $mode");
     }
-    $result = remarshal($tm, $in, $wfi, $wfo)->MustValue();
+    $result = remarshal($tm, $in, $wfi, $wfo)->MustVal();
     if ($wfo === WireFormat::PROTOBUF) {
       $result = \addcslashes($result, $result);
     }
@@ -145,12 +145,12 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   }
   $r = remarshal($tm, $payload, $wfi, $wfo);
   if (!$r->Ok()) {
-    $estr = $r->Error()->Error();
+    $estr = $r->Err()->Error();
     p('parse error: '.$estr);
     $cresp->result = new ConformanceResponse_parse_error($estr);
     return $cresp;
   }
-  $result = $r->MustValue();
+  $result = $r->MustVal();
   switch ($wfo) {
     case WireFormat::PROTOBUF:
       $cresp->result = new ConformanceResponse_protobuf_payload($result);

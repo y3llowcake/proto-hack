@@ -23,9 +23,9 @@ namespace Errors {
   namespace Result {
     interface Result<Tv> {
       public function Ok(): bool;
-      public function Value(): ?Tv;
-      public function MustValue(): Tv;
-      public function Error(): \Errors\Error;
+      public function Val(): ?Tv;
+      public function MustVal(): Tv;
+      public function Err(): \Errors\Error;
 
       // TODO Consider abandoning this in favor of type constraints on generics?
       public function As<Tvv super Tv>(): Result<Tvv>;
@@ -74,7 +74,7 @@ namespace {
     public function Ok(): bool {
       return $this->error->Ok();
     }
-    public function MustValue(): Tv {
+    public function MustVal(): Tv {
       invariant(
         $this->value !== null,
         "result is null; error: '%s'",
@@ -82,10 +82,10 @@ namespace {
       );
       return $this->value;
     }
-    public function Value(): ?Tv {
+    public function Val(): ?Tv {
       return $this->value;
     }
-    public function Error(): Errors\Error {
+    public function Err(): Errors\Error {
       return $this->error;
     }
     public function As<Tvv super Tv>(): Result<Tvv> {
