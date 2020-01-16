@@ -3,16 +3,17 @@
 namespace Errors {
   interface Error extends \Stringish {
     public function Ok(): bool;
+    public function MustOk(): void;
     public function Error(): string;
   }
 
   <<__Memoize>>
   function Ok(): Error {
-    return new \Ok();
+    return new \OkImpl();
   }
 
   function Error(string $s): Error {
-    return new \Err($s);
+    return new \ErrImpl($s);
   }
 
   function Errorf(\HH\FormatString<\PlainSprintf> $f, mixed ...$v): Error {
@@ -31,21 +32,22 @@ namespace Errors {
   }
 
   function ResultV<Tvv>(Tvv $v): Result<Tvv> {
-    return new \Result<Tvv>($v, Ok());
+    return new \ResultImpl<Tvv>($v, Ok());
   }
 
   function ResultE<Tvv>(\Errors\Error $e): Result<Tvv> {
     invariant(!$e->Ok(), "ResultE called with ok error");
-    return new \Result<Tvv>(null, $e);
+    return new \ResultImpl<Tvv>(null, $e);
   }
 }
 
 namespace {
-  class Ok implements Errors\Error {
+  class OkImpl implements Errors\Error {
     public function __construct() {}
     public function Ok(): bool {
       return true;
     }
+    public function MustOk(): void {}
     public function Error(): string {
       return "OK";
     }
@@ -54,11 +56,14 @@ namespace {
     }
   }
 
-  class Err implements Errors\Error {
+  class ErrImpl implements Errors\Error {
     public function __construct(private string $err) {}
     public function Ok(): bool {
       return false;
     }
+    public function MustOk(): void {
+      throw new Exception(\sprintf('error not ok: %s', $this->err));
+    }
     public function Error(): string {
       return $this->err;
     }
@@ -67,7 +72,7 @@ namespace {
     }
   }
 
-  class Result<Tv> implements Errors\Result<Tv> {
+  class ResultImpl<Tv> implements Errors\Result<Tv> {
     public function __construct(
       private ?Tv $value,
       private Errors\Error $error,
@@ -89,8 +94,8 @@ namespace {
     public function Error(): Errors\Error {
       return $this->error;
     }
-    public function As<Tvv super Tv>(): Result<Tvv> {
-      return new Result($this->value, $this->error);
+    public function As<Tvv super Tv>(): Errors\Result<Tvv> {
+      return new ResultImpl<Tvv>($this->value, $this->error);
     }
   }
 }
