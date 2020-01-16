@@ -9,7 +9,7 @@ include "./gen-src/example4_proto.php";
 include "./gen-src/exampleany_proto.php";
 include "./gen-src/descriptor_proto.php";
 
-function check(\Result\Error $err): void {
+function check(\Errors\Error $err): void {
   if (!$err->Ok()) {
     throw new Exception($err->Error());
   }

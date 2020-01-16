@@ -1350,9 +1350,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	// CopyFrom function
-	w.p("public function CopyFrom(%s\\Message $o): \\Result\\Error {", libNs)
+	w.p("public function CopyFrom(%s\\Message $o): \\Errors\\Error {", libNs)
 	w.p("if (!($o is %s)) {", name)
-	w.p("return \\Result\\Errorf('CopyFrom failed: incorrect type received: %%s', $o->MessageName());")
+	w.p("return \\Errors\\Errorf('CopyFrom failed: incorrect type received: %%s', $o->MessageName());")
 	w.p("}")
 	for _, f := range fields {
 		if f.isOneofMember() {
@@ -1364,7 +1364,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("$this->%s = $o->%s->Copy();", oo.name, oo.name)
 	}
 	w.p("$this->%sunrecognized = $o->%sunrecognized;", specialPrefix, specialPrefix)
-	w.p("return \\Result\\Ok();")
+	w.p("return \\Errors\\Ok();")
 	w.p("}")
 
 	w.p("}") // class

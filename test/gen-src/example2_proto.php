@@ -79,13 +79,13 @@ class example2 implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example2)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->zomg = $o->zomg;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 
@@ -147,9 +147,9 @@ class refexample3 implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is refexample3)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $tmp = $o->funky;
     if ($tmp !== null) {
@@ -158,7 +158,7 @@ class refexample3 implements \Protobuf\Message {
       $this->funky = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 

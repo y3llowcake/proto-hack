@@ -61,14 +61,14 @@ class Duration implements \Protobuf\Message {
     $this->nanos = $parts[1];
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Duration)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->seconds = $o->seconds;
     $this->nanos = $o->nanos;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 

@@ -1,10 +1,9 @@
 <?hh // strict
 
-namespace Result {
+namespace Errors {
   interface Error extends \Stringish {
     public function Ok(): bool;
-    public function Error(
-    ): string; // Maybe remove this if stringish_cast is no longer nessecary.
+    public function Error(): string;
   }
 
   <<__Memoize>>
@@ -21,34 +20,27 @@ namespace Result {
     return Error(\sprintf($f, ...$v));
   }
 
-  final class Result<Tv> {
-    private function __construct(public ?Tv $value, public Error $error) {}
-    public function MustValue(): Tv {
-      invariant(
-        $this->value !== null,
-        "result is null; error: '%s'",
-        $this->error,
-      );
-      return $this->value;
+  namespace Result {
+    interface Result<Tv> {
+      public function Ok(): bool;
+      public function Value(): ?Tv;
+      public function MustValue(): Tv;
+      public function Error(): \Errors\Error;
+
+      // TODO Consider abandoning this in favor of type constraints on generics?
+      public function As<Tvv super Tv>(): Result<Tvv>;
     }
-    public static function Value<Tvv>(Tvv $v): Result<Tvv> {
-      return new Result<Tvv>($v, Ok());
+    function Value<Tvv>(Tvv $v): Result<Tvv> {
+      return new \Result<Tvv>($v, \Errors\Ok());
     }
-    public static function Error<Tvv>(string $s): Result<Tvv> {
-      return new Result<Tvv>(null, Error($s));
-    }
-    public static function Errorf<Tvv>(
-      \HH\FormatString<\PlainSprintf> $f,
-      mixed ...$v
-    ): Result<Tvv> {
-      /* HH_IGNORE_ERROR[4027] */
-      return self::Error<Tvv>(\sprintf($f, ...$v));
+    function Error<Tvv>(\Errors\Error $e): Result<Tvv> {
+      return new \Result<Tvv>(null, $e);
     }
   }
 }
 
 namespace {
-  class Ok implements \Result\Error {
+  class Ok implements Errors\Error {
     public function __construct() {}
     public function Ok(): bool {
       return true;
@@ -61,7 +53,7 @@ namespace {
     }
   }
 
-  class Err implements \Result\Error {
+  class Err implements Errors\Error {
     public function __construct(private string $err) {}
     public function Ok(): bool {
       return false;
@@ -71,6 +63,33 @@ namespace {
     }
     public function __toString(): string {
       return $this->err;
+    }
+  }
+
+  class Result<Tv> implements Errors\Result\Result<Tv> {
+    public function __construct(
+      private ?Tv $value,
+      private Errors\Error $error,
+    ) {}
+    public function Ok(): bool {
+      return $this->error->Ok();
+    }
+    public function MustValue(): Tv {
+      invariant(
+        $this->value !== null,
+        "result is null; error: '%s'",
+        $this->error,
+      );
+      return $this->value;
+    }
+    public function Value(): ?Tv {
+      return $this->value;
+    }
+    public function Error(): Errors\Error {
+      return $this->error;
+    }
+    public function As<Tvv super Tv>(): Result<Tvv> {
+      return new Result($this->value, $this->error);
     }
   }
 }

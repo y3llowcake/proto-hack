@@ -97,9 +97,9 @@ class Struct_FieldsEntry implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Struct_FieldsEntry)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->key = $o->key;
     $tmp = $o->value;
@@ -109,7 +109,7 @@ class Struct_FieldsEntry implements \Protobuf\Message {
       $this->value = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 
@@ -174,9 +174,9 @@ class Struct implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Struct)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     foreach ($o->fields as $k => $v) {
       $nv = new \google\protobuf\Value();
@@ -184,7 +184,7 @@ class Struct implements \Protobuf\Message {
       $this->fields[$k] = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 
@@ -449,13 +449,13 @@ class Value implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Value)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->kind = $o->kind->Copy();
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 
@@ -517,9 +517,9 @@ class ListValue implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): \Result\Error {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is ListValue)) {
-      return \Result\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     foreach ($o->values as $v) {
       $nv = new \google\protobuf\Value();
@@ -527,7 +527,7 @@ class ListValue implements \Protobuf\Message {
       $this->values []= $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
-    return \Result\Ok();
+    return \Errors\Ok();
   }
 }
 

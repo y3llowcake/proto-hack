@@ -144,9 +144,10 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
     return $cresp;
   }
   $r = remarshal($tm, $payload, $wfi, $wfo);
-  if (!$r->error->Ok()) {
-    p('parse error: '.$r->error->Error());
-    $cresp->result = new ConformanceResponse_parse_error($r->error->Error());
+  if (!$r->Ok()) {
+    $estr = $r->Error()->Error();
+    p('parse error: '.$estr);
+    $cresp->result = new ConformanceResponse_parse_error($estr);
     return $cresp;
   }
   $result = $r->MustValue();
@@ -162,12 +163,15 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   return $cresp;
 }
 
+use \Errors\Result\Result;
+use function \Errors\Result\{Value, Error};
+
 function remarshal(
   \Protobuf\Message $tm,
   string $in,
   int $wfi,
   int $wfo,
-): \Result\Result<string> {
+): Result<string> {
   $err = null;
   switch ($wfi) {
     case WireFormat::PROTOBUF:
@@ -180,14 +184,14 @@ function remarshal(
       throw new \Exception('unexpected wire format');
   }
   if (!$err->Ok()) {
-    return \Result\Result::Error($err->Error());
+    return Error($err);
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
     case WireFormat::PROTOBUF:
-      return \Result\Result::Value(\Protobuf\Marshal($tm));
+      return Value(\Protobuf\Marshal($tm));
     case WireFormat::JSON:
-      return \Result\Result::Value(\Protobuf\MarshalJson($tm));
+      return Value(\Protobuf\MarshalJson($tm));
   }
   throw new \Exception("invalid output wire format: $wfo");
 }

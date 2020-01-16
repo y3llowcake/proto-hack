@@ -2,8 +2,8 @@
 
 namespace Protobuf {
 
-  use type \Result\Error;
-  use function \Result\{Ok};
+  use type \Errors\Error;
+  use function \Errors\{Ok};
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
@@ -40,7 +40,11 @@ namespace Protobuf {
     $exp = 'type.googleapis.com/'.$m->MessageName();
     $got = $any->type_url;
     if ($exp !== $got) {
-      return \Result\Error("invalid Any.type_url, expected '$exp' got '$got'");
+      return \Errors\Errorf(
+        "invalid Any.type_url, expected '%s' got '%s'",
+        $exp,
+        $got,
+      );
     }
     return Unmarshal($any->value, $m);
   }
@@ -992,8 +996,8 @@ namespace Protobuf\Internal {
 
 namespace {
   class ProtobufException extends \Exception {
-    public function Error(): \Result\Error {
-      return \Result\Error($this->getMessage());
+    public function Error(): \Errors\Error {
+      return \Errors\Error($this->getMessage());
     }
   }
 }
