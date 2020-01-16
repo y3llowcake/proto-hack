@@ -164,7 +164,7 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
 }
 
 use \Errors\Result\Result;
-use function \Errors\Result\{Value, Error};
+use function \Errors\Result\{Val, Err};
 
 function remarshal(
   \Protobuf\Message $tm,
@@ -184,14 +184,14 @@ function remarshal(
       throw new \Exception('unexpected wire format');
   }
   if (!$err->Ok()) {
-    return Error($err);
+    return Err($err);
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
     case WireFormat::PROTOBUF:
-      return Value(\Protobuf\Marshal($tm));
+      return Val(\Protobuf\Marshal($tm));
     case WireFormat::JSON:
-      return Value(\Protobuf\MarshalJson($tm));
+      return Val(\Protobuf\MarshalJson($tm));
   }
   throw new \Exception("invalid output wire format: $wfo");
 }

@@ -30,10 +30,10 @@ namespace Errors {
       // TODO Consider abandoning this in favor of type constraints on generics?
       public function As<Tvv super Tv>(): Result<Tvv>;
     }
-    function Value<Tvv>(Tvv $v): Result<Tvv> {
+    function Val<Tvv>(Tvv $v): Result<Tvv> {
       return new \Result<Tvv>($v, \Errors\Ok());
     }
-    function Error<Tvv>(\Errors\Error $e): Result<Tvv> {
+    function Err<Tvv>(\Errors\Error $e): Result<Tvv> {
       return new \Result<Tvv>(null, $e);
     }
   }
