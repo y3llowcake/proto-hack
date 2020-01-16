@@ -390,6 +390,11 @@ namespace {
     public function Ok(): bool {
       return $this->code == \Grpc\Codes::OK;
     }
+    public function MustOk(): void {
+      if (!$this->Ok()) {
+        throw new Exception('error not ok: '.$this->Error());
+      }
+    }
     public function Error(): string {
       return \sprintf(
         "%s(%d): %s",
