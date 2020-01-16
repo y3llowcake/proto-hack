@@ -67,7 +67,7 @@ function main(array<string> $argv): void {
       default:
         die("unsupported mode $mode");
     }
-    $result = remarshal($tm, $in, $wfi, $wfo)->MustVal();
+    $result = remarshal($tm, $in, $wfi, $wfo)->MustValue();
     if ($wfo === WireFormat::PROTOBUF) {
       $result = \addcslashes($result, $result);
     }
@@ -145,12 +145,12 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
   }
   $r = remarshal($tm, $payload, $wfi, $wfo);
   if (!$r->Ok()) {
-    $estr = $r->Err()->Error();
+    $estr = $r->Error()->Error();
     p('parse error: '.$estr);
     $cresp->result = new ConformanceResponse_parse_error($estr);
     return $cresp;
   }
-  $result = $r->MustVal();
+  $result = $r->MustValue();
   switch ($wfo) {
     case WireFormat::PROTOBUF:
       $cresp->result = new ConformanceResponse_protobuf_payload($result);
@@ -164,7 +164,7 @@ function conformance(ConformanceRequest $creq): ConformanceResponse {
 }
 
 use \Errors\Result;
-use function \Errors\{Val, Err, Ok};
+use function \Errors\{ResultE, ResultV, Ok};
 
 function remarshal(
   \Protobuf\Message $tm,
@@ -184,14 +184,14 @@ function remarshal(
       throw new \Exception('unexpected wire format');
   }
   if (!$err->Ok()) {
-    return Err($err);
+    return ResultE($err);
   }
   p("remarshaling: ".\print_r($tm, true));
   switch ($wfo) {
     case WireFormat::PROTOBUF:
-      return Val(\Protobuf\Marshal($tm));
+      return ResultV(\Protobuf\Marshal($tm));
     case WireFormat::JSON:
-      return Val(\Protobuf\MarshalJson($tm));
+      return ResultV(\Protobuf\MarshalJson($tm));
   }
   throw new \Exception("invalid output wire format: $wfo");
 }
