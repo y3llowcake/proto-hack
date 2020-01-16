@@ -56,12 +56,13 @@ class Donkey implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Donkey)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->hi = $o->hi;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -118,12 +119,13 @@ class Funky_Monkey implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Funky_Monkey)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->hi = $o->hi;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -204,9 +206,9 @@ class Funky implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is Funky)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $tmp = $o->monkey;
     if ($tmp !== null) {
@@ -221,6 +223,7 @@ class Funky implements \Protobuf\Message {
       $this->dokey = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 

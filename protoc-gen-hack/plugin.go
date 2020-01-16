@@ -1350,9 +1350,9 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 	w.ln()
 
 	// CopyFrom function
-	w.p("public function CopyFrom(%s\\Message $o): void {", libNs)
+	w.p("public function CopyFrom(%s\\Message $o): \\Errors\\Error {", libNs)
 	w.p("if (!($o is %s)) {", name)
-	w.p("throw new %s\\ProtobufException('CopyFrom failed: incorrect type received');", libNs)
+	w.p("return \\Errors\\Errorf('CopyFrom failed: incorrect type received: %%s', $o->MessageName());")
 	w.p("}")
 	for _, f := range fields {
 		if f.isOneofMember() {
@@ -1364,6 +1364,7 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 		w.p("$this->%s = $o->%s->Copy();", oo.name, oo.name)
 	}
 	w.p("$this->%sunrecognized = $o->%sunrecognized;", specialPrefix, specialPrefix)
+	w.p("return \\Errors\\Ok();")
 	w.p("}")
 
 	w.p("}") // class
@@ -1440,7 +1441,10 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		}
 		w.p("$handler = (\\Grpc\\Context $ctx, \\Grpc\\Unmarshaller $u): %s\\Message ==> {", libNs)
 		w.p("$in = new %s();", m.InputPhpName)
-		w.p("$u->Unmarshal($in);")
+		w.p("$err = $u->Unmarshal($in);")
+		w.p("if (!$err->Ok()) {")
+		w.p("throw new \\Grpc\\GrpcException(\\Grpc\\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());")
+		w.p("}")
 		w.p("return $service->%s($ctx, $in);", m.PhpName)
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)

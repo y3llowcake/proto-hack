@@ -82,12 +82,13 @@ class example2 implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example2)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->aint32 = $o->aint32;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -236,12 +237,13 @@ class example1_example2 implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example1_example2)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->astring = $o->astring;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -312,13 +314,14 @@ class example1_AmapEntry implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example1_AmapEntry)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->key = $o->key;
     $this->value = $o->value;
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -394,9 +397,9 @@ class example1_Amap2Entry implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example1_Amap2Entry)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->key = $o->key;
     $tmp = $o->value;
@@ -406,6 +409,7 @@ class example1_Amap2Entry implements \Protobuf\Message {
       $this->value = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -897,9 +901,9 @@ class example1 implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is example1)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $this->adouble = $o->adouble;
     $this->afloat = $o->afloat;
@@ -954,6 +958,7 @@ class example1 implements \Protobuf\Message {
     }
     $this->aoneof = $o->aoneof->Copy();
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 
@@ -976,7 +981,10 @@ function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\S
   $methods = vec[];
   $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Protobuf\Message ==> {
     $in = new \foo\bar\example1();
-    $u->Unmarshal($in);
+    $err = $u->Unmarshal($in);
+    if (!$err->Ok()) {
+      throw new \Grpc\GrpcException(\Grpc\Codes::InvalidArgument, 'proto unmarshal; ' . $err->Error());
+    }
     return $service->OneToTwo($ctx, $in);
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);

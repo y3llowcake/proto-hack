@@ -61,9 +61,9 @@ class AnyTest implements \Protobuf\Message {
     }
   }
 
-  public function CopyFrom(\Protobuf\Message $o): void {
+  public function CopyFrom(\Protobuf\Message $o): \Errors\Error {
     if (!($o is AnyTest)) {
-      throw new \Protobuf\ProtobufException('CopyFrom failed: incorrect type received');
+      return \Errors\Errorf('CopyFrom failed: incorrect type received: %s', $o->MessageName());
     }
     $tmp = $o->any;
     if ($tmp !== null) {
@@ -72,6 +72,7 @@ class AnyTest implements \Protobuf\Message {
       $this->any = $nv;
     }
     $this->XXX_unrecognized = $o->XXX_unrecognized;
+    return \Errors\Ok();
   }
 }
 

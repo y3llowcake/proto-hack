@@ -1,35 +1,51 @@
 <?hh // strict
 
 namespace Protobuf {
-
-  class ProtobufException extends \Exception {}
+  use type \Errors\Error;
+  use function \Errors\Ok;
 
   interface Message {
     public function MergeFrom(Internal\Decoder $d): void;
     public function MergeJsonFrom(mixed $m): void;
     public function WriteTo(Internal\Encoder $e): void;
     public function WriteJsonTo(Internal\JsonEncoder $e): void;
-    public function CopyFrom(Message $m): void;
+    public function CopyFrom(Message $m): Error;
     public function MessageName(): string;
   }
 
-  function Unmarshal(string $data, Message $message): void {
-    $message->MergeFrom(Internal\Decoder::FromString($data));
+  function Unmarshal(string $data, Message $message): Error {
+    try {
+      $message->MergeFrom(Internal\Decoder::FromString($data));
+    } catch (\ProtobufException $e) {
+      return $e->Error();
+    }
+    return Ok();
   }
 
-  function UnmarshalJson(string $data, Message $message): void {
-    $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
+  function UnmarshalJson(string $data, Message $message): Error {
+    try {
+      $message->MergeJsonFrom(Internal\JsonDecoder::FromString($data));
+    } catch (\ProtobufException $e) {
+      return $e->Error();
+    }
+    return Ok();
   }
 
-  function UnmarshalAny(\google\protobuf\Any $any, Message $m): void {
+  function UnmarshalCopy(Message $from, Message $to): Error {
+    return $to->CopyFrom($from);
+  }
+
+  function UnmarshalAny(\google\protobuf\Any $any, Message $m): Error {
     $exp = 'type.googleapis.com/'.$m->MessageName();
     $got = $any->type_url;
     if ($exp !== $got) {
-      throw new ProtobufException(
-        "invalid Any.type_url, expected '$exp' got '$got'",
+      return \Errors\Errorf(
+        "invalid Any.type_url, expected '%s' got '%s'",
+        $exp,
+        $got,
       );
     }
-    Unmarshal($any->value, $m);
+    return Unmarshal($any->value, $m);
   }
 
   function Marshal(Message $message): string {
@@ -79,13 +95,12 @@ namespace Protobuf\Internal {
 
   function AssertEndiannessAndIntSize(): void {
     if (\PHP_INT_SIZE != 8) {
-      throw new \Protobuf\ProtobufException(
-        "unsupported PHP_INT_SIZE size: ".\PHP_INT_SIZE,
-      );
+      throw
+        new \ProtobufException("unsupported PHP_INT_SIZE size: ".\PHP_INT_SIZE);
     }
     $end = \unpack('l', \chr(0x70).\chr(0x10).\chr(0xF0).\chr(0x00))[1];
     if ($end !== 15732848) {
-      throw new \Protobuf\ProtobufException(
+      throw new \ProtobufException(
         "unsupported endianess (is this machine little endian?): ".$end,
       );
     }
@@ -110,9 +125,8 @@ namespace Protobuf\Internal {
       $shift = 0;
       while (true) {
         if ($this->isEOF()) {
-          throw new \Protobuf\ProtobufException(
-            "buffer overrun while reading varint-128",
-          );
+          throw
+            new \ProtobufException("buffer overrun while reading varint-128");
         }
         $c = \ord($this->buf[$this->offset]);
         $this->offset++;
@@ -145,7 +159,7 @@ namespace Protobuf\Internal {
       $k = $this->readVarint();
       $fn = $k >> 3;
       if ($fn == 0) {
-        throw new \Protobuf\ProtobufException("zero field number");
+        throw new \ProtobufException("zero field number");
       }
       return tuple($fn, $k & 0x7);
     }
@@ -196,14 +210,12 @@ namespace Protobuf\Internal {
 
     private function readRaw(int $size): string {
       if ($this->isEOF()) {
-        throw
-          new \Protobuf\ProtobufException("buffer overrun while reading raw");
+        throw new \ProtobufException("buffer overrun while reading raw");
       }
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
-        throw new \Protobuf\ProtobufException(
-          "buffer overrun while reading raw: ".$size,
-        );
+        throw
+          new \ProtobufException("buffer overrun while reading raw: ".$size);
       }
       $ss = \substr($this->buf, $this->offset, $size);
       $this->offset = $noff;
@@ -214,9 +226,8 @@ namespace Protobuf\Internal {
       $size = $this->readVarint();
       $noff = $this->offset + $size;
       if ($noff > $this->len) {
-        throw new \Protobuf\ProtobufException(
-          "buffer overrun while reading buffer: ".$size,
-        );
+        throw
+          new \ProtobufException("buffer overrun while reading buffer: ".$size);
       }
       $buf = new Decoder($this->buf, $this->offset, $noff, new Encoder());
       $this->offset = $noff;
@@ -243,7 +254,7 @@ namespace Protobuf\Internal {
           $this->skipped->writeRaw($this->readRaw(4));
           break;
         default:
-          throw new \Protobuf\ProtobufException(
+          throw new \ProtobufException(
             "encountered unknown wire type $wt during skip",
           );
       }
@@ -763,9 +774,8 @@ namespace Protobuf\Internal {
       if ($data !== null) {
         return $data;
       }
-      throw new \Protobuf\ProtobufException(
-        "json_decode failed; ".\json_last_error_msg(),
-      );
+      throw
+        new \ProtobufException("json_decode failed; ".\json_last_error_msg());
     }
 
     public static function readObject(mixed $m): dict<string, mixed> {
@@ -776,9 +786,8 @@ namespace Protobuf\Internal {
         }
         return $ret;
       }
-      throw new \Protobuf\ProtobufException(
-        \sprintf("expected dict got %s", \gettype($m)),
-      );
+      throw
+        new \ProtobufException(\sprintf("expected dict got %s", \gettype($m)));
     }
 
     public static function readList(mixed $m): vec<mixed> {
@@ -791,9 +800,8 @@ namespace Protobuf\Internal {
         }
         return $ret;
       }
-      throw new \Protobuf\ProtobufException(
-        \sprintf("expected vec got %s", \gettype($m)),
-      );
+      throw
+        new \ProtobufException(\sprintf("expected vec got %s", \gettype($m)));
     }
 
     public static function readBytes(mixed $m): string {
@@ -802,7 +810,7 @@ namespace Protobuf\Internal {
       if ($m is string) {
         return self::decodeBytes($m);
       }
-      throw new \Protobuf\ProtobufException(
+      throw new \ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
       );
     }
@@ -814,7 +822,7 @@ namespace Protobuf\Internal {
       );
       if ($b is string)
         return $b;
-      throw new \Protobuf\ProtobufException("base64 decode failed");
+      throw new \ProtobufException("base64 decode failed");
     }
 
     public static function readString(mixed $m): string {
@@ -822,7 +830,7 @@ namespace Protobuf\Internal {
         return '';
       if ($m is string)
         return $m;
-      throw new \Protobuf\ProtobufException(
+      throw new \ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
       );
     }
@@ -841,12 +849,11 @@ namespace Protobuf\Internal {
         return $m;
       if ($m is string) {
         if ($m === '') {
-          throw new \Protobuf\ProtobufException('empty integer string');
+          throw new \ProtobufException('empty integer string');
         }
 
         if (!self::isDigitString($m, $signed)) {
-          throw
-            new \Protobuf\ProtobufException('invalid char in integer string');
+          throw new \ProtobufException('invalid char in integer string');
         }
 
         $mgmp = \gmp_init($m, 10);
@@ -856,12 +863,12 @@ namespace Protobuf\Internal {
               ((int)\gmp_cmp($mgmp, '9223372036854775807')) > 0 ||
               ((int)\gmp_cmp($mgmp, '-9223372036854775808')) < 0
             ) {
-              throw new \Protobuf\ProtobufException('int64 out of bounds');
+              throw new \ProtobufException('int64 out of bounds');
             }
           } else {
             if (((int)\gmp_cmp($m, '9223372036854775807')) > 0) {
               if (((int)\gmp_cmp($m, '18446744073709551615')) > 0) {
-                throw new \Protobuf\ProtobufException('uint64 out of bounds');
+                throw new \ProtobufException('uint64 out of bounds');
               }
               \gmp_clrbit(inout $mgmp, 63);
               return \gmp_intval($mgmp) | 0x8000000000000000;
@@ -873,21 +880,18 @@ namespace Protobuf\Internal {
       }
       if ($m is float) {
         if (\fmod($m, 1.0) !== 0.00) {
-          throw new \Protobuf\ProtobufException(
-            'expected int got non integral float',
-          );
+          throw new \ProtobufException('expected int got non integral float');
         }
         return (int)$m;
       }
-      throw new \Protobuf\ProtobufException(
-        \sprintf("expected int got %s", \gettype($m)),
-      );
+      throw
+        new \ProtobufException(\sprintf("expected int got %s", \gettype($m)));
     }
 
     public static function readInt32Signed(mixed $m): int {
       $i = self::readInt($m, true, false);
       if ($i > 2147483647 || $i < -2147483648) {
-        throw new \Protobuf\ProtobufException('int32 out of bounds');
+        throw new \ProtobufException('int32 out of bounds');
       }
       return $i;
     }
@@ -895,7 +899,7 @@ namespace Protobuf\Internal {
     public static function readInt32Unsigned(mixed $m): int {
       $i = self::readInt($m, false, false);
       if ($i > 4294967295) {
-        throw new \Protobuf\ProtobufException('uint32 out of bounds');
+        throw new \ProtobufException('uint32 out of bounds');
       }
       return $i;
     }
@@ -922,9 +926,8 @@ namespace Protobuf\Internal {
       if (\is_numeric($m)) {
         return (float)$m;
       }
-      throw new \Protobuf\ProtobufException(
-        \sprintf("expected float got %s", \gettype($m)),
-      );
+      throw
+        new \ProtobufException(\sprintf("expected float got %s", \gettype($m)));
     }
 
     public static function readBool(mixed $m): bool {
@@ -932,9 +935,8 @@ namespace Protobuf\Internal {
         return false;
       if ($m is bool)
         return $m;
-      throw new \Protobuf\ProtobufException(
-        \sprintf("expected bool got %s", \gettype($m)),
-      );
+      throw
+        new \ProtobufException(\sprintf("expected bool got %s", \gettype($m)));
     }
 
     public static function readBoolMapKey(mixed $m): bool_map_key_t {
@@ -943,9 +945,9 @@ namespace Protobuf\Internal {
           return $m;
         if ($m === 'false')
           return $m;
-        throw new \Protobuf\ProtobufException('could not map string to bool');
+        throw new \ProtobufException('could not map string to bool');
       }
-      throw new \Protobuf\ProtobufException(
+      throw new \ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
       );
     }
@@ -955,8 +957,7 @@ namespace Protobuf\Internal {
         return tuple(0, 0);
       if ($m is string) {
         if (\substr($m, -1) != 's') {
-          throw
-            new \Protobuf\ProtobufException('duration missing trailing \'s\'');
+          throw new \ProtobufException('duration missing trailing \'s\'');
         }
         $m = \substr($m, 0, -1);
         $parts = \explode('.', $m);
@@ -966,7 +967,7 @@ namespace Protobuf\Internal {
           $sns = \str_pad($parts[1], 9, '0');
           $ns = (int)$sns;
         } else if (\count($parts) > 2) {
-          throw new \Protobuf\ProtobufException(\sprintf(
+          throw new \ProtobufException(\sprintf(
             'duration has wrong number of parts; got %d expected <= 2',
             \count($parts),
           ));
@@ -980,14 +981,22 @@ namespace Protobuf\Internal {
           $ns < -999999999 ||
           $ns > 999999999
         ) {
-          throw new \Protobuf\ProtobufException('duration out of bounds');
+          throw new \ProtobufException('duration out of bounds');
         }
         return tuple($s, $ns);
       }
-      throw new \Protobuf\ProtobufException(
+      throw new \ProtobufException(
         \sprintf("expected string got %s", \gettype($m)),
       );
     }
   }
 }
 // namespace Protobuf/Internal
+
+namespace {
+  class ProtobufException extends \Exception {
+    public function Error(): \Errors\Error {
+      return \Errors\Error($this->getMessage());
+    }
+  }
+}
