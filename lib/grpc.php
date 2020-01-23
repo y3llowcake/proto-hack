@@ -77,6 +77,7 @@ namespace Grpc {
     interface Status extends \Errors\Error {
       public function Code(): \Grpc\Code;
       public function Message(): string;
+      public function Details(): vec<\google\protobuf\Any>;
     }
 
     <<__Memoize>>
@@ -385,7 +386,14 @@ namespace Grpc {
 
 namespace {
   class GrpcStatus implements \Grpc\Status\Status {
-    public function __construct(private \Grpc\Code $code, private string $msg) {
+    private \Grpc\Code $code;
+    private string $msg;
+    private vec<\google\protobuf\Any> $details;
+
+    public function __construct(\Grpc\Code $code, string $msg) {
+      $this->code = $code;
+      $this->msg = $msg;
+      $this->details = vec[];
     }
     public function Ok(): bool {
       return $this->code == \Grpc\Codes::OK;
@@ -403,6 +411,17 @@ namespace {
         $this->msg,
       );
     }
+    public function Details(): vec<\google\protobuf\Any> {
+      return $this->details;
+    }
+    public function WithDetails(\google\protobuf\Any ...$details): GrpcStatus {
+      $o = new GrpcStatus($this->code, $this->msg);
+      $o->details = $this->details;
+      foreach ($details as $d) {
+        $o->details[] = $d;
+      }
+      return $o;
+    }
     public function __toString(): string {
       return $this->Error();
     }
@@ -413,5 +432,4 @@ namespace {
       return $this->code;
     }
   }
-
 }
