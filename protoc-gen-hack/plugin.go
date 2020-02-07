@@ -7,14 +7,15 @@ import (
 	"encoding/base64"
 	"flag"
 	"fmt"
-	"github.com/golang/protobuf/proto"
-	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
-	ppb "github.com/golang/protobuf/protoc-gen-go/plugin"
 	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/golang/protobuf/proto"
+	desc "github.com/golang/protobuf/protoc-gen-go/descriptor"
+	ppb "github.com/golang/protobuf/protoc-gen-go/plugin"
 )
 
 const (
@@ -29,7 +30,11 @@ var (
 	version          = "undefined" // go build -ldflags "-X main.version=1"
 	fversion         = flag.Bool("version", false, "print version and exit")
 	reservedKeywords = []string{"eval", "isset", "unset", "empty", "const", "new", "and", "or",
-		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static", "self"}
+		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static", "self",
+		"int", "bool", "classname", "dict", "vec", "dynamic", "float", "keyset", "nothing", "noreturn", "num",
+		"shape", "string", "Vector", "Map", "Set", "varray", "darray", "Awaitable", "Iterable", "Container", "KeyedContainer",
+		"Traversable", "KeyedTraversable", "Iterable", "KeyedIterable", "Iterator", "KeyedIterator", "AsyncIterator",
+		"AsyncKeyedIterator", "AsyncGenerator"}
 )
 
 func main() {
