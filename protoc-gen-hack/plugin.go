@@ -31,10 +31,16 @@ var (
 	fversion         = flag.Bool("version", false, "print version and exit")
 	reservedKeywords = []string{"eval", "isset", "unset", "empty", "const", "new", "and", "or",
 		"xor", "as", "print", "throw", "array", "instanceof", "trait", "class", "interface", "static", "self",
-		"int", "bool", "classname", "dict", "vec", "dynamic", "float", "keyset", "nothing", "noreturn", "num",
+		"int", "bool", "classname", "dict", "vec", "dynamic", "float", "keyset", "nothing", "noreturn", "num", "enum"
 		"shape", "string", "Vector", "Map", "Set", "varray", "darray", "Awaitable", "Iterable", "Container", "KeyedContainer",
 		"Traversable", "KeyedTraversable", "Iterable", "KeyedIterable", "Iterator", "KeyedIterator", "AsyncIterator",
-		"AsyncKeyedIterator", "AsyncGenerator"}
+		"AsyncKeyedIterator", "AsyncGenerator", "Generator", "FormatString", "BuiltinEnum", "Throwable", "DateTime",
+		"stdClass", "DateTimeImmutable", "Stringish", "XHPChild", "IMemoizeParam", "typename", "IDisposable",
+		"IAsyncDisposable", "ImmVector", "Set", "ImmSet", "ImmMap", "Pair", "ConstVector", "Collection", "ConstMap"
+		"ConstCollection", "ClassAttribute", "EnumAttribute", "TypeAliasAttribute", "FunctionAttribute", "MethodAttribute", 
+		"InstancePropertyAttribute", "StaticPropertyAttribute", "ParameterAttribute", "TypeParameterAttribute", "FileAttribute", 
+		"TypeConstantAttribute", "tuple", "echo", "assert", "fun", "invariant", "invariant_violation", "inst_meth", "class_meth",
+		"meth_caller", "varray_or_darray", "callable", "object", "dynamic", "this", "mixed", "resource", "null"}
 )
 
 func main() {
