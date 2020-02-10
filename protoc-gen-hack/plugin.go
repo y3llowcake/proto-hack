@@ -244,7 +244,7 @@ func toPhpName(ns, name string) (string, string) {
 func isReservedName(name string) bool {
 	lowerName := strings.ToLower(name)
 	for _, keyword := range reservedKeywords {
-		if lowerName == keyword {
+		if lowerName == strings.ToLower(keyword) {
 			return true
 		}
 	}
