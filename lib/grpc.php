@@ -101,6 +101,13 @@ namespace Grpc {
       /* HH_IGNORE_ERROR[4027] */
       return Error($code, \sprintf($f, ...$v));
     }
+
+    function FromError(\Errors\Error $err): Status {
+      if ($err is Status) {
+        return $err;
+      }
+      return Error(\Grpc\Codes::Unknown, $err->Error());
+    }
   }
 
   // Only the following ASCII characters are allowed in keys:
