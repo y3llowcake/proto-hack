@@ -1424,10 +1424,13 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 			continue
 		}
 		w.ln()
-		w.p("public async function %s(\\Grpc\\Context $ctx, %s $in, \\Grpc\\CallOption ...$co): Awaitable<%s> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
+		w.p("public async function %s(\\Grpc\\Context $ctx, %s $in, \\Grpc\\CallOption ...$co): Awaitable<\\Errors\\Result<%s>> {", m.PhpName, m.InputPhpName, m.OutputPhpName)
 		w.p("$out = new %s();", m.OutputPhpName)
-		w.p("await $this->invoker->Invoke($ctx, '/%s/%s', $in, $out, ...$co);", fqname, m.mdp.GetName())
-		w.p("return $out;")
+		w.p("$err = await $this->invoker->Invoke($ctx, '/%s/%s', $in, $out, ...$co);", fqname, m.mdp.GetName())
+		w.p("if ($err->Ok()) {")
+		w.p("return \\Errors\\ResultV($out);")
+		w.p("}")
+		w.p("return \\Errors\\ResultE($err);")
 		w.p("}")
 	}
 	w.p("}")

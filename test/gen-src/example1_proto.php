@@ -966,10 +966,13 @@ class ExampleServiceClient {
   public function __construct(private \Grpc\Invoker $invoker) {
   }
 
-  public async function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in, \Grpc\CallOption ...$co): Awaitable<\foo\bar\example2> {
+  public async function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in, \Grpc\CallOption ...$co): Awaitable<\Errors\Result<\foo\bar\example2>> {
     $out = new \foo\bar\example2();
-    await $this->invoker->Invoke($ctx, '/foo.bar.ExampleService/OneToTwo', $in, $out, ...$co);
-    return $out;
+    $err = await $this->invoker->Invoke($ctx, '/foo.bar.ExampleService/OneToTwo', $in, $out, ...$co);
+    if ($err->Ok()) {
+      return \Errors\ResultV($out);
+    }
+    return \Errors\ResultE($err);
   }
 }
 

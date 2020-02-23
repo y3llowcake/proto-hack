@@ -206,10 +206,13 @@ class AndClient {
   public function __construct(private \Grpc\Invoker $invoker) {
   }
 
-  public async function throw(\Grpc\Context $ctx, \pb_Class $in, \Grpc\CallOption ...$co): Awaitable<\google\protobuf\pb_Empty> {
+  public async function throw(\Grpc\Context $ctx, \pb_Class $in, \Grpc\CallOption ...$co): Awaitable<\Errors\Result<\google\protobuf\pb_Empty>> {
     $out = new \google\protobuf\pb_Empty();
-    await $this->invoker->Invoke($ctx, '/And/throw', $in, $out, ...$co);
-    return $out;
+    $err = await $this->invoker->Invoke($ctx, '/And/throw', $in, $out, ...$co);
+    if ($err->Ok()) {
+      return \Errors\ResultV($out);
+    }
+    return \Errors\ResultE($err);
   }
 }
 

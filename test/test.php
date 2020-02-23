@@ -248,7 +248,7 @@ function testLoopbackService(): void {
     'astring' => 'hello',
   ));
   $out = HH\Asio\join($cli->OneToTwo(new Context(), $in));
-  if ($out->aint32 !== 1337) {
+  if ($out->MustValue()->aint32 !== 1337) {
     throw new Exception('loopback service test failed');
   }
 }
