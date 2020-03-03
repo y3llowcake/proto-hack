@@ -234,7 +234,11 @@ function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
     if (!$err->Ok()) {
       return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err));
     }
-    return $service->throw($ctx, $in)->As<\Protobuf\Message>();
+    try {
+      return $service->throw($ctx, $in)->As<\Protobuf\Message>();
+    } catch (\Grpc\GrpcException $e) {
+      return \Errors\ResultE(\Grpc\Status\Error($e->grpc_code, $e->grpc_message));
+    }
   };
   $methods []= new \Grpc\MethodDesc('throw', $handler);
   return new \Grpc\ServiceDesc('And', $methods);

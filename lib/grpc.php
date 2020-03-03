@@ -388,6 +388,24 @@ namespace Grpc {
       return Errorf("loopback method not implemented: '%s'", $method_name);
     }
   }
+
+  class GrpcException extends \Exception {
+    public Code $grpc_code;
+    public string $grpc_message;
+    public function __construct(Code $code, string $message) {
+      parent::__construct(
+        \sprintf(
+          "grpc exception: %s (%d); %s",
+          Codes::Name($code),
+          $code,
+          $message,
+        ),
+        $code,
+      );
+      $this->grpc_code = $code;
+      $this->grpc_message = $message;
+    }
+  }
 }
 // namespace Grpc
 

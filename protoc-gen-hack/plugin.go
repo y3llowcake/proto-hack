@@ -1461,7 +1461,11 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("if (!$err->Ok()) {")
 		w.p("return \\Errors\\ResultE(\\Errors\\Errorf('proto unmarshal: %s', $err));", "%s")
 		w.p("}")
+		w.p("try {") // Exception Interop
 		w.p("return $service->%s($ctx, $in)->As<%s\\Message>();", m.PhpName, libNs)
+		w.p("} catch (\\Grpc\\GrpcException $e) {")
+		w.p("return \\Errors\\ResultE(\\Grpc\\Status\\Error($e->grpc_code, $e->grpc_message));")
+		w.p("}")
 		w.p("};")
 		w.p("$methods []= new \\Grpc\\MethodDesc('%s', $handler);", m.PhpName)
 	}
