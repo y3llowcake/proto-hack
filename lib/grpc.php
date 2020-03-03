@@ -389,7 +389,7 @@ namespace Grpc {
     }
   }
 
-  class GrpcException extends \Exception {
+  class DeprecatedServerException extends \Exception {
     public Code $grpc_code;
     public string $grpc_message;
     public function __construct(Code $code, string $message) {
