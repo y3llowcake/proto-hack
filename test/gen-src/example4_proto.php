@@ -236,7 +236,7 @@ function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
     }
     try {
       return $service->throw($ctx, $in)->As<\Protobuf\Message>();
-    } catch (\Grpc\DeprecatedServerException $e) {
+    } catch (\Grpc\DeprecatedGrpcException $e) {
       return \Errors\ResultE(\Grpc\Status\Error($e->grpc_code, $e->grpc_message));
     }
   };
