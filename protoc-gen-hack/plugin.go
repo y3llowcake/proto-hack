@@ -1354,6 +1354,8 @@ func writeDescriptor(w *writer, dp *desc.DescriptorProto, ns *Namespace, prefixN
 			w.p("break;")
 			w.i--
 		}
+		w.p("default:")
+		w.p("break;")
 		w.p("}")
 		w.p("}")
 	}

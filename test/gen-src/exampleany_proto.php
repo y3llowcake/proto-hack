@@ -57,6 +57,8 @@ class AnyTest implements \Protobuf\Message {
           if ($this->any == null) $this->any = new \google\protobuf\Any();
           $this->any->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }

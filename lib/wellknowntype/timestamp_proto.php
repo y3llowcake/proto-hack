@@ -67,6 +67,8 @@ class Timestamp implements \Protobuf\Message {
         case 'nanos':
           $this->nanos = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }

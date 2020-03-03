@@ -52,6 +52,8 @@ class Donkey implements \Protobuf\Message {
         case 'hi':
           $this->hi = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -115,6 +117,8 @@ class Funky_Monkey implements \Protobuf\Message {
         case 'hi':
           $this->hi = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -202,6 +206,8 @@ class Funky implements \Protobuf\Message {
           if ($this->dokey == null) $this->dokey = new \Donkey();
           $this->dokey->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }

@@ -67,6 +67,8 @@ class Any implements \Protobuf\Message {
         case 'value':
           $this->value = \Protobuf\Internal\JsonDecoder::readBytes($v);
           break;
+        default:
+        break;
       }
     }
   }

@@ -52,6 +52,8 @@ class pb_Class implements \Protobuf\Message {
         case 'name':
           $this->name = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -120,6 +122,8 @@ class pb_Interface implements \Protobuf\Message {
           if ($this->class == null) $this->class = new \pb_Class();
           $this->class->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -188,6 +192,8 @@ class NotClass implements \Protobuf\Message {
         case 'name':
           $this->name = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }

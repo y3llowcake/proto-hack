@@ -39,6 +39,8 @@ class pb_Empty implements \Protobuf\Message {
     $d = \Protobuf\Internal\JsonDecoder::readObject($m);
     foreach ($d as $k => $v) {
       switch ($k) {
+        default:
+        break;
       }
     }
   }

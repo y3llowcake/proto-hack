@@ -78,6 +78,8 @@ class example2 implements \Protobuf\Message {
         case 'aint32':
           $this->aint32 = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -233,6 +235,8 @@ class example1_example2 implements \Protobuf\Message {
         case 'astring':
           $this->astring = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -310,6 +314,8 @@ class example1_AmapEntry implements \Protobuf\Message {
         case 'value':
           $this->value = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -393,6 +399,8 @@ class example1_Amap2Entry implements \Protobuf\Message {
           if ($this->value == null) $this->value = new \fiz\baz\example2();
           $this->value->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -897,6 +905,8 @@ class example1 implements \Protobuf\Message {
           if ($this->anany == null) $this->anany = new \google\protobuf\Any();
           $this->anany->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }

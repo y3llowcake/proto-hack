@@ -60,6 +60,8 @@ class FileDescriptorSet implements \Protobuf\Message {
             $this->file []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -339,6 +341,8 @@ class FileDescriptorProto implements \Protobuf\Message {
         case 'syntax':
           $this->syntax = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -472,6 +476,8 @@ class DescriptorProto_ExtensionRange implements \Protobuf\Message {
           if ($this->options == null) $this->options = new \google\protobuf\ExtensionRangeOptions();
           $this->options->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -556,6 +562,8 @@ class DescriptorProto_ReservedRange implements \Protobuf\Message {
         case 'end':
           $this->end = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -802,6 +810,8 @@ class DescriptorProto implements \Protobuf\Message {
             $this->reserved_name []= \Protobuf\Internal\JsonDecoder::readString($vv);
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -914,6 +924,8 @@ class ExtensionRangeOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -1213,6 +1225,8 @@ class FieldDescriptorProto implements \Protobuf\Message {
         case 'json_name': case 'jsonName':
           $this->json_name = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -1309,6 +1323,8 @@ class OneofDescriptorProto implements \Protobuf\Message {
           if ($this->options == null) $this->options = new \google\protobuf\OneofOptions();
           $this->options->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -1392,6 +1408,8 @@ class EnumDescriptorProto_EnumReservedRange implements \Protobuf\Message {
         case 'end':
           $this->end = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -1533,6 +1551,8 @@ class EnumDescriptorProto implements \Protobuf\Message {
             $this->reserved_name []= \Protobuf\Internal\JsonDecoder::readString($vv);
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -1646,6 +1666,8 @@ class EnumValueDescriptorProto implements \Protobuf\Message {
           if ($this->options == null) $this->options = new \google\protobuf\EnumValueOptions();
           $this->options->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -1756,6 +1778,8 @@ class ServiceDescriptorProto implements \Protobuf\Message {
           if ($this->options == null) $this->options = new \google\protobuf\ServiceOptions();
           $this->options->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -1905,6 +1929,8 @@ class MethodDescriptorProto implements \Protobuf\Message {
         case 'server_streaming': case 'serverStreaming':
           $this->server_streaming = \Protobuf\Internal\JsonDecoder::readBool($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -2293,6 +2319,8 @@ class FileOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -2443,6 +2471,8 @@ class MessageOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -2661,6 +2691,8 @@ class FieldOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -2741,6 +2773,8 @@ class OneofOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -2843,6 +2877,8 @@ class EnumOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -2933,6 +2969,8 @@ class EnumValueOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -3022,6 +3060,8 @@ class ServiceOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -3153,6 +3193,8 @@ class MethodOptions implements \Protobuf\Message {
             $this->uninterpreted_option []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -3236,6 +3278,8 @@ class UninterpretedOption_NamePart implements \Protobuf\Message {
         case 'is_extension': case 'isExtension':
           $this->is_extension = \Protobuf\Internal\JsonDecoder::readBool($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -3391,6 +3435,8 @@ class UninterpretedOption implements \Protobuf\Message {
         case 'aggregate_value': case 'aggregateValue':
           $this->aggregate_value = \Protobuf\Internal\JsonDecoder::readString($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -3542,6 +3588,8 @@ class SourceCodeInfo_Location implements \Protobuf\Message {
             $this->leading_detached_comments []= \Protobuf\Internal\JsonDecoder::readString($vv);
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -3616,6 +3664,8 @@ class SourceCodeInfo implements \Protobuf\Message {
             $this->location []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }
@@ -3735,6 +3785,8 @@ class GeneratedCodeInfo_Annotation implements \Protobuf\Message {
         case 'end':
           $this->end = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -3808,6 +3860,8 @@ class GeneratedCodeInfo implements \Protobuf\Message {
             $this->annotation []= $obj;
           }
           break;
+        default:
+        break;
       }
     }
   }

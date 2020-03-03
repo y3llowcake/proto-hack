@@ -75,6 +75,8 @@ class example2 implements \Protobuf\Message {
         case 'zomg':
           $this->zomg = \Protobuf\Internal\JsonDecoder::readInt32Signed($v);
           break;
+        default:
+        break;
       }
     }
   }
@@ -143,6 +145,8 @@ class refexample3 implements \Protobuf\Message {
           if ($this->funky == null) $this->funky = new \Funky();
           $this->funky->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }

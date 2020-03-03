@@ -55,6 +55,8 @@ class FieldMask implements \Protobuf\Message {
             $this->paths []= \Protobuf\Internal\JsonDecoder::readString($vv);
           }
           break;
+        default:
+        break;
       }
     }
   }

@@ -93,6 +93,8 @@ class Struct_FieldsEntry implements \Protobuf\Message {
           if ($this->value == null) $this->value = new \google\protobuf\Value();
           $this->value->MergeJsonFrom($v);
           break;
+        default:
+        break;
       }
     }
   }
