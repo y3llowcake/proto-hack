@@ -78,6 +78,7 @@ namespace Grpc {
       public function Code(): \Grpc\Code;
       public function Message(): string;
       public function Details(): vec<\google\protobuf\Any>;
+      public function WithDetails(\google\protobuf\Any ...$details): Status;
     }
 
     <<__Memoize>>
