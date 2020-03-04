@@ -998,11 +998,7 @@ function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\S
     if (!$err->Ok()) {
       return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err));
     }
-    try {
-      return $service->OneToTwo($ctx, $in)->As<\Protobuf\Message>();
-    } catch (\Grpc\DeprecatedGrpcException $e) {
-      return \Errors\ResultE(\Grpc\Status\Error($e->grpc_code, $e->grpc_message));
-    }
+    return $service->OneToTwo($ctx, $in)->As<\Protobuf\Message>();
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
   return new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods);

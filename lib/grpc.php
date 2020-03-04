@@ -2,7 +2,7 @@
 
 namespace Grpc {
   use type \Errors\{Error, Result};
-  use function \Errors\{Errorf, Ok, ResultE, ResultV};
+  use function \Errors\{ResultE, ResultV};
 
   use \Protobuf\Message;
 
@@ -271,6 +271,8 @@ namespace Grpc {
     ): Result<Message>;
   }
 
+  use function \Errors\{Errorf, Ok};
+
   function SplitFQMethod(string $fq): Result<(string, string)> {
     // Strip leading slash, if any.
     $fq = \ltrim($fq, '/');
@@ -387,24 +389,6 @@ namespace Grpc {
         }
       }
       return Errorf("loopback method not implemented: '%s'", $method_name);
-    }
-  }
-
-  class DeprecatedGrpcException extends \Exception {
-    public Code $grpc_code;
-    public string $grpc_message;
-    public function __construct(Code $code, string $message) {
-      parent::__construct(
-        \sprintf(
-          "grpc exception: %s (%d); %s",
-          Codes::Name($code),
-          $code,
-          $message,
-        ),
-        $code,
-      );
-      $this->grpc_code = $code;
-      $this->grpc_message = $message;
     }
   }
 }

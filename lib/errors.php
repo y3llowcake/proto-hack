@@ -29,8 +29,6 @@ namespace Errors {
 
     // TODO Consider abandoning this in favor of type constraints on generics?
     public function As<Tvv super Tv>(): Result<Tvv>;
-
-    public function DeprecatedGrpcExceptionOrValue(): Tv;
   }
 
   function ResultV<Tvv>(Tvv $v): Result<Tvv> {
@@ -98,15 +96,6 @@ namespace {
     }
     public function As<Tvv super Tv>(): Errors\Result<Tvv> {
       return new ResultImpl<Tvv>($this->value, $this->error);
-    }
-
-    public function DeprecatedGrpcExceptionOrValue(): Tv {
-      if ($this->Ok()) {
-        return $this->MustValue();
-      }
-      $status = \Grpc\Status\FromError($this->Error());
-      throw
-        new \Grpc\DeprecatedGrpcException($status->Code(), $status->Message());
     }
   }
 }
