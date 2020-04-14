@@ -153,7 +153,7 @@ function microtime_as_int(): int {
 
 function testDescriptorReflection(): void {
   $fds = Protobuf\Internal\LoadedFileDescriptors();
-  $names = array();
+  $names = dict[];
   foreach ($fds as $fd) {
     $raw = $fd->FileDescriptorProtoBytes();
     if ($raw == false) {
