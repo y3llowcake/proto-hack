@@ -242,7 +242,7 @@ namespace Grpc {
     }
   }
 
-  type MethodHandler = (function(Context, Unmarshaller): Result<Message>);
+  type MethodHandler = (function(Context, Unmarshaller): Awaitable<Result<Message>>);
 
   class MethodDesc {
     public function __construct(
@@ -310,11 +310,11 @@ namespace Grpc {
       return Ok();
     }
 
-    public function Dispatch(
+    public async function Dispatch(
       Context $ctx,
       string $fqmethod,
       Unmarshaller $unm,
-    ): Result<Message> {
+    ): Awaitable<Result<Message>> {
       $sm = SplitFQMethod($fqmethod);
       if (!$sm->Ok()) {
         return ResultE(Status\Error(Codes::InvalidArgument, $sm->Error()));
@@ -343,7 +343,7 @@ namespace Grpc {
         return $this->interceptor
           ->ServerIntercept($ctx, $service_name, $method_name, $unm, $handler);
       }
-      return $handler($ctx, $unm);
+      return await $handler($ctx, $unm);
     }
   }
 
@@ -373,7 +373,7 @@ namespace Grpc {
           // TODO: ctx needs to be rebuilt correctly.
           $handler = $m->handler;
           try {
-            $ret = $handler($ctx, new CopyUnmarshaller($in));
+            $ret = await $handler($ctx, new CopyUnmarshaller($in));
             if (!$ret->Ok()) {
               return $ret->Error();
             }

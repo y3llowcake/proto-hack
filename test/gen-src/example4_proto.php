@@ -223,18 +223,18 @@ class AndClient {
 }
 
 interface AndServer {
-  public function throw(\Grpc\Context $ctx, \pb_Class $in): \Errors\Result<\google\protobuf\pb_Empty>;
+  public function throw(\Grpc\Context $ctx, \pb_Class $in): Awaitable<\Errors\Result<\google\protobuf\pb_Empty>>;
 }
 
 function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
-  $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Errors\Result<\Protobuf\Message> ==> {
+  $handler = async (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): Awaitable<\Errors\Result<\Protobuf\Message>> ==> {
     $in = new \pb_Class();
     $err = $u->Unmarshal($in);
     if (!$err->Ok()) {
       return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
     }
-    return $service->throw($ctx, $in)->As<\Protobuf\Message>();
+    return (await $service->throw($ctx, $in))->As<\Protobuf\Message>();
   };
   $methods []= new \Grpc\MethodDesc('throw', $handler);
   return new \Grpc\ServiceDesc('And', $methods);

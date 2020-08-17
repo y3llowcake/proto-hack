@@ -987,18 +987,18 @@ class ExampleServiceClient {
 }
 
 interface ExampleServiceServer {
-  public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): \Errors\Result<\foo\bar\example2>;
+  public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): Awaitable<\Errors\Result<\foo\bar\example2>>;
 }
 
 function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\ServiceDesc {
   $methods = vec[];
-  $handler = (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): \Errors\Result<\Protobuf\Message> ==> {
+  $handler = async (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): Awaitable<\Errors\Result<\Protobuf\Message>> ==> {
     $in = new \foo\bar\example1();
     $err = $u->Unmarshal($in);
     if (!$err->Ok()) {
       return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
     }
-    return $service->OneToTwo($ctx, $in)->As<\Protobuf\Message>();
+    return (await $service->OneToTwo($ctx, $in))->As<\Protobuf\Message>();
   };
   $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
   return new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods);

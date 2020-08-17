@@ -215,10 +215,10 @@ function testAny(): void {
 }
 
 class ServerImpl implements foo\bar\ExampleServiceServer {
-  public function OneToTwo(
+  public async function OneToTwo(
     \Grpc\Context $ctx,
     \foo\bar\example1 $in,
-  ): \Errors\Result<\foo\bar\example2> {
+  ): Awaitable<\Errors\Result<\foo\bar\example2>> {
     if ($in->astring !== "hello") {
       throw new Exception('fail!');
     }
