@@ -996,7 +996,7 @@ function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\S
     $in = new \foo\bar\example1();
     $err = $u->Unmarshal($in);
     if (!$err->Ok()) {
-      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err));
+      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
     }
     return $service->OneToTwo($ctx, $in)->As<\Protobuf\Message>();
   };

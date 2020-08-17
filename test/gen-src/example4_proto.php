@@ -232,7 +232,7 @@ function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
     $in = new \pb_Class();
     $err = $u->Unmarshal($in);
     if (!$err->Ok()) {
-      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err));
+      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
     }
     return $service->throw($ctx, $in)->As<\Protobuf\Message>();
   };

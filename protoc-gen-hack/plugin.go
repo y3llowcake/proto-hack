@@ -1459,7 +1459,7 @@ func writeService(w *writer, sdp *desc.ServiceDescriptorProto, pkg string, ns *N
 		w.p("$in = new %s();", m.InputPhpName)
 		w.p("$err = $u->Unmarshal($in);")
 		w.p("if (!$err->Ok()) {")
-		w.p("return \\Errors\\ResultE(\\Errors\\Errorf('proto unmarshal: %s', $err));", "%s")
+		w.p("return \\Errors\\ResultE(\\Errors\\Errorf('proto unmarshal: %s', $err->Error()));", "%s")
 		w.p("}")
 		w.p("return $service->%s($ctx, $in)->As<%s\\Message>();", m.PhpName, libNs)
 		w.p("};")

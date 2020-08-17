@@ -84,7 +84,7 @@ namespace {
       invariant(
         $this->value !== null,
         "result is null; error: '%s'",
-        $this->error,
+        $this->error->Error(),
       );
       return $this->value;
     }
