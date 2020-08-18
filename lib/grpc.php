@@ -268,7 +268,7 @@ namespace Grpc {
       string $method_name,
       Unmarshaller $unmarshaller,
       MethodHandler $handler,
-    ): Result<Message>;
+    ): Awaitable<Result<Message>>;
   }
 
   use function \Errors\{Errorf, Ok};
@@ -340,7 +340,7 @@ namespace Grpc {
       }
       $handler = $service[$method_name];
       if ($this->interceptor !== null) {
-        return $this->interceptor
+        return await $this->interceptor
           ->ServerIntercept($ctx, $service_name, $method_name, $unm, $handler);
       }
       return await $handler($ctx, $unm);
