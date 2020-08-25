@@ -40,7 +40,7 @@ var (
 		"ConstCollection", "ClassAttribute", "EnumAttribute", "TypeAliasAttribute", "FunctionAttribute", "MethodAttribute",
 		"InstancePropertyAttribute", "StaticPropertyAttribute", "ParameterAttribute", "TypeParameterAttribute", "FileAttribute",
 		"TypeConstantAttribute", "tuple", "echo", "assert", "fun", "invariant", "invariant_violation", "inst_meth", "class_meth",
-		"meth_caller", "varray_or_darray", "callable", "object", "dynamic", "this", "mixed", "resource", "null"}
+		"meth_caller", "varray_or_darray", "callable", "object", "dynamic", "this", "mixed", "resource", "null", "namespace"}
 )
 
 func main() {
