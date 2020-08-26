@@ -990,7 +990,7 @@ func (f field) isOneofMember() bool {
 
 // writeEnum writes an enumeration type and constants definitions.
 func writeEnum(w *writer, ed *desc.EnumDescriptorProto, prefixNames []string) {
-	name := strings.Join(append(prefixNames, *ed.Name), "_")
+	name := escapeReservedName(strings.Join(append(prefixNames, *ed.Name), "_"))
 	typename := name + "_enum_t"
 	w.p("newtype %s as int = int;", typename)
 	w.p("abstract class %s {", name)
