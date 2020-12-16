@@ -273,8 +273,7 @@ function main(): void {
   //set_time_limit(5);
   //ini_set('memory_limit', '20M');
 
-  /* HH_FIXME[2050] */
-  $argv = $_SERVER['argv'];
+  $argv = HH\global_get('argv') as KeyedContainer<_, _>;
   if (count($argv) > 1 && $argv[1] == 'bench') {
     bench();
     exit(1);

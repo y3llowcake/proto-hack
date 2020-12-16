@@ -86,12 +86,14 @@ namespace Grpc {
       return new \GrpcStatus(\Grpc\Codes::OK, "OK");
     }
 
-    function Error(\Grpc\Code $code, \Stringish $s): Status {
+    function Error(\Grpc\Code $code, mixed $s): Status {
       if ($s is string) {
         return new \GrpcStatus($code, $s);
       }
-      /* HH_IGNORE_ERROR[4128] */
-      return new \GrpcStatus($code, $s->__toString());
+      if ($s is \Errors\Error) {
+        return new \GrpcStatus($code, $s->Error());
+      }
+      return new \GrpcStatus($code, (string)$s);
     }
 
     function Errorf(
@@ -99,8 +101,7 @@ namespace Grpc {
       \HH\FormatString<\PlainSprintf> $f,
       mixed ...$v
     ): Status {
-      /* HH_IGNORE_ERROR[4027] */
-      return Error($code, \sprintf($f, ...$v));
+      return Error($code, \vsprintf($f, $v));
     }
 
     function FromError(\Errors\Error $err): Status {
@@ -242,7 +243,10 @@ namespace Grpc {
     }
   }
 
-  type MethodHandler = (function(Context, Unmarshaller): Awaitable<Result<Message>>);
+  type MethodHandler = (function(
+    Context,
+    Unmarshaller,
+  ): Awaitable<Result<Message>>);
 
   class MethodDesc {
     public function __construct(
@@ -278,8 +282,9 @@ namespace Grpc {
     $fq = \ltrim($fq, '/');
     $parts = \explode('/', $fq, 2);
     if (\count($parts) < 2) {
-      return
-        ResultE(Errorf("invalid fully qualified gRPC method name '%s'", $fq));
+      return ResultE(
+        Errorf("invalid fully qualified gRPC method name '%s'", $fq),
+      );
     }
     return ResultV(tuple($parts[0], $parts[1]));
   }

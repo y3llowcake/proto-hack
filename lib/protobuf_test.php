@@ -1,6 +1,5 @@
 <?hh // strict
 namespace Protobuf\Internal;
-include "protobuf.php";
 
 function a(mixed $got, mixed $exp, string $msg): void {
   if ($got !== $exp) {
@@ -64,6 +63,8 @@ function testLittleEndianInt64(int $dec, string $enc): void {
 
 <<__EntryPoint>>
 function main(): void {
+  include "protobuf.php";
+
   AssertEndiannessAndIntSize();
 
   // Varint 128

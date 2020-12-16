@@ -17,8 +17,7 @@ namespace Errors {
   }
 
   function Errorf(\HH\FormatString<\PlainSprintf> $f, mixed ...$v): Error {
-    /* HH_IGNORE_ERROR[4027] */
-    return Error(\sprintf($f, ...$v));
+    return Error(\vsprintf($f, $v));
   }
 
   interface Result<Tv> {
