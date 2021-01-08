@@ -187,8 +187,8 @@ function testAny(): void {
   $any = $t1->any;
   invariant($any != null, "");
 
-  assert($any->type_url === 'type.googleapis.com/foo.bar.example1');
-  assert($any->value === Protobuf\Marshal($e1));
+  \assert($any->type_url === 'type.googleapis.com/foo.bar.example1');
+  \assert($any->value === Protobuf\Marshal($e1));
 
   // Test serde.
   $str = Protobuf\Marshal($t1);
@@ -196,13 +196,13 @@ function testAny(): void {
   check(Protobuf\Unmarshal($str, $t2));
   $any2 = $t2->any;
   invariant($any2 != null, "");
-  assert($any2->type_url === $any->type_url);
-  assert($any2->value === $any->value);
+  \assert($any2->type_url === $any->type_url);
+  \assert($any2->value === $any->value);
 
   // Test unmarshaling
   $e2 = new foo\bar\example1();
   check(Protobuf\UnmarshalAny($any2, $e2));
-  assert($e2->astring === "Hello World!");
+  \assert($e2->astring === "Hello World!");
 }
 
 class ServerImpl implements foo\bar\ExampleServiceServer {
