@@ -176,6 +176,12 @@ function testReservedClassNames(): void {
   $n = new NotClass();
 }
 
+function assert(bool $b): void {
+	if (!$b) {
+		throw new \Exception('assertion failed');
+	}
+}
+
 function testAny(): void {
   // This should run without errors.
   $e1 = new foo\bar\example1();
