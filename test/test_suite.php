@@ -177,9 +177,9 @@ function testReservedClassNames(): void {
 }
 
 function assert(bool $b): void {
-	if (!$b) {
-		throw new \Exception('assertion failed');
-	}
+  if (!$b) {
+    throw new \Exception('assertion failed');
+  }
 }
 
 function testAny(): void {

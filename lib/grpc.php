@@ -60,9 +60,9 @@ namespace Grpc {
         case Codes::DataLoss:
           return "DataLoss";
         case Codes::Unauthenticated:
-					return "Unauthenticated";
-				default:
-					return "Unknown";
+          return "Unauthenticated";
+        default:
+          return "Unknown";
       }
     }
 
