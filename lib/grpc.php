@@ -60,9 +60,10 @@ namespace Grpc {
         case Codes::DataLoss:
           return "DataLoss";
         case Codes::Unauthenticated:
-          return "Unauthenticated";
+					return "Unauthenticated";
+				default:
+					return "Unknown";
       }
-      return "Unknown";
     }
 
     public static function FromInt(int $code): Code {
