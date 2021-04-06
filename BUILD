@@ -18,25 +18,28 @@ go_binary(
 )
 
 sh_binary(
-  name = "wellknown",
-  srcs = ["wellknown_bin.sh"],
-  deps = [ "//:wellknown_lib" ],
+  name = "gen",
+  srcs = ["gen_bin.sh"],
+  deps = [ "//:gen_lib" ],
 )
 
 sh_test(
-  name = "wellknown_test",
-  srcs = ["wellknown_test.sh"],
-  deps = [ "//:wellknown_lib" ],
+  name = "gen_test",
+  srcs = ["gen_test.sh"],
+  deps = [ "//:gen_lib" ],
 )
 
 sh_library(
-  name = "wellknown_lib",
-  srcs = ["wellknown.sh"],
+  name = "gen_lib",
+  srcs = ["gen.sh"],
   data = [
       "@com_google_protobuf//:well_known_protos",
       "@com_google_protobuf//:protoc",
       "//:protoc-gen-hack",
-  ] + glob(["lib/wellknowntype/**/*.php"]),
+  ] + glob([
+      "test/*.proto",
+      "generated/**/*.php",
+      ]),
 )
 
 filegroup(

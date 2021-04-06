@@ -38,7 +38,11 @@ echo generating hacklang...
 for SRC in $PBS
 do
   echo source: $SRC
-  $PROTOC -I external/com_google_protobuf/src --plugin=$GENHACK --hack_out="allow_proto2_dangerous:$TMP" $SRC
+  ARGS="-I ./"
+  if [[ "$SRC" =~ .*"com_google_protobuf".* ]]; then
+    ARGS="-I external/com_google_protobuf/src"
+  fi
+  $PROTOC $ARGS --plugin=$GENHACK --hack_out="allow_proto2_dangerous:$TMP" $SRC
   echo
 done
 
@@ -49,7 +53,7 @@ if [ $# -gt 0 ]; then
   echo "comparing outputs with destination"
   diff -r $TMP $DST
 else
-  DST="${BUILD_WORKSPACE_DIRECTORY}/lib/wellknowntype"
+  DST="${BUILD_WORKSPACE_DIRECTORY}/generated"
   echo
   echo "copying outputs to destination"
   rm -r $DST

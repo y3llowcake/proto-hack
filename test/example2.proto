@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "example3.proto";
+import "test/example3.proto";
 
 package fiz.baz;
 

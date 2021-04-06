@@ -1,3 +1,3 @@
 #!/bin/bash
 set -euo pipefail
-source wellknown.sh test
+source gen.sh
