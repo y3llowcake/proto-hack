@@ -1,2 +1,2 @@
-#ignored_paths=["conformance"]
+ignored_paths=["bazel-proto-hack"]
 assume_php=false

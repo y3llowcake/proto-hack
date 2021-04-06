@@ -66,9 +66,11 @@ hh_test(
 INTEGRATION_PHP = glob(["test/**/*.php"])
 ALL_PHP += INTEGRATION_PHP
 
+ALL_INTEGRATION = INTEGRATION_PHP + LIB_PHP + ALL_GEN
+
 hh_test(
   name = "integration_test",
-  srcs = INTEGRATION_PHP + LIB_PHP + ALL_GEN,
+  srcs = ALL_INTEGRATION,
   hh_args = "test/test.php",
 )
 

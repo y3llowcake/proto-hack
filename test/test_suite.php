@@ -251,7 +251,7 @@ function testLoopbackService(): void {
 }
 
 function bench(): void {
-  $raw = file_get_contents('./gen-data/example1.pb.bin');
+  $raw = file_get_contents('generated/test/example1.pb.bin');
   $iter = 100000;
   while (true) {
     $duration = clock_gettime_ns(CLOCK_REALTIME);

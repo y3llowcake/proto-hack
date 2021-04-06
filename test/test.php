@@ -1,6 +1,5 @@
 <?hh // strict
 
-
 <<__EntryPoint>>
 function main(): void {
   //set_time_limit(5);
@@ -14,7 +13,7 @@ function main(): void {
   include "generated/test/example2_proto.php";
   include "generated/test/example4_proto.php";
   include "generated/test/exampleany_proto.php";
-  include "generated/test/descriptor_proto.php";
+  include "generated/google/protobuf/descriptor_proto.php";
 
   include "test/test_suite.php";
 
