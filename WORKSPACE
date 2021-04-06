@@ -1,26 +1,38 @@
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
 #
 # Golang.
 #
 http_archive(
     name = "io_bazel_rules_go",
-    urls = ["https://github.com/bazelbuild/rules_go/releases/download/0.12.1/rules_go-0.12.1.tar.gz"],
-    sha256 = "8b68d0630d63d95dacc0016c3bb4b76154fe34fca93efd65d1c366de3fcb4294",
+    sha256 = "69de5c704a05ff37862f7e0f5534d4f479418afc21806c887db544a316f3cb6b",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_go/releases/download/v0.27.0/rules_go-v0.27.0.tar.gz",
+        "https://github.com/bazelbuild/rules_go/releases/download/v0.27.0/rules_go-v0.27.0.tar.gz",
+    ],
 )
 
-load(
-	"@io_bazel_rules_go//go:def.bzl",
-	"go_rules_dependencies",
-	"go_register_toolchains",
-)
-
+load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
 go_rules_dependencies()
-go_register_toolchains()
+go_register_toolchains(version = "1.16.2")
+
 
 #
-# Golang + Protobuf.
+# Protobuf
 #
+#http_archive(
+#    name = "rules_python",
+#    url = "https://github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
+#    sha256 = "778197e26c5fbeb07ac2a2c5ae405b30f6cb7ad1f5510ea6fdac03bded96cc6f",
+#)
 
-load(
-    "@io_bazel_rules_go//proto:def.bzl",
-    "go_proto_library",
+PBV = '3.15.7'
+http_archive(
+    name = "com_google_protobuf",
+    strip_prefix = 'protobuf-' + PBV,
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/v" + PBV + ".zip"],
+    sha256 = "feeeb3a866834bd46be16a20d3ff74c475b27e1c0d4441173b6dfd806bc2f136",
 )
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+protobuf_deps()

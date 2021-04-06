@@ -46,7 +46,7 @@ var (
 func main() {
 	flag.Parse()
 	if *fversion {
-		fmt.Println(version)
+		fmt.Println("version", version)
 		return
 	}
 	var buf bytes.Buffer
