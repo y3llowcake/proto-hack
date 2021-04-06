@@ -1,5 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
-load(":hh.bzl", "hh_test")
+load(":hh.bzl", "hh_test", "hh_client_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -30,7 +30,11 @@ sh_test(
   deps = [ "//:gen_lib" ],
 )
 
+ALL_PHP = []
+
 GEN_PHP = glob(["generated/**/*.php"])
+ALL_PHP += GEN_PHP
+
 GEN_PB_BIN = glob(["generated/**/*.pb.bin"])
 ALL_GEN = GEN_PHP + GEN_PB_BIN
 
@@ -48,17 +52,29 @@ sh_library(
 )
 
 LIB_PHP = glob(["lib/**/*.php"])
+ALL_PHP += LIB_PHP
 
-hh_test(
-  name = "integration_test",
-  srcs = glob(["test/**/*.php"]) + LIB_PHP + ALL_GEN,
-  hh_args = "test/test.php",
-)
+LIB_TEST_PHP = glob(["lib_test/**/*.php"])
+ALL_PHP += LIB_TEST_PHP
 
 hh_test(
   name = "library_test",
-  srcs = glob(["lib_test/**/*.php"]) + LIB_PHP,
+  srcs = LIB_TEST_PHP + LIB_PHP,
   hh_args = "lib_test/test.php",
+)
+
+INTEGRATION_PHP = glob(["test/**/*.php"])
+ALL_PHP += INTEGRATION_PHP
+
+hh_test(
+  name = "integration_test",
+  srcs = INTEGRATION_PHP + LIB_PHP + ALL_GEN,
+  hh_args = "test/test.php",
+)
+
+hh_client_test(
+  name = "typecheck_test",
+  srcs = [".hhconfig"] + ALL_PHP,
 )
 
 filegroup(
