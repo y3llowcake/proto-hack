@@ -46,6 +46,8 @@ do
   echo
 done
 
+protoc --encode=foo.bar.example1  ./test/example1.proto < ./test/example1.pb.txt > $TMP/test/example1.pb.bin
+
 if [ $# -gt 0 ]; then
   DST="./lib/wellknowntype"
   # Comparison mode; see if there are diffs, if none, exit 0.

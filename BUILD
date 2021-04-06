@@ -38,6 +38,7 @@ sh_library(
       "//:protoc-gen-hack",
   ] + glob([
       "test/*.proto",
+      "test/*.pb.txt",
       "generated/**/*.php",
       ]),
 )
