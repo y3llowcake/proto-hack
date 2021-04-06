@@ -9,13 +9,13 @@ set -euo pipefail
 """
 
 def _hh_test(ctx):
-  out = ctx.outputs.out
-  script_content = cmd_template.format(
-    args = ctx.attr.hh_args,
-  )
-  ctx.actions.write(out, script_content, is_executable = True)
-  runfiles = ctx.runfiles(files = ctx.files.srcs)
-  return [DefaultInfo(executable = out, runfiles = runfiles)]
+    out = ctx.outputs.out
+    script_content = cmd_template.format(
+        args = ctx.attr.hh_args,
+    )
+    ctx.actions.write(out, script_content, is_executable = True)
+    runfiles = ctx.runfiles(files = ctx.files.srcs)
+    return [DefaultInfo(executable = out, runfiles = runfiles)]
 
 hh_test = rule(
     _hh_test,
@@ -27,17 +27,17 @@ hh_test = rule(
         "hh_args": attr.string(mandatory = True),
     },
     outputs = {
-      "out": "%{name}.bin",
+        "out": "%{name}.bin",
     },
     test = True,
 )
 
 def _hh_client_test(ctx):
-  out = ctx.outputs.out
-  script_content = "#!/bin/bash\nset -euo pipefail\nhh_client"
-  ctx.actions.write(out, script_content, is_executable = True)
-  runfiles = ctx.runfiles(files = ctx.files.srcs)
-  return [DefaultInfo(executable = out, runfiles = runfiles)]
+    out = ctx.outputs.out
+    script_content = "#!/bin/bash\nset -euo pipefail\nhh_client"
+    ctx.actions.write(out, script_content, is_executable = True)
+    runfiles = ctx.runfiles(files = ctx.files.srcs)
+    return [DefaultInfo(executable = out, runfiles = runfiles)]
 
 hh_client_test = rule(
     _hh_client_test,
@@ -48,7 +48,7 @@ hh_client_test = rule(
         ),
     },
     outputs = {
-      "out": "%{name}.bin",
+        "out": "%{name}.bin",
     },
     test = True,
 )

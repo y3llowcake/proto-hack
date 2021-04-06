@@ -84,6 +84,15 @@ CONFORMANCE_PHP = glob(["conformance/**/*.php"])
 
 ALL_PHP += CONFORMANCE_PHP
 
+sh_test(
+    name = "conformance_test",
+    srcs = ["conformance_test.sh"],
+    data = CONFORMANCE_PHP + LIB_PHP + ALL_GEN + [
+        "conformance.sh",
+        "conformance/failures.txt",
+        "@com_google_protobuf//:conformance_test_runner",
+    ],
+)
 
 hh_client_test(
     name = "typecheck_test",

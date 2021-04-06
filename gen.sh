@@ -1,7 +1,6 @@
 #!/bin/bash
-
 set -euo pipefail
-ls -R
+#ls -R
 
 #
 # Setup a tmp directory
