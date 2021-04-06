@@ -14,19 +14,19 @@ function main(): void {
     },
   );
 
-  include '../lib/errors.php';
-  include '../lib/protobuf.php';
-  include '../lib/wellknowntype/any_proto.php';
-  include '../lib/wellknowntype/duration_proto.php';
-  include '../lib/wellknowntype/field_mask_proto.php';
-  include '../lib/wellknowntype/struct_proto.php';
-  include '../lib/wellknowntype/timestamp_proto.php';
-  include '../lib/wellknowntype/wrappers_proto.php';
+  require 'lib/errors.php';
+  require 'lib/protobuf.php';
+  require 'generated/google/protobuf/any_proto.php';
+  require 'generated/google/protobuf/duration_proto.php';
+  require 'generated/google/protobuf/field_mask_proto.php';
+  require 'generated/google/protobuf/struct_proto.php';
+  require 'generated/google/protobuf/timestamp_proto.php';
+  require 'generated/google/protobuf/wrappers_proto.php';
 
-  include 'gen-src/google/protobuf/test_messages_proto2_proto.php';
-  include 'gen-src/google/protobuf/test_messages_proto3_proto.php';
-  include
-  'gen-src/third_party/google/protobuf/conformance/conformance_proto.php';
+  require 'generated/google/protobuf/test_messages_proto2_proto.php';
+  require 'generated/google/protobuf/test_messages_proto3_proto.php';
+  require
+  'generated/external/com_google_protobuf/conformance/conformance_proto.php';
 
   $av = \HH\global_get('argv') as KeyedContainer<_, _>;
   $argv = vec[];

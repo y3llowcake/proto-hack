@@ -5,17 +5,17 @@ function main(): void {
   //set_time_limit(5);
   //ini_set('memory_limit', '20M');
 
-  include "lib/errors.php";
-  include "lib/protobuf.php";
-  include "lib/grpc.php";
-  include "generated/google/protobuf/any_proto.php";
-  include "generated/test/example1_proto.php";
-  include "generated/test/example2_proto.php";
-  include "generated/test/example4_proto.php";
-  include "generated/test/exampleany_proto.php";
-  include "generated/google/protobuf/descriptor_proto.php";
+  require "lib/errors.php";
+  require "lib/protobuf.php";
+  require "lib/grpc.php";
+  require "generated/google/protobuf/any_proto.php";
+  require "generated/test/example1_proto.php";
+  require "generated/test/example2_proto.php";
+  require "generated/test/example4_proto.php";
+  require "generated/test/exampleany_proto.php";
+  require "generated/google/protobuf/descriptor_proto.php";
 
-  include "test/test_suite.php";
+  require "test/test_suite.php";
 
   $argv = HH\global_get('argv') as KeyedContainer<_, _>;
   if (count($argv) > 1 && $argv[1] == 'bench') {

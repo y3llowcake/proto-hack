@@ -31,17 +31,14 @@ PROTOC=`readlink $PROTOC`
 echo protoc path: $PROTOC
 $PROTOC --version
 
-PBS=`find . -name '*.proto'`
+PBS=`find . -name '*.proto' | grep -v _virtual_imports`
 
 echo
 echo generating hacklang...
 for SRC in $PBS
 do
   echo source: $SRC
-  ARGS="-I ./"
-  if [[ "$SRC" =~ .*"com_google_protobuf".* ]]; then
-    ARGS="-I external/com_google_protobuf/src"
-  fi
+  ARGS="-I external/com_google_protobuf/src -I ./"
   $PROTOC $ARGS --plugin=$GENHACK --hack_out="plugin=grpc,allow_proto2_dangerous:$TMP" $SRC
   echo
 done
