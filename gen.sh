@@ -42,18 +42,17 @@ do
   if [[ "$SRC" =~ .*"com_google_protobuf".* ]]; then
     ARGS="-I external/com_google_protobuf/src"
   fi
-  $PROTOC $ARGS --plugin=$GENHACK --hack_out="allow_proto2_dangerous:$TMP" $SRC
+  $PROTOC $ARGS --plugin=$GENHACK --hack_out="plugin=grpc,allow_proto2_dangerous:$TMP" $SRC
   echo
 done
 
 protoc --encode=foo.bar.example1  ./test/example1.proto < ./test/example1.pb.txt > $TMP/test/example1.pb.bin
 
 if [ $# -gt 0 ]; then
-  DST="./lib/wellknowntype"
   # Comparison mode; see if there are diffs, if none, exit 0.
   echo
   echo "comparing outputs with destination"
-  diff -r $TMP $DST
+  diff -r $TMP ./generated
 else
   DST="${BUILD_WORKSPACE_DIRECTORY}/generated"
   echo

@@ -6,17 +6,17 @@ function main(): void {
   //set_time_limit(5);
   //ini_set('memory_limit', '20M');
 
-  include "../lib/errors.php";
-  include "../lib/protobuf.php";
-  include "../lib/grpc.php";
-  include "../lib/wellknowntype/any_proto.php";
-  include "./gen-src/example1_proto.php";
-  include "./gen-src/example2_proto.php";
-  include "./gen-src/example4_proto.php";
-  include "./gen-src/exampleany_proto.php";
-  include "./gen-src/descriptor_proto.php";
+  include "lib/errors.php";
+  include "lib/protobuf.php";
+  include "lib/grpc.php";
+  include "generated/google/protobuf/any_proto.php";
+  include "generated/test/example1_proto.php";
+  include "generated/test/example2_proto.php";
+  include "generated/test/example4_proto.php";
+  include "generated/test/exampleany_proto.php";
+  include "generated/test/descriptor_proto.php";
 
-  include "./test_suite.php";
+  include "test/test_suite.php";
 
   $argv = HH\global_get('argv') as KeyedContainer<_, _>;
   if (count($argv) > 1 && $argv[1] == 'bench') {
@@ -25,7 +25,7 @@ function main(): void {
   }
 
   // PROTO
-  $raw = file_get_contents('./gen-data/example1.pb.bin');
+  $raw = file_get_contents('generated/test/example1.pb.bin');
   $got = new foo\bar\example1();
   check(Protobuf\Unmarshal($raw, $got));
   testExample1($got, "test example1: file");

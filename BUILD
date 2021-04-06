@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
+load(":hh.bzl", "hh_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -29,6 +30,10 @@ sh_test(
   deps = [ "//:gen_lib" ],
 )
 
+GEN_PHP = glob(["generated/**/*.php"])
+GEN_PB_BIN = glob(["generated/**/*.pb.bin"])
+ALL_GEN = GEN_PHP + GEN_PB_BIN
+
 sh_library(
   name = "gen_lib",
   srcs = ["gen.sh"],
@@ -39,13 +44,24 @@ sh_library(
   ] + glob([
       "test/*.proto",
       "test/*.pb.txt",
-      "generated/**/*.php",
-      ]),
+      ]) + ALL_GEN,
+)
+
+LIB_PHP = glob(["lib/**/*.php"])
+
+hh_test(
+  name = "integration_test",
+  srcs = glob(["test/**/*.php"]) + LIB_PHP + ALL_GEN,
+  hh_args = "test/test.php",
+)
+
+hh_test(
+  name = "library_test",
+  srcs = glob(["lib_test/**/*.php"]) + LIB_PHP,
+  hh_args = "lib_test/test.php",
 )
 
 filegroup(
     name = "hack_library",
-    srcs = glob([
-        "lib/**/*.php",
-    ]),
+    srcs = LIB_PHP + GEN_PHP
 )

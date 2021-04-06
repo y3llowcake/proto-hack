@@ -208,6 +208,41 @@ class NotClass implements \Protobuf\Message {
   }
 }
 
+class AndClient {
+  public function __construct(private \Grpc\Invoker $invoker) {
+  }
+
+  public async function throw(\Grpc\Context $ctx, \pb_Class $in, \Grpc\CallOption ...$co): Awaitable<\Errors\Result<\google\protobuf\pb_Empty>> {
+    $out = new \google\protobuf\pb_Empty();
+    $err = await $this->invoker->Invoke($ctx, '/And/throw', $in, $out, ...$co);
+    if ($err->Ok()) {
+      return \Errors\ResultV($out);
+    }
+    return \Errors\ResultE($err);
+  }
+}
+
+interface AndServer {
+  public function throw(\Grpc\Context $ctx, \pb_Class $in): Awaitable<\Errors\Result<\google\protobuf\pb_Empty>>;
+}
+
+function AndServiceDescriptor(AndServer $service): \Grpc\ServiceDesc {
+  $methods = vec[];
+  $handler = async (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): Awaitable<\Errors\Result<\Protobuf\Message>> ==> {
+    $in = new \pb_Class();
+    $err = $u->Unmarshal($in);
+    if (!$err->Ok()) {
+      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
+    }
+    return (await $service->throw($ctx, $in))->As<\Protobuf\Message>();
+  };
+  $methods []= new \Grpc\MethodDesc('throw', $handler);
+  return new \Grpc\ServiceDesc('And', $methods);
+}
+
+function RegisterAndServer(\Grpc\Server $server, AndServer $service): void {
+  $server->RegisterService(AndServiceDescriptor($service));
+}
 
 class XXX_FileDescriptor_test_example4__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'test/example4.proto';

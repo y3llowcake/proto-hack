@@ -155,11 +155,11 @@ function testDescriptorReflection(): void {
     // print_r($dp);
     $names[$fd->Name()] = $raw;
   }
-  if ($names['example1.proto'] == '') {
+  if ($names['test/example1.proto'] == '') {
     throw new \Exception('missing file descriptor for example1');
   }
   $dp = new google\protobuf\FileDescriptorProto();
-  check(Protobuf\Unmarshal($names['example1.proto'], $dp));
+  check(Protobuf\Unmarshal($names['test/example1.proto'], $dp));
   if ($dp->package != 'foo.bar') {
     throw new \Exception(
       'descriptor proto for example1.proto has unexpected package: '.

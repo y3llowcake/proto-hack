@@ -972,6 +972,41 @@ class example1 implements \Protobuf\Message {
   }
 }
 
+class ExampleServiceClient {
+  public function __construct(private \Grpc\Invoker $invoker) {
+  }
+
+  public async function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in, \Grpc\CallOption ...$co): Awaitable<\Errors\Result<\foo\bar\example2>> {
+    $out = new \foo\bar\example2();
+    $err = await $this->invoker->Invoke($ctx, '/foo.bar.ExampleService/OneToTwo', $in, $out, ...$co);
+    if ($err->Ok()) {
+      return \Errors\ResultV($out);
+    }
+    return \Errors\ResultE($err);
+  }
+}
+
+interface ExampleServiceServer {
+  public function OneToTwo(\Grpc\Context $ctx, \foo\bar\example1 $in): Awaitable<\Errors\Result<\foo\bar\example2>>;
+}
+
+function ExampleServiceServiceDescriptor(ExampleServiceServer $service): \Grpc\ServiceDesc {
+  $methods = vec[];
+  $handler = async (\Grpc\Context $ctx, \Grpc\Unmarshaller $u): Awaitable<\Errors\Result<\Protobuf\Message>> ==> {
+    $in = new \foo\bar\example1();
+    $err = $u->Unmarshal($in);
+    if (!$err->Ok()) {
+      return \Errors\ResultE(\Errors\Errorf('proto unmarshal: %s', $err->Error()));
+    }
+    return (await $service->OneToTwo($ctx, $in))->As<\Protobuf\Message>();
+  };
+  $methods []= new \Grpc\MethodDesc('OneToTwo', $handler);
+  return new \Grpc\ServiceDesc('foo.bar.ExampleService', $methods);
+}
+
+function RegisterExampleServiceServer(\Grpc\Server $server, ExampleServiceServer $service): void {
+  $server->RegisterService(ExampleServiceServiceDescriptor($service));
+}
 
 class XXX_FileDescriptor_test_example1__proto implements \Protobuf\Internal\FileDescriptor {
   const string NAME = 'test/example1.proto';

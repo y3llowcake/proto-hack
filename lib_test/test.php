@@ -63,7 +63,7 @@ function testLittleEndianInt64(int $dec, string $enc): void {
 
 <<__EntryPoint>>
 function main(): void {
-  include "protobuf.php";
+  include "lib/protobuf.php";
 
   AssertEndiannessAndIntSize();
 
