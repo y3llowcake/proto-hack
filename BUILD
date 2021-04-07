@@ -116,7 +116,7 @@ filegroup(
     name = "hack_library",
     srcs = LIB_PHP + glob(
         include = ["generated/google/protobuf/**/*.php"],
-        exclude = ["*test_messages*"],
+        exclude = ["**/*test_messages*"],
     ),
     visibility = ["//visibility:public"],
 )
