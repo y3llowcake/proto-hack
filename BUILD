@@ -100,6 +100,12 @@ sh_test(
     deps = [":conformance_lib"],
 )
 
+sh_binary(
+    name = "conformance_update_failures",
+    srcs = ["conformance_bin.sh"],
+    deps = [":conformance_lib"],
+)
+
 hh_client_test(
     name = "typecheck_test",
     srcs = [".hhconfig"] + ALL_PHP,
