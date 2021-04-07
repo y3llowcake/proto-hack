@@ -2,14 +2,10 @@
 Hacklang generator for protobuf
 
 # Dependencies
-- golang
+- bazel[isk] which will manage:
+  - protoc
+  - golang toolchain
 - hhvm
-- protoc
-
-# Installation
-`go get -u github.com/y3llowcake/proto-hack/protoc-gen-hack`
-
-`protoc-gen-hack` should now be in your `$PATH`
 
 # Usage
 `protoc --hack_out=./gen-src example.proto`
@@ -27,7 +23,8 @@ In addition to generated code, you will need the library code in `/lib`.
 ```
 
 # Development
-`make test`
+testing: `bazelisk test //...`
+codegen: `bazelisk run :gen`
 
 # Notes
 - Unsigned 64 bit integer types (e.g. uint64, fixed64) are represented using

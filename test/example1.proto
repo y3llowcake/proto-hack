@@ -3,7 +3,7 @@ syntax = "proto3";
 package foo.bar;
 
 import "google/protobuf/any.proto";
-import "example2.proto";
+import "test/example2.proto";
 
 enum AEnum1 {
   A = 0;
