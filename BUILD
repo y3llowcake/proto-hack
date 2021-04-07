@@ -10,6 +10,7 @@ go_binary(
         "protoc-gen-hack/plugin.go",
     ],
     out = "protoc-gen-hack",
+    visibility = ["//visibility:public"],
     x_defs = {"version": "1.0"},
     deps = [
         "@com_github_golang_protobuf//proto:go_default_library",
@@ -117,4 +118,5 @@ filegroup(
         include = ["generated/google/protobuf/**/*.php"],
         exclude = ["*test_messages*"],
     ),
+    visibility = ["//visibility:public"],
 )
