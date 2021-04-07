@@ -13,26 +13,20 @@ http_archive(
 )
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
+
 go_rules_dependencies()
+
 go_register_toolchains(version = "1.16.2")
 
+PBV = "3.15.7"
 
-#
-# Protobuf
-#
-#http_archive(
-#    name = "rules_python",
-#    url = "https://github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
-#    sha256 = "778197e26c5fbeb07ac2a2c5ae405b30f6cb7ad1f5510ea6fdac03bded96cc6f",
-#)
-
-PBV = '3.15.7'
 http_archive(
     name = "com_google_protobuf",
-    strip_prefix = 'protobuf-' + PBV,
-    urls = ["https://github.com/protocolbuffers/protobuf/archive/v" + PBV + ".zip"],
     sha256 = "feeeb3a866834bd46be16a20d3ff74c475b27e1c0d4441173b6dfd806bc2f136",
+    strip_prefix = "protobuf-" + PBV,
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/v" + PBV + ".zip"],
 )
 
 load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
 protobuf_deps()

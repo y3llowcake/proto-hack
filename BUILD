@@ -1,7 +1,7 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary")
 load(":hh.bzl", "hh_client_test", "hh_test")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 go_binary(
     name = "protoc-gen-hack",
@@ -84,14 +84,20 @@ CONFORMANCE_PHP = glob(["conformance/**/*.php"])
 
 ALL_PHP += CONFORMANCE_PHP
 
-sh_test(
-    name = "conformance_test",
-    srcs = ["conformance_test.sh"],
+sh_library(
+    name = "conformance_lib",
+    srcs = ["conformance.sh"],
     data = CONFORMANCE_PHP + LIB_PHP + ALL_GEN + [
-        "conformance.sh",
+        "conformance_hhvm_harness.sh",
         "conformance/failures.txt",
         "@com_google_protobuf//:conformance_test_runner",
     ],
+)
+
+sh_test(
+    name = "conformance_test",
+    srcs = ["conformance_test.sh"],
+    deps = [":conformance_lib"],
 )
 
 hh_client_test(

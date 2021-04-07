@@ -33,9 +33,9 @@ function main(): void {
   foreach ($av as $arg) {
     $argv[] = (string)$arg;
   }
-  // throw new \Exception(\print_r($argv, true));
+  # throw new \Exception(\print_r($argv, true));
 
-  if (\count($argv) > 1 && $argv[1] != "conformance.sh") {
+  if (\count($argv) > 1 && $argv[1] != "conformance_hhvm_harness.sh") {
     echo "oneoff test mode\n";
     $in = $argv[1];
     echo 'escaped input: "'.$in.'"'."\n";
