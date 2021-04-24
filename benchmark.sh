@@ -4,7 +4,7 @@ echo running benchmark harness...
 if [ $# -ge 1 ]; then
   echo with repo auth
   TMP=`mktemp -d`
-  hhvm --hphp -t hhbc -v AllVolatile=true --module=generated --module=lib --module=test --output-dir $TMP
+  hhvm --hphp -t hhbc --module=generated --module=lib --module=test --output-dir $TMP
   hhvm -d hhvm.repo.authoritative=true -d hhvm.repo.central.path=$TMP/hhvm.hhbc test/test.php bench
 else
   echo without repo auth
