@@ -242,13 +242,10 @@ namespace Protobuf\Internal {
       return $this->offset >= $this->len;
     }
 
-    public function skip(int $fn, int $wt, bool $discard = false): void {
-      if ($discard) {
-        // Discard is not used internally by the API, but is exposed externally
-        // for fast path parsers.
-        $this->discard($wt);
-        return;
-      }
+    public function skip(int $fn, int $wt): void {
+      // Uncomment the line below to test the accuracy of discard logic.
+      // $this->discard($wt); return;
+
       $this->skipped->writeTag($fn, $wt);
       switch ($wt) {
         case 0:
@@ -270,6 +267,8 @@ namespace Protobuf\Internal {
       }
     }
 
+    // Discard is not used internally by the API, but is exposed externally
+    // for fast path parsers.
     public function discard(int $wt): void {
       $size = 0;
       switch ($wt) {
@@ -295,6 +294,12 @@ namespace Protobuf\Internal {
         throw new \ProtobufException("buffer overrun while discarding: ".$size);
       }
       $this->offset = $noff;
+    }
+
+    // Offset is not used internally by the API, but is exposed externally for
+    // fast path parsers.
+    public function offset(): int {
+      return $this->offset;
     }
 
     public function skippedRaw(): string {
