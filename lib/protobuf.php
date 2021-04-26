@@ -242,7 +242,13 @@ namespace Protobuf\Internal {
       return $this->offset >= $this->len;
     }
 
-    public function skip(int $fn, int $wt): void {
+    public function skip(int $fn, int $wt, bool $discard = false): void {
+      if ($discard) {
+        // Discard is not used internally by the API, but is exposed externally
+        // for fast path parsers.
+        $this->discard($wt);
+        return;
+      }
       $this->skipped->writeTag($fn, $wt);
       switch ($wt) {
         case 0:
@@ -262,6 +268,33 @@ namespace Protobuf\Internal {
             "encountered unknown wire type $wt during skip",
           );
       }
+    }
+
+    public function discard(int $wt): void {
+      $size = 0;
+      switch ($wt) {
+        case 0:
+          $this->readVarint();
+          return; // done, early exit.
+        case 1:
+          $size = 8;
+          break;
+        case 2:
+          $size = $this->readVarint();
+          break;
+        case 5:
+          $size = 4;
+          break;
+        default:
+          throw new \ProtobufException(
+            "encountered unknown wire type $wt during discard",
+          );
+      }
+      $noff = $this->offset + $size;
+      if ($noff > $this->len) {
+        throw new \ProtobufException("buffer overrun while discarding: ".$size);
+      }
+      $this->offset = $noff;
     }
 
     public function skippedRaw(): string {
