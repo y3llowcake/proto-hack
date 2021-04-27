@@ -244,7 +244,7 @@ namespace Protobuf\Internal {
 
     public function skip(int $fn, int $wt): void {
       // Uncomment the line below to test the accuracy of discard logic.
-      // $this->discard($wt); return;
+      // $this->_discard($wt); return;
 
       $this->skipped->writeTag($fn, $wt);
       switch ($wt) {
@@ -267,9 +267,13 @@ namespace Protobuf\Internal {
       }
     }
 
-    // Discard is not used internally by the API, but is exposed externally
-    // for fast path parsers.
-    public function discard(int $wt): void {
+    public function skippedRaw(): string {
+      return $this->skipped->buffer();
+    }
+
+    // Function below this line are not used internally by the API or generated
+    // code, but are intentionally exposed for custom parsers to make use of.
+    public function _discard(int $wt): void {
       $size = 0;
       switch ($wt) {
         case 0:
@@ -296,14 +300,12 @@ namespace Protobuf\Internal {
       $this->offset = $noff;
     }
 
-    // Offset is not used internally by the API, but is exposed externally for
-    // fast path parsers.
-    public function offset(): int {
+    public function _offset(): int {
       return $this->offset;
     }
 
-    public function skippedRaw(): string {
-      return $this->skipped->buffer();
+    public function _buffer(): string {
+      return $this->buffer;
     }
   }
 
