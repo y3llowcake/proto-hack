@@ -32,6 +32,7 @@ hh_test = rule(
     test = True,
 )
 
+# TODO this is broken because hh_client isn't following symlinks?
 def _hh_client_test(ctx):
     out = ctx.outputs.out
     script_content = "#!/bin/bash\nset -euo pipefail\nhh_client"

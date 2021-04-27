@@ -305,7 +305,7 @@ namespace Protobuf\Internal {
     }
 
     public function _buffer(): string {
-      return $this->buffer;
+      return $this->buf;
     }
   }
 
